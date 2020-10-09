@@ -49,7 +49,7 @@ namespace JsonPathExpressions
         /// <param name="elements">Collection of JsonPath elements</param>
         /// <exception cref="ArgumentException">Empty elements collection provided</exception>
         public AbsoluteJsonPathExpression(IReadOnlyCollection<JsonPathElement> elements)
-            : base(elements, null)
+            : base(elements, true)
         {
         }
 
