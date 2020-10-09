@@ -32,6 +32,14 @@ namespace JsonPathExpressions.Tests.Elements
 
     public class JsonPathExpressionElementTests
     {
+        [Fact]
+        public void IsStrict_ReturnsFalse()
+        {
+            var element = new JsonPathExpressionElement("@.length-1");
+
+            element.IsStrict.Should().BeFalse();
+        }
+
         [Theory]
         [InlineData("@.length-1", "@.length-1", true)]
         [InlineData("@.length-1", "@.length-2", false)]
@@ -60,12 +68,12 @@ namespace JsonPathExpressions.Tests.Elements
 
         [Theory]
         [InlineData("@.length-1", 0, 1, 1, null)]
+        [InlineData("@.length-1", 0, 1, 2, null)]
         [InlineData("@.length-1", 100, 101, 1, null)]
         [InlineData("@.length-1", null, 1, 1, null)]
         [InlineData("@.length-1", 10, 9, -1, null)]
         [InlineData("@.length-1", -1, null, 1, null)]
         [InlineData("@.length-1", 0, 2, 1, false)]
-        [InlineData("@.length-1", 0, 1, 2, false)]
         [InlineData("@.length-1", -2, null, 1, false)]
         public void Matches_ArraySlice(string expression, int? start, int? end, int step, bool? expected)
         {

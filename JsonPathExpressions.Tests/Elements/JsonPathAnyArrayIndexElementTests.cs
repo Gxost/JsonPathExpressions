@@ -31,6 +31,14 @@ namespace JsonPathExpressions.Tests.Elements
 
     public class JsonPathAnyArrayIndexElementTests
     {
+        [Fact]
+        public void IsStrict_ReturnsFalse()
+        {
+            var element = new JsonPathAnyArrayIndexElement();
+
+            element.IsStrict.Should().BeFalse();
+        }
+
         [Theory]
         [InlineData(JsonPathElementType.Root, false)]
         [InlineData(JsonPathElementType.RecursiveDescent, false)]

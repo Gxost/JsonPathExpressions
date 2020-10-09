@@ -58,7 +58,9 @@ namespace JsonPathExpressions.Elements
 
         public int Start => Step > 0 ? Left : Right;
         public bool ContainsAllIndexes => Left == 0 && Right == int.MaxValue && Step == 1;
-        public int IndexCount => (Right - Left + 1) / Math.Abs(Step);
+        public int IndexCount => Right >= Left
+            ? (Right - Left) / Math.Abs(Step) + 1
+            : 0;
 
         public bool Contains(int index)
         {

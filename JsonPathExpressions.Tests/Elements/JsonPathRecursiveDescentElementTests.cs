@@ -31,6 +31,14 @@ namespace JsonPathExpressions.Tests.Elements
 
     public class JsonPathRecursiveDescentElementTests
     {
+        [Fact]
+        public void IsStrict_ReturnsFalse()
+        {
+            var element = new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("name"));
+
+            element.IsStrict.Should().BeFalse();
+        }
+
         [Theory]
         [InlineData("name", "name", true)]
         [InlineData("name", "other-name", false)]

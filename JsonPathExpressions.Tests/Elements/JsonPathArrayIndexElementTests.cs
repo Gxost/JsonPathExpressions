@@ -32,6 +32,14 @@ namespace JsonPathExpressions.Tests.Elements
     public class JsonPathArrayIndexElementTests
     {
         [Fact]
+        public void IsStrict_ReturnsTrue()
+        {
+            var element = new JsonPathArrayIndexElement(7);
+
+            element.IsStrict.Should().BeTrue();
+        }
+
+        [Fact]
         public void Matches_KnownArrayIndex_ReturnsTrue()
         {
             var element = new JsonPathArrayIndexElement(7);

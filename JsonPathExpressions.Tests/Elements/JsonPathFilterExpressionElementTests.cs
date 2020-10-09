@@ -31,6 +31,14 @@ namespace JsonPathExpressions.Tests.Elements
 
     public class JsonPathFilterExpressionElementTests
     {
+        [Fact]
+        public void IsStrict_ReturnsFalse()
+        {
+            var element = new JsonPathFilterExpressionElement("@.name = 'a'");
+
+            element.IsStrict.Should().BeFalse();
+        }
+
         [Theory]
         [InlineData("@.name", "@.name", true)]
         [InlineData("@.name", "@.name = 'a'", null)]

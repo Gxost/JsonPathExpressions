@@ -32,6 +32,14 @@ namespace JsonPathExpressions.Tests.Elements
     public class JsonPathPropertyElementTests
     {
         [Fact]
+        public void IsStrict_ReturnsTrue()
+        {
+            var element = new JsonPathPropertyElement("name");
+
+            element.IsStrict.Should().BeTrue();
+        }
+
+        [Fact]
         public void Matches_KnownPropertyName_ReturnsTrue()
         {
             var element = new JsonPathPropertyElement("name");

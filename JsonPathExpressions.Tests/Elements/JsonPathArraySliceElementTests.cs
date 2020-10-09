@@ -32,6 +32,19 @@ namespace JsonPathExpressions.Tests.Elements
     public class JsonPathArraySliceElementTests
     {
         [Theory]
+        [InlineData(0, 0, 1, false)]
+        [InlineData(0, 1, 1, true)]
+        [InlineData(0, 2, 1, false)]
+        [InlineData(0, 1, 2, true)]
+        [InlineData(1, 0, -1, true)]
+        public void IsStrict(int? start, int? end, int step, bool expected)
+        {
+            var element = new JsonPathArraySliceElement(start, end, step);
+
+            element.IsStrict.Should().Be(expected);
+        }
+
+        [Theory]
         [InlineData(0, 2, 1, 1, true)]
         [InlineData(null, 2, 1, 1, true)]
         [InlineData(0, 2, 1, 2, false)]

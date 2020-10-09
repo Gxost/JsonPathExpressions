@@ -31,6 +31,16 @@ namespace JsonPathExpressions.Tests.Elements
 
     public class JsonPathArrayIndexListElementTests
     {
+        [Theory]
+        [InlineData(true, 42)]
+        [InlineData(false, 7, 42)]
+        public void IsStrict(bool expected, params int[] indexes)
+        {
+            var element = new JsonPathArrayIndexListElement(indexes);
+
+            element.IsStrict.Should().Be(expected);
+        }
+
         [Fact]
         public void Matches_KnownArrayIndex_ReturnsTrue()
         {

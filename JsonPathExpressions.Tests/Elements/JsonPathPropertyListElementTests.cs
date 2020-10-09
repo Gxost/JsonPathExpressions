@@ -31,6 +31,16 @@ namespace JsonPathExpressions.Tests.Elements
 
     public class JsonPathPropertyListElementTests
     {
+        [Theory]
+        [InlineData(true, "a")]
+        [InlineData(false, "a", "b")]
+        public void IsStrict(bool expected, params string[] names)
+        {
+            var element = new JsonPathPropertyListElement(names);
+
+            element.IsStrict.Should().Be(expected);
+        }
+
         [Fact]
         public void Matches_KnownPropertyName_ReturnsTrue()
         {
