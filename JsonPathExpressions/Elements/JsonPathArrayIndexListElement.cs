@@ -74,7 +74,7 @@ namespace JsonPathExpressions.Elements
         public override bool IsNormalized => _isNormalized.Value;
 
         /// <summary>
-        /// Collection of array indexes
+        /// Gets collection of array indexes
         /// </summary>
         /// <remarks>
         /// It is guaranteed that the collection is not empty

@@ -56,7 +56,7 @@ namespace JsonPathExpressions.Elements
         public override bool IsNormalized => true;
 
         /// <summary>
-        /// Filter expression
+        /// Gets filter expression
         /// </summary>
         public string Expression { get; }
 

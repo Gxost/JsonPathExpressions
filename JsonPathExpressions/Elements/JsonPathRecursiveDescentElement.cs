@@ -59,7 +59,7 @@ namespace JsonPathExpressions.Elements
         public override bool IsNormalized => AppliedToElement.IsNormalized;
 
         /// <summary>
-        /// JsonPath element to which recursive descent is applied
+        /// Gets JsonPath element to which recursive descent is applied
         /// </summary>
         public JsonPathElement AppliedToElement { get; }
         

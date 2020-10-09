@@ -188,7 +188,7 @@ namespace JsonPathExpressions.Elements
         /// </summary>
         /// <param name="index">Array index to check</param>
         /// <returns>True if the slice contains <paramref name="index"/>; false if not; null if it's not possible to check current slice</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is zero</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is negative</exception>
         public bool? ContainsIndex(int index)
         {
             if (index < 0)
@@ -200,7 +200,7 @@ namespace JsonPathExpressions.Elements
         /// <summary>
         /// Return enumerable representing all indexes in the slice
         /// </summary>
-        /// <returns><see cref="IEnumerable{T}"/> representing all indexes in the slice</returns>
+        /// <returns><see cref="IEnumerable{T}"/> representing all indexes in the slice; null if it's not possible to get indexes in the slice</returns>
         public IEnumerable<int> GetIndexes()
         {
             return IndexRange?.GetIndexes();
