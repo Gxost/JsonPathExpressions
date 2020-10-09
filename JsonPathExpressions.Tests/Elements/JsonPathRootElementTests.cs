@@ -39,6 +39,14 @@ namespace JsonPathExpressions.Tests.Elements
             element.IsStrict.Should().BeTrue();
         }
 
+        [Fact]
+        public void IsNormalized_ReturnsTrue()
+        {
+            var element = new JsonPathRootElement();
+
+            element.IsNormalized.Should().BeTrue();
+        }
+
         [Theory]
         [InlineData(JsonPathElementType.Root, true)]
         [InlineData(JsonPathElementType.RecursiveDescent, false)]

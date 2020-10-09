@@ -40,6 +40,14 @@ namespace JsonPathExpressions.Tests.Elements
         }
 
         [Fact]
+        public void IsNormalized_ReturnsTrue()
+        {
+            var element = new JsonPathPropertyElement("name");
+
+            element.IsNormalized.Should().BeTrue();
+        }
+
+        [Fact]
         public void Matches_KnownPropertyName_ReturnsTrue()
         {
             var element = new JsonPathPropertyElement("name");

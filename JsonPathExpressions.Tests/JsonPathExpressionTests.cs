@@ -21,6 +21,19 @@
         }
 
         [Fact]
+        public void IsNormalized_NormalizedElements_ReturnsTrue()
+        {
+            var path = new JsonPathExpression(new JsonPathElement[]
+            {
+                new JsonPathRootElement(),
+                new JsonPathPropertyElement("a"),
+                new JsonPathArrayIndexElement(42)
+            });
+
+            path.IsNormalized.Should().BeTrue();
+        }
+
+        [Fact]
         public void Constructor_RootIsNotFirstElement_Throws()
         {
             var elements = new JsonPathElement[] { new JsonPathPropertyElement("a"), new JsonPathRootElement() };

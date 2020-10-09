@@ -45,6 +45,21 @@ namespace JsonPathExpressions.Tests.Elements
         }
 
         [Theory]
+        [InlineData(0, 2, 1, false)]
+        [InlineData(1, 1, 1, false)]
+        [InlineData(1, 1, -1, false)]
+        [InlineData(0, 1, 1, false)]
+        [InlineData(null, null, 1, false)]
+        [InlineData(null, 10, 1, true)]
+        [InlineData(null, null, 2, true)]
+        public void IsNormalized(int? start, int? end, int step, bool expected)
+        {
+            var element = new JsonPathArraySliceElement(start, end, step);
+
+            element.IsNormalized.Should().Be(expected);
+        }
+
+        [Theory]
         [InlineData(0, 2, 1, 1, true)]
         [InlineData(null, 2, 1, 1, true)]
         [InlineData(0, 2, 1, 2, false)]

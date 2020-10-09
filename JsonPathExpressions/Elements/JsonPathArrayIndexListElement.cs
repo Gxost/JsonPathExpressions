@@ -185,7 +185,7 @@ namespace JsonPathExpressions.Elements
 
         private static bool IsSlice(IReadOnlyCollection<int> sortedIndexes, out int? start, out int? end, out int step)
         {
-            if (sortedIndexes.Count == 0)
+            if (sortedIndexes.Count < 3)
             {
                 start = null;
                 end = 0;

@@ -98,7 +98,7 @@ namespace JsonPathExpressions.Elements
 
         private IndexRange IndexRange => _indexRange.Value;
         private bool IsLastElement => Start == -1 && End == null && Step == 1;
-        private bool IsNotNormalizedEmptySlice => IndexCount == 0 && Start != null && End != 0 && Step != 1;
+        private bool IsNotNormalizedEmptySlice => IndexCount == 0 && !(Start == null && End == 0 && Step == 1);
 
         /// <inheritdoc />
         public override JsonPathElement GetNormalized()

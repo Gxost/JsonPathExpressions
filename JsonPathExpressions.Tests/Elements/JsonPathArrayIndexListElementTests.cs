@@ -41,6 +41,19 @@ namespace JsonPathExpressions.Tests.Elements
             element.IsStrict.Should().Be(expected);
         }
 
+        [Theory]
+        [InlineData(false, 42)]
+        [InlineData(true, 7, 42)]
+        [InlineData(false, 42, 7)]
+        [InlineData(false, 1, 2, 3)]
+        [InlineData(false, 0, 2, 4)]
+        public void IsNormalized(bool expected, params int[] indexes)
+        {
+            var element = new JsonPathArrayIndexListElement(indexes);
+
+            element.IsNormalized.Should().Be(expected);
+        }
+
         [Fact]
         public void Matches_KnownArrayIndex_ReturnsTrue()
         {

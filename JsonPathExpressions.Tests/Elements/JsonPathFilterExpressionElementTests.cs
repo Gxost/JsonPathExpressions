@@ -39,6 +39,14 @@ namespace JsonPathExpressions.Tests.Elements
             element.IsStrict.Should().BeFalse();
         }
 
+        [Fact]
+        public void IsNormalized_ReturnsTrue()
+        {
+            var element = new JsonPathFilterExpressionElement("@.name = 'a'");
+
+            element.IsNormalized.Should().BeTrue();
+        }
+
         [Theory]
         [InlineData("@.name", "@.name", true)]
         [InlineData("@.name", "@.name = 'a'", null)]

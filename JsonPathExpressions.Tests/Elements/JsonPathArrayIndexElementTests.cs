@@ -40,6 +40,14 @@ namespace JsonPathExpressions.Tests.Elements
         }
 
         [Fact]
+        public void IsNormalized_ReturnsTrue()
+        {
+            var element = new JsonPathArrayIndexElement(7);
+
+            element.IsNormalized.Should().BeTrue();
+        }
+
+        [Fact]
         public void Matches_KnownArrayIndex_ReturnsTrue()
         {
             var element = new JsonPathArrayIndexElement(7);

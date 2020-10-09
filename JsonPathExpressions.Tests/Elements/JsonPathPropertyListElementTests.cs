@@ -41,6 +41,17 @@ namespace JsonPathExpressions.Tests.Elements
             element.IsStrict.Should().Be(expected);
         }
 
+        [Theory]
+        [InlineData(false, "a")]
+        [InlineData(true, "a", "b")]
+        [InlineData(false, "b", "a")]
+        public void IsNormalized(bool expected, params string[] names)
+        {
+            var element = new JsonPathPropertyListElement(names);
+
+            element.IsNormalized.Should().Be(expected);
+        }
+
         [Fact]
         public void Matches_KnownPropertyName_ReturnsTrue()
         {
