@@ -155,12 +155,7 @@ namespace JsonPathExpressions
                     continue;
 
                 if (i == 0)
-                    break;
-
-                if (i == path.Elements.Count - 1)
-                    return path;
-                if (i == other.Elements.Count - 1)
-                    return other;
+                    return null;
 
                 var elements = path.Elements
                     .Take(i)
@@ -169,7 +164,7 @@ namespace JsonPathExpressions
                 return (TJsonPathExpression)path.Create(elements);
             }
 
-            return null;
+            return minLength == path.Elements.Count ? path : other;
         }
 
         /// <summary>

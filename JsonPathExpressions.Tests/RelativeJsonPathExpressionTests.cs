@@ -26,5 +26,24 @@
 
             action.Should().Throw<ArgumentException>();
         }
+
+        [Fact]
+        public void Create_ReturnsObjectOfTheSameType()
+        {
+            var path = new RelativeJsonPathExpression(new JsonPathElement[]
+            {
+                new JsonPathPropertyElement("a")
+            });
+            var elements = new JsonPathElement[]
+            {
+                new JsonPathPropertyElement("a"),
+                new JsonPathArrayIndexElement(42)
+            };
+
+            var actual = path.Create(elements);
+
+            actual.Elements.Should().BeEquivalentTo(elements);
+            actual.GetType().Should().Be<RelativeJsonPathExpression>();
+        }
     }
 }
