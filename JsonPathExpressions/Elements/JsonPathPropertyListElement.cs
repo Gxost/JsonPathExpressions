@@ -35,7 +35,6 @@ namespace JsonPathExpressions.Elements
     public sealed class JsonPathPropertyListElement : JsonPathElement, IEquatable<JsonPathPropertyListElement>
     {
         private readonly HashSet<string> _names;
-        private readonly Lazy<bool> _isNormalized;
 
         /// <summary>
         /// Create <see cref="JsonPathPropertyListElement"/> instance
@@ -55,15 +54,6 @@ namespace JsonPathExpressions.Elements
                 throw new ArgumentException("Single quote in property name is not allowed", nameof(names));
 
             _names = new HashSet<string>(names, StringComparer.Ordinal);
-            _isNormalized = new Lazy<bool>(ComputeIsNormalized);
-        }
-
-        private JsonPathPropertyListElement(HashSet<string> names, bool? isNormalized)
-        {
-            _names = names;
-            _isNormalized = isNormalized.HasValue
-                ? new Lazy<bool>(() => isNormalized.Value)
-                : new Lazy<bool>(ComputeIsNormalized);
         }
 
         /// <inheritdoc />
@@ -73,7 +63,7 @@ namespace JsonPathExpressions.Elements
         public override bool IsStrict => Names.Count == 1;
 
         /// <inheritdoc />
-        public override bool IsNormalized => _isNormalized.Value;
+        public override bool IsNormalized => Names.Count != 1;
 
         /// <summary>
         /// Collection of property names
@@ -89,13 +79,7 @@ namespace JsonPathExpressions.Elements
             if (Names.Count == 1)
                 return new JsonPathPropertyElement(Names.First());
 
-            if (IsNormalized)
-                return this;
-
-            var names = new List<string>(Names);
-            names.Sort();
-
-            return new JsonPathPropertyListElement(new HashSet<string>(names, StringComparer.Ordinal), true);
+            return this;
         }
 
         /// <inheritdoc />
@@ -155,23 +139,6 @@ namespace JsonPathExpressions.Elements
 
                 return hashCode;
             }
-        }
-
-        private bool ComputeIsNormalized()
-        {
-            if (Names.Count == 1)
-                return false;
-
-            string lastName = Names.First();
-            foreach (string name in Names)
-            {
-                if (StringComparer.Ordinal.Compare(name, lastName) < 0)
-                    return false;
-
-                lastName = name;
-            }
-
-            return true;
         }
     }
 }

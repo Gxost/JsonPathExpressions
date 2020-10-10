@@ -44,7 +44,6 @@ namespace JsonPathExpressions.Tests.Elements
         [Theory]
         [InlineData(false, "a")]
         [InlineData(true, "a", "b")]
-        [InlineData(false, "b", "a")]
         public void IsNormalized(bool expected, params string[] names)
         {
             var element = new JsonPathPropertyListElement(names);

@@ -56,14 +56,6 @@ namespace JsonPathExpressions.Elements
             _isNormalized = new Lazy<bool>(ComputeIsNormalized);
         }
 
-        private JsonPathArrayIndexListElement(HashSet<int> indexes, bool? isNormalized)
-        {
-            _indexes = indexes;
-            _isNormalized = isNormalized.HasValue
-                ? new Lazy<bool>(() => isNormalized.Value)
-                : new Lazy<bool>(ComputeIsNormalized);
-        }
-
         /// <inheritdoc />
         public override JsonPathElementType Type => JsonPathElementType.ArrayIndexList;
 
@@ -87,15 +79,9 @@ namespace JsonPathExpressions.Elements
             if (Indexes.Count == 1)
                 return new JsonPathArrayIndexElement(Indexes.First());
 
-            if (IsNormalized)
-                return this;
-
-            var indexes = new List<int>(Indexes);
-            indexes.Sort();
-
-            return IsSlice(indexes, out int? start, out int? end, out int step)
+            return IsSlice(Indexes, out int? start, out int? end, out int step)
                 ? (JsonPathElement)new JsonPathArraySliceElement(start, end, step)
-                : (JsonPathElement)new JsonPathArrayIndexListElement(new HashSet<int>(indexes), true);
+                : this;
         }
 
         /// <inheritdoc />
@@ -165,22 +151,7 @@ namespace JsonPathExpressions.Elements
         private bool ComputeIsNormalized()
         {
             return Indexes.Count > 1
-                   && IsSorted()
                    && !IsSlice(Indexes, out _, out _, out _);
-        }
-
-        private bool IsSorted()
-        {
-            int lastIndex = Indexes.First();
-            foreach (int index in Indexes)
-            {
-                if (index < lastIndex)
-                    return false;
-
-                lastIndex = index;
-            }
-
-            return true;
         }
 
         private static bool IsSlice(IReadOnlyCollection<int> sortedIndexes, out int? start, out int? end, out int step)
