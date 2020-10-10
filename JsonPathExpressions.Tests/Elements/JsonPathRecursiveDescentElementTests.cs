@@ -55,6 +55,27 @@ namespace JsonPathExpressions.Tests.Elements
             element.IsNormalized.Should().BeFalse();
         }
 
+        [Fact]
+        public void GetNormalized_AppliedToNormalized_ReturnsSelf()
+        {
+            var element = new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("name"));
+
+            var actual = element.GetNormalized();
+
+            actual.Should().Be(element);
+        }
+
+        [Fact]
+        public void GetNormalized_AppliedToNotNormalizedArraySlice_ReturnsAppliedToAnyArrayIndex()
+        {
+            var element = new JsonPathRecursiveDescentElement(new JsonPathArraySliceElement(null, null));
+            var expected = new JsonPathRecursiveDescentElement(new JsonPathAnyArrayIndexElement());
+
+            var actual = element.GetNormalized();
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
         [Theory]
         [InlineData("name", "name", true)]
         [InlineData("name", "other-name", false)]

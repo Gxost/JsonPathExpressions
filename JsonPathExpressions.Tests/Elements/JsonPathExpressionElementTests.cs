@@ -48,6 +48,16 @@ namespace JsonPathExpressions.Tests.Elements
             element.IsNormalized.Should().BeTrue();
         }
 
+        [Fact]
+        public void GetNormalized_ReturnsSelf()
+        {
+            var element = new JsonPathExpressionElement("@.length-1");
+
+            var actual = element.GetNormalized();
+
+            actual.Should().Be(element);
+        }
+
         [Theory]
         [InlineData("@.length-1", "@.length-1", true)]
         [InlineData("@.length-1", "@.length-2", false)]

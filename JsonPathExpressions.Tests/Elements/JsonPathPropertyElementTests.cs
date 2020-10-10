@@ -48,6 +48,16 @@ namespace JsonPathExpressions.Tests.Elements
         }
 
         [Fact]
+        public void GetNormalized_ReturnsSelf()
+        {
+            var element = new JsonPathPropertyElement("name");
+
+            var actual = element.GetNormalized();
+
+            actual.Should().Be(element);
+        }
+
+        [Fact]
         public void Matches_KnownPropertyName_ReturnsTrue()
         {
             var element = new JsonPathPropertyElement("name");

@@ -59,6 +59,60 @@ namespace JsonPathExpressions.Tests.Elements
             element.IsNormalized.Should().Be(expected);
         }
 
+        [Fact]
+        public void GetNormalized_SingleIndex_ReturnsArrayIndexElement()
+        {
+            var element = new JsonPathArraySliceElement(42, 43, 7);
+            var expected = new JsonPathArrayIndexElement(42);
+
+            var actual = element.GetNormalized();
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public void GetNormalized_StartsWithZero_ReturnsArraySliceElementStartingWithNull()
+        {
+            var element = new JsonPathArraySliceElement(0, 3, 1);
+            var expected = new JsonPathArraySliceElement(null, 3, 1);
+
+            var actual = element.GetNormalized();
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public void GetNormalized_EmptySliceNotStartingWithNull_ReturnsEmptySliceStartingWithNull()
+        {
+            var element = new JsonPathArraySliceElement(3, 3, 1);
+            var expected = new JsonPathArraySliceElement(null, 0, 1);
+
+            var actual = element.GetNormalized();
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public void GetNormalized_ContainsAllIndexes_ReturnsAnyArrayIndexElement()
+        {
+            var element = new JsonPathArraySliceElement(0, null, 1);
+            var expected = new JsonPathAnyArrayIndexElement();
+
+            var actual = element.GetNormalized();
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public void GetNormalized_StepNotOne_ReturnsSelf()
+        {
+            var element = new JsonPathArraySliceElement(null, null, 2);
+
+            var actual = element.GetNormalized();
+
+            actual.Should().Be(element);
+        }
+
         [Theory]
         [InlineData(0, 2, 1, 1, true)]
         [InlineData(null, 2, 1, 1, true)]

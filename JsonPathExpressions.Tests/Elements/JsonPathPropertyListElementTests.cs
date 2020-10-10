@@ -24,6 +24,7 @@
 
 namespace JsonPathExpressions.Tests.Elements
 {
+    using System;
     using FluentAssertions;
     using Helpers;
     using JsonPathExpressions.Elements;
@@ -49,6 +50,27 @@ namespace JsonPathExpressions.Tests.Elements
             var element = new JsonPathPropertyListElement(names);
 
             element.IsNormalized.Should().Be(expected);
+        }
+
+        [Fact]
+        public void GetNormalized_SingleProperty_ReturnsPropertyElement()
+        {
+            var element = new JsonPathPropertyListElement(new [] {"name"});
+            var expected = new JsonPathPropertyElement("name");
+
+            var actual = element.GetNormalized();
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public void GetNormalized_MultipleProperties_ReturnsSelf()
+        {
+            var element = new JsonPathPropertyListElement(new[] { "a", "b" });
+
+            var actual = element.GetNormalized();
+
+            actual.Should().Be(element);
         }
 
         [Fact]

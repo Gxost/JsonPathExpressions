@@ -47,6 +47,16 @@ namespace JsonPathExpressions.Tests.Elements
             element.IsNormalized.Should().BeTrue();
         }
 
+        [Fact]
+        public void GetNormalized_ReturnsSelf()
+        {
+            var element = new JsonPathAnyArrayIndexElement();
+
+            var actual = element.GetNormalized();
+
+            actual.Should().Be(element);
+        }
+
         [Theory]
         [InlineData(JsonPathElementType.Root, false)]
         [InlineData(JsonPathElementType.RecursiveDescent, false)]

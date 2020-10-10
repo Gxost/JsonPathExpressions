@@ -47,6 +47,16 @@ namespace JsonPathExpressions.Tests.Elements
             element.IsNormalized.Should().BeTrue();
         }
 
+        [Fact]
+        public void GetNormalized_ReturnsSelf()
+        {
+            var element = new JsonPathFilterExpressionElement("@.name = 'a'");
+
+            var actual = element.GetNormalized();
+
+            actual.Should().Be(element);
+        }
+
         [Theory]
         [InlineData("@.name", "@.name", true)]
         [InlineData("@.name", "@.name = 'a'", null)]

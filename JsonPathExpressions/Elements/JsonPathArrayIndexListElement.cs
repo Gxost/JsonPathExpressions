@@ -192,10 +192,12 @@ namespace JsonPathExpressions.Elements
                     end = 0;
                     return false;
                 }
+
+                last = index;
             }
 
             start = first == 0 ? default : first;
-            end = last == int.MaxValue ? default(int?) : last + 1;
+            end = last == int.MaxValue ? default(int?) : last + Math.Sign(step);
 
             return true;
         }
