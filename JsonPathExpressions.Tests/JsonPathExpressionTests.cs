@@ -8,6 +8,31 @@
     public class JsonPathExpressionTests
     {
         [Fact]
+        public void IsAbsolute_StartsWithRootElement_ReturnsTrue()
+        {
+            var path = new JsonPathExpression(new JsonPathElement[]
+            {
+                new JsonPathRootElement(),
+                new JsonPathPropertyElement("a"),
+                new JsonPathArrayIndexElement(42)
+            });
+
+            path.IsAbsolute.Should().BeTrue();
+        }
+
+        [Fact]
+        public void IsAbsolute_StartsWithNonRootElement_ReturnsFalse()
+        {
+            var path = new JsonPathExpression(new JsonPathElement[]
+            {
+                new JsonPathPropertyElement("a"),
+                new JsonPathArrayIndexElement(42)
+            });
+
+            path.IsAbsolute.Should().BeFalse();
+        }
+
+        [Fact]
         public void IsStrict_StrictElements_ReturnsTrue()
         {
             var path = new JsonPathExpression(new JsonPathElement[]
@@ -31,6 +56,32 @@
             });
 
             path.IsNormalized.Should().BeTrue();
+        }
+
+        [Theory]
+        [InlineData("$.a.*['b','c'][42][*][7,42][0:10]..[(@.length-1)][?(@.name = 'a')]", "$.a.*['b','c'][42][*][7,42][0:10]..[(@.length-1)][?(@.name = 'a')]", true)]
+        [InlineData("[:]", "[::1]", true)]
+        [InlineData("a", "b", false)]
+        [InlineData("*", "b", false)]
+        [InlineData("[7]", "[42]", false)]
+        [InlineData("[*]", "[42]", false)]
+        [InlineData("[7,42]", "[42]", false)]
+        [InlineData("[7,42]", "[:]", false)]
+        [InlineData("[0:10]", "[0:10:2]", false)]
+        [InlineData("[0:10]", "[0:9]", false)]
+        [InlineData("[:]", "[::2]", false)]
+        [InlineData("[(@.length-1)]", "[(@.length-2)]", false)]
+        [InlineData("[?(@.name = 'a')]", "[?(@.name = 'b')]", false)]
+        [InlineData("$.a", "a", false)]
+        [InlineData("$.a", "$..a", false)]
+        public void Equals_ReturnsExpected(string first, string second, bool expected)
+        {
+            var firstPath = new JsonPathExpression(first);
+            var secondPath = new JsonPathExpression(second);
+
+            bool actual = firstPath.Equals(secondPath);
+
+            actual.Should().Be(expected);
         }
 
         [Fact]
