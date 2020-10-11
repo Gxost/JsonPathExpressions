@@ -71,10 +71,14 @@ namespace JsonPathExpressions.Matching
             var element = jsonPath.Elements[Index];
             if (element.Type != JsonPathElementType.RecursiveDescent)
             {
-                if (IsStrict(element) && Matches(jsonPath, _strict) == true)
-                    return true;
-
                 bool? result = false;
+                if (IsStrict(element))
+                {
+                    result = Matches(jsonPath, _strict);
+                    if (result == true)
+                        return true;
+                }
+
                 var nonStrict = GetNonStrictNodes(element);
                 foreach (var item in nonStrict)
                 {
