@@ -12,7 +12,20 @@ Since JSONPath behaviour is not standardized different implementations work in d
 
 ### Create and modify expressions
 
-You can create expressions from scratch or parse existing ones.
+You can create JSONPath expressions from scratch or parse existing ones:
+
+```csharp
+var expr1 = new JsonPathExpression("$.a.b.c");
+var expr2 = new JsonPathExpression(new JsonPathElement[]{
+    new JsonPatheRootElement(),
+    new JsonPathPropertyElement("a"),
+    new JsonPathPropertyElement("b"),
+    new JsonPathPropertyElement("c")
+	});
+bool equals = expr1.Equals(expr2); // returns true
+```
+
+You can modify existing expressions:
 
 ```csharp
 var expr = new JsonPathExpression("$.a.b.c");
@@ -21,6 +34,23 @@ string child = expr.Append(new JsonPathArrayIndexElement(42)).ToString(); // ret
 ```
 
 ### Analyze expressions
+
+#### Check if path is absolute
+
+```csharp
+bool isAbsolute = new JsonPathExpression("$.a.b.c").IsAbsolute; // returns true because expression starts with root object
+```
+
+#### Check if path is strict
+
+Strict JSONPath expression points at exactly one JSON element. This check does not count expressions and slice addressing last array element (`[-1:]`).
+
+```csharp
+bool isStrict = new JsonPathExpression("$.a[42].b[7:8]").IsStrict; // returns true because expression addresses exactly one element
+isStrict = new JsonPathExpression("$.a[*].b[7]").IsStrict; // returns false because expression potentially addresses multiple elements
+```
+
+#### Work with parent/child relations
 
 ```csharp
 var parent = new JsonPathExpression("$.a.['b']");
@@ -45,21 +75,84 @@ var expr2 = new JsonPathExpression("$.a.b.c[42]");
 bool? matches = expr1.Matches(expr2); // returns true
 ```
 
-## Classes
-
-### JsonPathExpression
-
-Main class to work is `JsonPathExpression` which consists of JSONPath expression elements. Expression and all elements are immutable (though some properties and `ToString()` methods utilize `Lazy<T>`), so any expression modification produces a new instance.
-
-JsonPath expressions are divided into absolute (starting with "$") and relative (not starting with "$"). While `JsonPathExpression` can contain any type of expressions there are two child classes restricting expression type available: `AbsoluteJsonPathExpression` and `RelativeJsonPathExpression`. Though almost all methods for work with JSONPath expressions work with `JsonPathExpression`, some methods accept or produce `RelativeJsonPathExpression` only.
-
-### JsonPathExpressionMatchingSet<TJsonPathExpression>
-
-`JsonPathExpressionMatchingSet<TJsonPathExpression>` allows to find matching expressions for a JSONPath expression. See example:
+The method returns `bool?` because for some expression elements it's not easy or possible to check if they exactly match. In this case `null` means "not true nor false":
 
 ```csharp
+var expr1 = new JsonPathExpression("$.a.*.c[-1:]"); // ends with last array element
+var expr2 = new JsonPathExpression("$.a.b.c[42]");
+bool? matches = expr1.Matches(expr2); // returns null because it's not possible to check if 42 is the last index in the array
+```
+
+## Details
+
+### Absolute/relative JSONPath expressions
+
+JSONPath expressions are divided into absolute (starting with "$") and relative (not starting with "$"). To check if JSONPath expression is absolute IsAbsolute property is used:
+
+```csharp
+var absolute = new JsonPathExpression("$.a.b.c");
+var relative = new JsonPathExpression("a.b.c");
+bool isAbsoluteAbsolute = absolute.IsAbsolute; // returns true
+bool isRelativeAbsolute = relative.IsAbsolute; // returns false
+```
+
+There are also derived classes ensuring expression type:
+
+```csharp
+var absolute = new AbsoluteJsonPathExpression("$.a.b.c"); // always starts with "$"
+var relative = new RelativeJsonPathExpression("a.b.c"); // always doesn't start with "$"
+```
+
+Any JSONPath expression can be converted to absolute:
+
+```csharp
+AbsoluteJsonPathExpression expr1 = new JsonPathExpression("$.a.b.c").ToAbsolute();
+AbsoluteJsonPathExpression expr2 = new JsonPathExpression("a.b.c").ToAbsolute();
+bool equals = expr1.Equals(expr2); // returns true
+```
+
+### Normalization
+
+Some meanings may be expressed using different JSONPath elements. Examples:
+- `[:]` and `[*]`;
+- `[0:42]` and `[:42]`;
+- `[0::2]` and `[::2]`;
+- `[7:7]` and `[:0]`.
+
+This can make analysis of expressions harder. To simplify it JSONPath expressions can be brought to normalized form:
+
+```csharp
+string expr1 = new JsonPathExpression("$.a[:].b[0:42]").GetNormalized().ToString(); // returns "$.a[*].b[:42]"
+```
+
+During normalization array index list element and property list element are broken down to array index element and property element if needed. This may be helpful when an expression is constructed from scratch:
+
+```csharp
+var expr1 = new JsonPathExpression(new JsonPathElement[]{
+    new JsonPatheRootElement(),
+    new JsonPathPropertyListElement(new []{ "a" }),
+    new JsonPathArrayIndexListElement(new [] { 42 })
+    }).GetNormalized();
+var expr2 = new JsonPathExpression(new JsonPathElement[]{
+    new JsonPatheRootElement(),
+    new JsonPathPropertyElement("a"),
+    new JsonPathArrayIndexElement(42)
+    });
+bool equals = expr1.Equals(expr2); // returns true
+```
+
+### Search for matching expressions
+
+`JsonPathExpressionMatchingSet<TJsonPathExpression>` allows to find matching expressions for a given JSONPath expression. See example:
+
+```csharp
+var expr1 = new JsonPathExpression("$.a.*.c[*]");
+var expr2 = new JsonPathExpression("$.*.b.c[:]");
+var expr3 = new JsonPathExpression("$.*.b.c[1::2]");
+
 var matchingSet = new JsonPathExpressionMatchingSet<JsonPathExpression>();
-matchingSet.Add(new JsonPathExpression("$.a.*.c[*]"));
-matchingSet.Add(new JsonPathExpression("$.*.b.c[:]"));
-bool matched = matchingSet.Matches(new JsonPathExpression("$.a.b.c[42]"), out var matchedBy); // matchedBy contains all expressions in the matching set because all of them match "$.a.b.c[42]"
+matchingSet.Add(expr1);
+matchingSet.Add(expr2);
+matchingSet.Add(expr3);
+bool matched = matchingSet.Matches(new JsonPathExpression("$.a.b.c[42]"), out var matchedBy); // matchedBy contains expr1 and expr2 because they match "$.a.b.c[42]"
 ```
