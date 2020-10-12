@@ -30,7 +30,7 @@ namespace JsonPathExpressions
     using Elements;
 
     /// <summary>
-    /// Extension method for <see cref="JsonPathExpression"/> and its children
+    /// Extension methods for <see cref="JsonPathExpression"/> and its children
     /// </summary>
     public static class JsonPathExpressionExtensions
     {
@@ -168,7 +168,7 @@ namespace JsonPathExpressions
         }
 
         /// <summary>
-        /// Get relative path from current JsonPath expression to child JsonPth expression
+        /// Get relative path from current JsonPath expression to child JsonPath expression
         /// </summary>
         /// <param name="path">JsonPath expression</param>
         /// <param name="childPath">Child JsonPath expression</param>
