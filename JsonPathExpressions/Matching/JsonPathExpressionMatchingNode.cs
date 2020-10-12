@@ -28,24 +28,25 @@ namespace JsonPathExpressions.Matching
     using System.Collections.Generic;
     using Elements;
 
-    internal class JsonPathExpressionMatchingNode
+    internal class JsonPathExpressionMatchingNode<TJsonPathExpression>
+        where TJsonPathExpression : JsonPathExpression
     {
-        private static readonly IReadOnlyDictionary<JsonPathElement, JsonPathExpressionMatchingNode> Empty = new Dictionary<JsonPathElement, JsonPathExpressionMatchingNode>();
+        private static readonly IReadOnlyDictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>> Empty = new Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>>();
 
-        private readonly Dictionary<JsonPathElement, JsonPathExpressionMatchingNode> _strict;
-        private readonly Dictionary<JsonPathElement, JsonPathExpressionMatchingNode> _properties;
-        private readonly Dictionary<JsonPathElement, JsonPathExpressionMatchingNode> _indexes;
-        private readonly HashSet<JsonPathExpression> _recursiveDescents;
-        private JsonPathExpression _current;
+        private readonly Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>> _strict;
+        private readonly Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>> _properties;
+        private readonly Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>> _indexes;
+        private readonly HashSet<TJsonPathExpression> _recursiveDescents;
+        private TJsonPathExpression _current;
 
         public JsonPathExpressionMatchingNode(int index)
         {
             Index = index;
 
-            _strict = new Dictionary<JsonPathElement, JsonPathExpressionMatchingNode>();
-            _properties = new Dictionary<JsonPathElement, JsonPathExpressionMatchingNode>();
-            _indexes = new Dictionary<JsonPathElement, JsonPathExpressionMatchingNode>();
-            _recursiveDescents = new HashSet<JsonPathExpression>();
+            _strict = new Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>>();
+            _properties = new Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>>();
+            _indexes = new Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>>();
+            _recursiveDescents = new HashSet<TJsonPathExpression>();
             _current = null;
         }
 
@@ -60,7 +61,7 @@ namespace JsonPathExpressions.Matching
                    && _current == null;
         }
 
-        public bool? Matches(JsonPathExpression jsonPath)
+        public bool? Matches(TJsonPathExpression jsonPath)
         {
             if (jsonPath == null)
                 throw new ArgumentNullException(nameof(jsonPath));
@@ -110,7 +111,7 @@ namespace JsonPathExpressions.Matching
             return false;
         }
 
-        public bool Matches(JsonPathExpression jsonPath, List<JsonPathExpression> matchedBy)
+        public bool Matches(TJsonPathExpression jsonPath, List<TJsonPathExpression> matchedBy)
         {
             if (jsonPath == null)
                 throw new ArgumentNullException(nameof(jsonPath));
@@ -156,7 +157,7 @@ namespace JsonPathExpressions.Matching
             return result;
         }
 
-        public bool Add(JsonPathExpression jsonPath)
+        public bool Add(TJsonPathExpression jsonPath)
         {
             if (jsonPath == null)
                 throw new ArgumentNullException(nameof(jsonPath));
@@ -171,7 +172,7 @@ namespace JsonPathExpressions.Matching
             return Add(jsonPath, GetNodes(element));
         }
 
-        public bool Remove(JsonPathExpression jsonPath)
+        public bool Remove(TJsonPathExpression jsonPath)
         {
             if (jsonPath == null)
                 throw new ArgumentNullException(nameof(jsonPath));
@@ -216,7 +217,7 @@ namespace JsonPathExpressions.Matching
             }
         }
 
-        private Dictionary<JsonPathElement, JsonPathExpressionMatchingNode> GetNodes(JsonPathElement element)
+        private Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>> GetNodes(JsonPathElement element)
         {
             switch (element.Type)
             {
@@ -238,7 +239,7 @@ namespace JsonPathExpressions.Matching
             }
         }
 
-        private IReadOnlyDictionary<JsonPathElement, JsonPathExpressionMatchingNode> GetNonStrictNodes(JsonPathElement element)
+        private IReadOnlyDictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>> GetNonStrictNodes(JsonPathElement element)
         {
             switch (element.Type)
             {
@@ -260,7 +261,7 @@ namespace JsonPathExpressions.Matching
             }
         }
 
-        private bool? Matches(JsonPathExpression jsonPath, Dictionary<JsonPathElement, JsonPathExpressionMatchingNode> nodes)
+        private bool? Matches(TJsonPathExpression jsonPath, Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>> nodes)
         {
             var element = jsonPath.Elements[Index];
             if (!nodes.TryGetValue(element, out var node))
@@ -269,7 +270,7 @@ namespace JsonPathExpressions.Matching
             return node.Matches(jsonPath);
         }
 
-        private bool Matches(JsonPathExpression jsonPath, Dictionary<JsonPathElement, JsonPathExpressionMatchingNode> nodes, List<JsonPathExpression> matchedBy)
+        private bool Matches(TJsonPathExpression jsonPath, Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>> nodes, List<TJsonPathExpression> matchedBy)
         {
             var element = jsonPath.Elements[Index];
             if (!nodes.TryGetValue(element, out var node))
@@ -278,19 +279,19 @@ namespace JsonPathExpressions.Matching
             return node.Matches(jsonPath, matchedBy);
         }
 
-        private bool Add(JsonPathExpression jsonPath, Dictionary<JsonPathElement, JsonPathExpressionMatchingNode> nodes)
+        private bool Add(TJsonPathExpression jsonPath, Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>> nodes)
         {
             var element = jsonPath.Elements[Index];
             if (!nodes.TryGetValue(element, out var node))
             {
-                node = new JsonPathExpressionMatchingNode(Index + 1);
+                node = new JsonPathExpressionMatchingNode<TJsonPathExpression>(Index + 1);
                 nodes.Add(element, node);
             }
 
             return node.Add(jsonPath);
         }
 
-        private bool Remove(JsonPathExpression jsonPath, Dictionary<JsonPathElement, JsonPathExpressionMatchingNode> nodes)
+        private bool Remove(TJsonPathExpression jsonPath, Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>> nodes)
         {
             var element = jsonPath.Elements[Index];
             if (!nodes.TryGetValue(element, out var node))
@@ -305,7 +306,7 @@ namespace JsonPathExpressions.Matching
             return true;
         }
 
-        private bool AddCurrent(JsonPathExpression jsonPath)
+        private bool AddCurrent(TJsonPathExpression jsonPath)
         {
             if (_current != null)
                 return false;

@@ -40,7 +40,7 @@ namespace JsonPathExpressions.Tests.Matching
         [InlineData("$.a..[(@.length-1)]", "$.a.b.c[42]", null)]
         public void Matches(string pathInSet, string path, bool? expected)
         {
-            var matchingSet = new JsonPathExpressionMatchingSet();
+            var matchingSet = new JsonPathExpressionMatchingSet<JsonPathExpression>();
             matchingSet.Add(new JsonPathExpression(pathInSet));
 
             bool? actual = matchingSet.Matches(new JsonPathExpression(path));
@@ -51,7 +51,7 @@ namespace JsonPathExpressions.Tests.Matching
         [Fact]
         public void Matches_ReturnsMatched()
         {
-            var matchingSet = new JsonPathExpressionMatchingSet();
+            var matchingSet = new JsonPathExpressionMatchingSet<JsonPathExpression>();
             matchingSet.Add(new JsonPathExpression("$.a.*.c[*]"));
             matchingSet.Add(new JsonPathExpression("$.*.b.c[:]"));
             matchingSet.Add(new JsonPathExpression("$.*.b.c[7]"));

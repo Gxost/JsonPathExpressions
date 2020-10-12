@@ -31,25 +31,26 @@ namespace JsonPathExpressions.Matching
     /// <summary>
     /// Allows to find JsonPath expressions that match given JsonPath expression
     /// </summary>
-    public sealed class JsonPathExpressionMatchingSet : IReadOnlyJsonPathExpressionMatchingSet, ICollection<JsonPathExpression>
+    public sealed class JsonPathExpressionMatchingSet<TJsonPathExpression> : IReadOnlyJsonPathExpressionMatchingSet<TJsonPathExpression>, ICollection<TJsonPathExpression>
+        where TJsonPathExpression : JsonPathExpression
     {
-        private readonly HashSet<JsonPathExpression> _hashSet;
-        private readonly JsonPathExpressionMatchingNode _matchingNode;
+        private readonly HashSet<TJsonPathExpression> _hashSet;
+        private readonly JsonPathExpressionMatchingNode<TJsonPathExpression> _matchingNode;
 
         /// <summary>
-        /// Create <see cref="JsonPathExpressionMatchingSet"/> instance
+        /// Create <see cref="JsonPathExpressionMatchingSet{TJsonPathExpression}"/> instance
         /// </summary>
         public JsonPathExpressionMatchingSet()
         {
-            _hashSet = new HashSet<JsonPathExpression>();
-            _matchingNode = new JsonPathExpressionMatchingNode(0);
+            _hashSet = new HashSet<TJsonPathExpression>();
+            _matchingNode = new JsonPathExpressionMatchingNode<TJsonPathExpression>(0);
         }
 
         /// <summary>
-        /// Create <see cref="JsonPathExpressionMatchingSet"/> instance
+        /// Create <see cref="JsonPathExpressionMatchingSet{TJsonPathExpression}"/> instance
         /// </summary>
         /// <param name="jsonPaths">Collection of JsonPath expression to add</param>
-        public JsonPathExpressionMatchingSet(IEnumerable<JsonPathExpression> jsonPaths)
+        public JsonPathExpressionMatchingSet(IEnumerable<TJsonPathExpression> jsonPaths)
             : this()
         {
             if (jsonPaths == null)
@@ -71,25 +72,25 @@ namespace JsonPathExpressions.Matching
         }
 
         /// <inheritdoc cref="ICollection{T}" />
-        public IEnumerator<JsonPathExpression> GetEnumerator()
+        public IEnumerator<TJsonPathExpression> GetEnumerator()
         {
             return _hashSet.GetEnumerator();
         }
 
         /// <inheritdoc cref="ICollection{T}" />
-        public bool Contains(JsonPathExpression jsonPath)
+        public bool Contains(TJsonPathExpression jsonPath)
         {
             return _hashSet.Contains(jsonPath);
         }
 
         /// <inheritdoc cref="ICollection{T}" />
-        public void CopyTo(JsonPathExpression[] array, int arrayIndex)
+        public void CopyTo(TJsonPathExpression[] array, int arrayIndex)
         {
             _hashSet.CopyTo(array, arrayIndex);
         }
 
         /// <inheritdoc />
-        public bool? Matches(JsonPathExpression jsonPath)
+        public bool? Matches(TJsonPathExpression jsonPath)
         {
             if (jsonPath == null)
                 throw new ArgumentNullException(nameof(jsonPath));
@@ -98,16 +99,16 @@ namespace JsonPathExpressions.Matching
         }
 
         /// <inheritdoc />
-        public bool Matches(JsonPathExpression jsonPath, out List<JsonPathExpression> matchedBy)
+        public bool Matches(TJsonPathExpression jsonPath, out List<TJsonPathExpression> matchedBy)
         {
             if (jsonPath == null)
                 throw new ArgumentNullException(nameof(jsonPath));
 
-            matchedBy = new List<JsonPathExpression>();
+            matchedBy = new List<TJsonPathExpression>();
             return _matchingNode.Matches(jsonPath, matchedBy);
         }
 
-        void ICollection<JsonPathExpression>.Add(JsonPathExpression jsonPath)
+        void ICollection<TJsonPathExpression>.Add(TJsonPathExpression jsonPath)
         {
             Add(jsonPath);
         }
@@ -117,7 +118,7 @@ namespace JsonPathExpressions.Matching
         /// </summary>
         /// <param name="jsonPath">JsonPath expression to add</param>
         /// <returns>True if <paramref name="jsonPath"/> is added to the set</returns>
-        public bool Add(JsonPathExpression jsonPath)
+        public bool Add(TJsonPathExpression jsonPath)
         {
             if (jsonPath == null)
                 throw new ArgumentNullException(nameof(jsonPath));
@@ -136,7 +137,7 @@ namespace JsonPathExpressions.Matching
         /// </summary>
         /// <param name="jsonPath">JsonPath expression to remove</param>
         /// <returns>True if <paramref name="jsonPath"/> is removed from the set</returns>
-        public bool Remove(JsonPathExpression jsonPath)
+        public bool Remove(TJsonPathExpression jsonPath)
         {
             if (jsonPath == null)
                 throw new ArgumentNullException(nameof(jsonPath));

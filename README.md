@@ -1,6 +1,6 @@
 # JSONPath expressions
 
-This project allows to create, parse, analyze and modify JsonPath expressions.
+This project allows to create, parse, analyze and modify JSONPath expressions.
 
 ## What is JSONPath
 
@@ -53,12 +53,12 @@ Main class to work is `JsonPathExpression` which consists of JSONPath expression
 
 JsonPath expressions are divided into absolute (starting with "$") and relative (not starting with "$"). While `JsonPathExpression` can contain any type of expressions there are two child classes restricting expression type available: `AbsoluteJsonPathExpression` and `RelativeJsonPathExpression`. Though almost all methods for work with JSONPath expressions work with `JsonPathExpression`, some methods accept or produce `RelativeJsonPathExpression` only.
 
-### JsonPathExpressionMatchingSet
+### JsonPathExpressionMatchingSet<TJsonPathExpression>
 
-`JsonPathExpressionMatchingSet` allows to find matching expressions for a JSONPath expression. See example:
+`JsonPathExpressionMatchingSet<TJsonPathExpression>` allows to find matching expressions for a JSONPath expression. See example:
 
 ```csharp
-var matchingSet = new JsonPathExpressionMatchingSet();
+var matchingSet = new JsonPathExpressionMatchingSet<JsonPathExpression>();
 matchingSet.Add(new JsonPathExpression("$.a.*.c[*]"));
 matchingSet.Add(new JsonPathExpression("$.*.b.c[:]"));
 bool matched = matchingSet.Matches(new JsonPathExpression("$.a.b.c[42]"), out var matchedBy); // matchedBy contains all expressions in the matching set because all of them match "$.a.b.c[42]"

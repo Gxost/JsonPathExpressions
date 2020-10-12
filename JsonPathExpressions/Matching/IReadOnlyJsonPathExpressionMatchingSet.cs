@@ -29,7 +29,8 @@ namespace JsonPathExpressions.Matching
     /// <summary>
     /// Allows to find JsonPath expressions that match given JsonPath expression
     /// </summary>
-    public interface IReadOnlyJsonPathExpressionMatchingSet : IReadOnlyCollection<JsonPathExpression>
+    public interface IReadOnlyJsonPathExpressionMatchingSet<TJsonPathExpression> : IReadOnlyCollection<TJsonPathExpression>
+        where TJsonPathExpression : JsonPathExpression
     {
         /// <summary>
         /// Tells if a set of JSON tree elements represented by any JsonPath expression in the set contain JSON tree elements represented by passed JsonPath expression
@@ -37,7 +38,7 @@ namespace JsonPathExpressions.Matching
         /// <param name="jsonPath">JsonPath expression to check for matching</param>
         /// <returns>True if a set of JSON tree elements represented by any JsonPath expression in the set contain JSON tree elements represented by <paramref name="jsonPath"/></returns>
         /// <remarks>Returns null if it's not possible to check if a set of JSON tree elements represented by any JsonPath expression in the set contain JSON tree elements represented by another JsonPath expression</remarks>
-        bool? Matches(JsonPathExpression jsonPath);
+        bool? Matches(TJsonPathExpression jsonPath);
 
         /// <summary>
         /// Tells if a set of JSON tree elements represented by any JsonPath expression in the set contain JSON tree elements represented by passed JsonPath expression
@@ -45,6 +46,6 @@ namespace JsonPathExpressions.Matching
         /// <param name="jsonPath">JsonPath expression to check for matching</param>
         /// <param name="matchedBy">List containing JsonPath expressions that matched <paramref name="jsonPath"/></param>
         /// <returns>True if a set of JSON tree elements represented by any JsonPath expression in the set contain JSON tree elements represented by <paramref name="jsonPath"/></returns>
-        bool Matches(JsonPathExpression jsonPath, out List<JsonPathExpression> matchedBy);
+        bool Matches(TJsonPathExpression jsonPath, out List<TJsonPathExpression> matchedBy);
     }
 }
