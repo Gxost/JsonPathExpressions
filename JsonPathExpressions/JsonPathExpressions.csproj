@@ -10,6 +10,7 @@
     <RepositoryUrl>https://github.com/Gxost/JsonPathExpressions</RepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Copyright>© 2020 Oleksandr Banakh</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
