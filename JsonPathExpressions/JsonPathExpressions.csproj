@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <Authors>Oleksandr Banakh</Authors>
     <Company></Company>
-    <Description>Allows to parse, generate and manipulate with JSONPath expressions</Description>
+    <Description>Allows to create, parse, modify and analyze JSONPath expressions</Description>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageTags>JSONPath</PackageTags>
     <RepositoryUrl>https://github.com/Gxost/JsonPathExpressions</RepositoryUrl>
