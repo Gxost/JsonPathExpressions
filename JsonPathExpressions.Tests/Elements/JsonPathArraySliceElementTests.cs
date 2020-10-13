@@ -59,6 +59,74 @@ namespace JsonPathExpressions.Tests.Elements
             element.IsNormalized.Should().Be(expected);
         }
 
+        [Theory]
+        [InlineData(null, 0, 1, 0)]
+        [InlineData(42, 42, 1, 0)]
+        [InlineData(null, 1, 1, 1)]
+        [InlineData(null, 1, 2, 1)]
+        [InlineData(10, 20, 1, 10)]
+        [InlineData(10, 20, 2, 5)]
+        [InlineData(10, 0, -1, 10)]
+        [InlineData(10, 0, -2, 5)]
+        [InlineData(-1, null, 1, 1)]
+        public void IndexCount(int? start, int? end, int step, int expected)
+        {
+            var element = new JsonPathArraySliceElement(start, end, step);
+
+            element.IndexCount.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData(null, null, 1, true)]
+        [InlineData(0, null, 1, true)]
+        [InlineData(null, null, 2, false)]
+        [InlineData(0, null, 2, false)]
+        [InlineData(1, null, 1, false)]
+        public void ContainsAllIndexes(int? start, int? end, int step, bool expected)
+        {
+            var element = new JsonPathArraySliceElement(start, end, step);
+
+            element.ContainsAllIndexes.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData(null, null, 1, 42, true)]
+        [InlineData(0, null, 1, 42, true)]
+        [InlineData(null, 43, 1, 42, true)]
+        [InlineData(0, 43, 1, 42, true)]
+        [InlineData(0, null, 2, 42, true)]
+        [InlineData(0, null, 3, 42, true)]
+        [InlineData(0, null, 4, 42, false)]
+        [InlineData(0, 42, 1, 42, false)]
+        [InlineData(10, 0, -1, 7, true)]
+        [InlineData(10, 0, -2, 7, false)]
+        [InlineData(-1, null, 1, 42, null)]
+        [InlineData(-1, null, -1, 42, null)]
+        public void ContainsIndex(int? start, int? end, int step, int index, bool? expected)
+        {
+            var element = new JsonPathArraySliceElement(start, end, step);
+
+            bool? actual = element.ContainsIndex(index);
+
+            actual.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData(null, 5, 1, 0, 1, 2, 3, 4)]
+        [InlineData(null, 5, 2, 0, 2, 4)]
+        [InlineData(5, 0, -1, 5, 4, 3, 2, 1)]
+        [InlineData(5, 0, -2, 5, 3, 1)]
+        [InlineData(5, null, -1, 5, 4, 3, 2, 1, 0)]
+        [InlineData(5, null, -2, 5, 3, 1)]
+        public void GetIndexes(int? start, int? end, int step, params int[] expected)
+        {
+            var element = new JsonPathArraySliceElement(start, end, step);
+
+            var actual = element.GetIndexes();
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
         [Fact]
         public void GetNormalized_SingleIndex_ReturnsArrayIndexElement()
         {
