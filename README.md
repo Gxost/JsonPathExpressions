@@ -22,7 +22,9 @@ var expr2 = new JsonPathExpression(new JsonPathElement[]{
     new JsonPathPropertyElement("b"),
     new JsonPathPropertyElement("c")
     });
-bool equals = expr1.Equals(expr2); // returns true
+var expr3 = JsonPathExpression.Builder.Root().Property("a").Property("b").Property("c").Build();
+bool equal1and2 = expr1.Equals(expr2); // returns true
+bool equal1and3 = expr1.Equals(expr3); // returns true
 ```
 
 You can modify existing expressions:

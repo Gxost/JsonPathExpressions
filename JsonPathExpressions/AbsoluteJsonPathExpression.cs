@@ -26,6 +26,7 @@ namespace JsonPathExpressions
 {
     using System;
     using System.Collections.Generic;
+    using Builders;
     using Conversion;
     using Elements;
 
@@ -52,6 +53,11 @@ namespace JsonPathExpressions
             : base(elements, true)
         {
         }
+
+        /// <summary>
+        /// Gets absolute JsonPath expression builder
+        /// </summary>
+        public static new IFirstAbsolutePathElementSyntax Builder => AbsoluteJsonPathExpressionBuilder.Create();
 
         /// <inheritdoc cref="IEquatable{T}"/>
         public bool Equals(AbsoluteJsonPathExpression other)

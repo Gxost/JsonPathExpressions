@@ -27,6 +27,7 @@ namespace JsonPathExpressions
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Builders;
     using Conversion;
     using Elements;
     using Utils;
@@ -116,6 +117,11 @@ namespace JsonPathExpressions
         /// Tells if the path is normalized
         /// </summary>
         public bool IsNormalized => _isNormalized.Value;
+
+        /// <summary>
+        /// Gets JsonPath expression builder
+        /// </summary>
+        public static IFirstPathElementSyntax Builder => JsonPathExpressionBuilder.Create();
 
         /// <inheritdoc cref="IEquatable{T}"/>
         public bool Equals(JsonPathExpression other)

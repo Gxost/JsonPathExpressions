@@ -26,6 +26,7 @@ namespace JsonPathExpressions
 {
     using System;
     using System.Collections.Generic;
+    using Builders;
     using Conversion;
     using Elements;
 
@@ -58,6 +59,11 @@ namespace JsonPathExpressions
         {
             return Equals((JsonPathExpression)other);
         }
+
+        /// <summary>
+        /// Gets relative JsonPath expression builder
+        /// </summary>
+        public static new IFirstRelativePathElementSyntax Builder => RelativeJsonPathExpressionBuilder.Create();
 
         /// <inheritdoc />
         public override bool Equals(object obj)
