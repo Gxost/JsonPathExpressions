@@ -85,6 +85,26 @@ namespace JsonPathExpressions.Tests.Elements
         }
 
         [Fact]
+        public void GetUnderlyingElement_Property_ReturnsProperty()
+        {
+            var element = ElementCreator.CreateAny(JsonPathElementType.Property);
+
+            var actual = element.GetUnderlyingElement();
+
+            actual.Should().Be(element);
+        }
+        [Fact]
+        public void GetUnderlyingElement_RecursiveDescentAppliedToProperty_ReturnsProperty()
+        {
+            var property = ElementCreator.CreateAny(JsonPathElementType.Property);
+            JsonPathElement element = new JsonPathRecursiveDescentElement(property);
+
+            var actual = element.GetUnderlyingElement();
+
+            actual.Should().Be(property);
+        }
+
+        [Fact]
         public void CastTo_PropertyToProperty_Casts()
         {
             var element = ElementCreator.CreateAny(JsonPathElementType.Property);
@@ -116,13 +136,54 @@ namespace JsonPathExpressions.Tests.Elements
         }
 
         [Fact]
-        public void CastTo_RecursiveDescentAppliedToPropertyToArrayIndex_Casts()
+        public void CastTo_RecursiveDescentAppliedToPropertyToArrayIndex_Throws()
         {
             JsonPathElement element = new JsonPathRecursiveDescentElement(ElementCreator.CreateAny(JsonPathElementType.Property));
 
             Action action = () => element.CastTo<JsonPathArrayIndexElement>();
 
             action.Should().Throw<InvalidCastException>();
+        }
+
+        [Fact]
+        public void As_PropertyToProperty_Casts()
+        {
+            var element = ElementCreator.CreateAny(JsonPathElementType.Property);
+
+            var actual = element.As<JsonPathPropertyElement>();
+
+            actual.Should().Be(element);
+        }
+
+        [Fact]
+        public void As_RecursiveDescentAppliedToPropertyToProperty_Casts()
+        {
+            var property = ElementCreator.CreateAny(JsonPathElementType.Property);
+            JsonPathElement element = new JsonPathRecursiveDescentElement(property);
+
+            var actual = element.As<JsonPathPropertyElement>();
+
+            actual.Should().Be(property);
+        }
+
+        [Fact]
+        public void As_PropertyToArrayIndex_ReturnsNull()
+        {
+            var element = ElementCreator.CreateAny(JsonPathElementType.Property);
+
+            var actual = element.As<JsonPathArrayIndexElement>();
+
+            actual.Should().BeNull();
+        }
+
+        [Fact]
+        public void As_RecursiveDescentAppliedToPropertyToArrayIndex_ReturnsNull()
+        {
+            JsonPathElement element = new JsonPathRecursiveDescentElement(ElementCreator.CreateAny(JsonPathElementType.Property));
+
+            var actual = element.As<JsonPathArrayIndexElement>();
+
+            actual.Should().BeNull();
         }
     }
 }

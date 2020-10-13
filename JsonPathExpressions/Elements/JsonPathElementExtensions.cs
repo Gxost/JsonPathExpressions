@@ -111,6 +111,24 @@ namespace JsonPathExpressions.Elements
         }
 
         /// <summary>
+        /// Get non-recursive-descent JsonPath element for passed JsonPath element
+        /// </summary>
+        /// <param name="element">JsonPath element</param>
+        /// <returns>Non-recursive-descent JsonPath element</returns>
+        /// <remarks>
+        /// If <paramref name="element"/> is <see cref="JsonPathRecursiveDescentElement"/> <see cref="JsonPathRecursiveDescentElement.AppliedToElement"/> is returned
+        /// </remarks>
+        public static JsonPathElement GetUnderlyingElement(this JsonPathElement element)
+        {
+            if (element == null)
+                throw new ArgumentNullException(nameof(element));
+
+            return element.Type == JsonPathElementType.RecursiveDescent
+                ? ((JsonPathRecursiveDescentElement)element).AppliedToElement
+                : element;
+        }
+
+        /// <summary>
         /// Cast JsonPath element or element to which recursive descent is applied to specified type
         /// </summary>
         /// <typeparam name="TJsonPathElement">Derived JsonPath element type</typeparam>
@@ -123,6 +141,20 @@ namespace JsonPathExpressions.Elements
             return typeof(TJsonPathElement) != typeof(JsonPathRecursiveDescentElement) && element is JsonPathRecursiveDescentElement recursiveDescentElement
                 ? (TJsonPathElement)recursiveDescentElement.AppliedToElement
                 : (TJsonPathElement)element;
+        }
+
+        /// <summary>
+        /// Try to cast JsonPath element or element to which recursive descent is applied to specified type
+        /// </summary>
+        /// <typeparam name="TJsonPathElement">Derived JsonPath element type</typeparam>
+        /// <param name="element">JsonPath element</param>
+        /// <returns>JsonPath element or element to which recursive descent is applied cast to derived type, or null</returns>
+        public static TJsonPathElement As<TJsonPathElement>(this JsonPathElement element)
+            where TJsonPathElement : JsonPathElement
+        {
+            return typeof(TJsonPathElement) != typeof(JsonPathRecursiveDescentElement) && element is JsonPathRecursiveDescentElement recursiveDescentElement
+                ? recursiveDescentElement.AppliedToElement as TJsonPathElement
+                : element as TJsonPathElement;
         }
     }
 }
