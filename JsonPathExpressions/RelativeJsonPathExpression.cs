@@ -72,10 +72,8 @@ namespace JsonPathExpressions
                 return false;
             if (ReferenceEquals(this, obj))
                 return true;
-            if (obj.GetType() != GetType())
-                return false;
 
-            return Equals((RelativeJsonPathExpression)obj);
+            return obj is JsonPathExpression expr && Equals(expr);
         }
 
         /// <inheritdoc />

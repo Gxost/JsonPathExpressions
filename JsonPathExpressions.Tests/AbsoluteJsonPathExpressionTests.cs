@@ -52,6 +52,28 @@ namespace JsonPathExpressions.Tests
         }
 
         [Fact]
+        public void Equals_EqualJsonPathExpression_ReturnsTrue()
+        {
+            var path = AbsoluteJsonPathExpression.Builder.Root().Property("a").Build();
+            var other = JsonPathExpression.Builder.Root().Property("a").Build();
+
+            bool actual = path.Equals(other);
+
+            actual.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Equals_RelativeJsonPathExpression_ReturnsFalse()
+        {
+            var path = AbsoluteJsonPathExpression.Builder.Root().Property("a").Build();
+            var other = RelativeJsonPathExpression.Builder.Property("a").Build();
+
+            bool actual = path.Equals(other);
+
+            actual.Should().BeFalse();
+        }
+
+        [Fact]
         public void Create_ReturnsObjectOfTheSameType()
         {
             var path = new AbsoluteJsonPathExpression(new JsonPathElement[]
