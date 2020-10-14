@@ -108,6 +108,38 @@ namespace JsonPathExpressions.Tests
             actual.Should().Be(expected);
         }
 
+        [Theory]
+        [InlineData("a", "a", true)]
+        [InlineData("a", "b", false)]
+        [InlineData("a", null, false)]
+        [InlineData(null, "a", false)]
+        [InlineData(null, null, true)]
+        public void EqualityOperator(string first, string second, bool expected)
+        {
+            var firstPath = first != null ? new JsonPathExpression(first) : null;
+            var secondPath = second != null ? new JsonPathExpression(second) : null;
+
+            bool actual = firstPath == secondPath;
+
+            actual.Should().Be(expected);
+        }
+
+        [Theory]
+        [InlineData("a", "a", false)]
+        [InlineData("a", "b", true)]
+        [InlineData("a", null, true)]
+        [InlineData(null, "a", true)]
+        [InlineData(null, null, false)]
+        public void InequalityOperator(string first, string second, bool expected)
+        {
+            var firstPath = first != null ? new JsonPathExpression(first) : null;
+            var secondPath = second != null ? new JsonPathExpression(second) : null;
+
+            bool actual = firstPath != secondPath;
+
+            actual.Should().Be(expected);
+        }
+
         [Fact]
         public void Create_ReturnsObjectOfTheSameType()
         {

@@ -159,6 +159,28 @@ namespace JsonPathExpressions
         }
 
         /// <summary>
+        /// Check if two JsonPath expressions are equal
+        /// </summary>
+        /// <param name="left">Left JsonPath expression</param>
+        /// <param name="right">Right JsonPath expression</param>
+        /// <returns>True if two JsonPath expressions are equal</returns>
+        public static bool operator ==(JsonPathExpression left, JsonPathExpression right)
+        {
+            return Equals(left, right);
+        }
+
+        /// <summary>
+        /// Check if two JsonPath expressions are not equal
+        /// </summary>
+        /// <param name="left">Left JsonPath expression</param>
+        /// <param name="right">Right JsonPath expression</param>
+        /// <returns>True if two JsonPath expressions are not equal</returns>
+        public static bool operator !=(JsonPathExpression left, JsonPathExpression right)
+        {
+            return !Equals(left, right);
+        }
+
+        /// <summary>
         /// Create a JsonPath expression with the same type as this
         /// </summary>
         /// <param name="elements">Collection of JsonPath elements</param>
