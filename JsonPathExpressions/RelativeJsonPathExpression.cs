@@ -66,23 +66,6 @@ namespace JsonPathExpressions
         public static new IFirstRelativePathElementSyntax Builder => RelativeJsonPathExpressionBuilder.Create();
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-
-            return obj is JsonPathExpression expr && Equals(expr);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        /// <inheritdoc />
         protected internal override JsonPathExpression Create(IReadOnlyCollection<JsonPathElement> elements)
         {
             return new RelativeJsonPathExpression(elements);
