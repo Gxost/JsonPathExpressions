@@ -59,9 +59,9 @@ namespace JsonPathExpressions.Builders
             return this;
         }
 
-        public INextAbsolutePathElementSyntax Properties(params string[] names)
+        public INextAbsolutePathElementSyntax Properties(string firstName, params string[] names)
         {
-            _elementsBuilder.Properties(names);
+            _elementsBuilder.Properties(firstName, names);
             return this;
         }
 
@@ -83,9 +83,9 @@ namespace JsonPathExpressions.Builders
             return this;
         }
 
-        public INextAbsolutePathElementSyntax ArrayIndexes(params int[] indexes)
+        public INextAbsolutePathElementSyntax ArrayIndexes(int firstIndex, params int[] indexes)
         {
-            _elementsBuilder.ArrayIndexes(indexes);
+            _elementsBuilder.ArrayIndexes(firstIndex, indexes);
             return this;
         }
 

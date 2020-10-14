@@ -28,6 +28,7 @@ namespace JsonPathExpressions.Builders
     using System.Collections.Generic;
     using System.Linq;
     using Elements;
+    using Utils;
 
     internal class JsonPathElementsBuilder
     {
@@ -73,6 +74,16 @@ namespace JsonPathExpressions.Builders
             return this;
         }
 
+        public JsonPathElementsBuilder Properties(string firstName, params string[] names)
+        {
+            if (firstName == null)
+                throw new ArgumentNullException(nameof(firstName));
+            if (names == null)
+                throw new ArgumentNullException(nameof(names));
+
+            return Properties(CollectionHelper.Concatenate(firstName, names));
+        }
+
         public JsonPathElementsBuilder Properties(IReadOnlyCollection<string> names)
         {
             if (names == null)
@@ -98,6 +109,14 @@ namespace JsonPathExpressions.Builders
         {
             AddElement(new JsonPathAnyArrayIndexElement());
             return this;
+        }
+
+        public JsonPathElementsBuilder ArrayIndexes(int firstIndex, params int[] indexes)
+        {
+            if (indexes == null)
+                throw new ArgumentNullException(nameof(indexes));
+
+            return ArrayIndexes(CollectionHelper.Concatenate(firstIndex, indexes));
         }
 
         public JsonPathElementsBuilder ArrayIndexes(IReadOnlyCollection<int> indexes)

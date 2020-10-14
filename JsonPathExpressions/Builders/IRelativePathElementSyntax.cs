@@ -47,9 +47,10 @@ namespace JsonPathExpressions.Builders
         /// <summary>
         /// Add one or multiple properties element
         /// </summary>
+        /// <param name="firstName">First property name</param>
         /// <param name="names">Collection of property names</param>
         /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax Properties(params string[] names);
+        INextRelativePathElementSyntax Properties(string firstName, params string[] names);
 
         /// <summary>
         /// Add one or multiple properties element
@@ -74,9 +75,10 @@ namespace JsonPathExpressions.Builders
         /// <summary>
         /// Add one or multiple array indexes element
         /// </summary>
+        /// <param name="firstIndex">First array index</param>
         /// <param name="indexes">Collection of array indexes</param>
         /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax ArrayIndexes(params int[] indexes);
+        INextRelativePathElementSyntax ArrayIndexes(int firstIndex, params int[] indexes);
 
         /// <summary>
         /// Add one or multiple array indexes element

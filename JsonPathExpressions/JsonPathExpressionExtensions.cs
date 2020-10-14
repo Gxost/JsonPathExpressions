@@ -28,6 +28,7 @@ namespace JsonPathExpressions
     using System.Collections.Generic;
     using System.Linq;
     using Elements;
+    using Utils;
 
     /// <summary>
     /// Extension methods for <see cref="JsonPathExpression"/> and its children
@@ -94,11 +95,10 @@ namespace JsonPathExpressions
             if (path is AbsoluteJsonPathExpression absolutePath)
                 return absolutePath;
 
-            if (path.IsAbsolute)
-                return new AbsoluteJsonPathExpression(path.Elements);
+            var elements = path.IsAbsolute
+                ? path.Elements
+                : CollectionHelper.Concatenate(new JsonPathRootElement(), path.Elements);
 
-            var elements = new List<JsonPathElement>(path.Elements.Count + 1) { new JsonPathRootElement() };
-            elements.AddRange(path.Elements);
             return new AbsoluteJsonPathExpression(elements);
         }
 
