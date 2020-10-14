@@ -28,13 +28,13 @@ namespace JsonPathExpressions.Conversion
     using System.Collections.Generic;
     using System.Linq;
     using Elements;
+    using Utils;
 
     internal static class JsonPathExpressionStringParser
     {
         private static readonly char[] StopCharsOutsideBrackets = {'.', '['};
         private static readonly char[] StopCharsInsideBrackets = {'\'', ']'};
         private static readonly char[] ForbiddenCharactersOutsideBrackets = {'[', ']'};
-        private static readonly HashSet<char> AllowedCharactersOutsideQuotesInsideBrackets = new HashSet<char> {' '};
 
         public static List<JsonPathElement> Parse(string jsonPath)
         {
@@ -81,7 +81,7 @@ namespace JsonPathExpressions.Conversion
                         }
 
                         if (nextIndex >= jsonPath.Length)
-                            throw new ArgumentException("Path end with dot", nameof(jsonPath));
+                            throw new ArgumentException("Path ends with dot", nameof(jsonPath));
                         break;
                     case '[':
                         int closingIndex = GetClosingBracketIndex(jsonPath, index + 1);
@@ -110,7 +110,7 @@ namespace JsonPathExpressions.Conversion
             if (isFirstToken && isRecursiveDescentApplied)
                 throw new ArgumentException("Recursive descent can not be applied to first token", nameof(isRecursiveDescentApplied));
             if (token.IndexOfAny(ForbiddenCharactersOutsideBrackets) != -1)
-                throw new ArgumentException($"Of forbidden characters found outside brackets: {string.Join(" ", ForbiddenCharactersOutsideBrackets)}", nameof(token));
+                throw new ArgumentException($"Forbidden characters found outside brackets: {string.Join(" ", ForbiddenCharactersOutsideBrackets)}", nameof(token));
 
             if (isFirstToken && token == "$")
                 return new JsonPathRootElement();
@@ -192,58 +192,20 @@ namespace JsonPathExpressions.Conversion
             if (!token.EndsWith("'", StringComparison.Ordinal))
                 throw new ArgumentException("No closing single quote found", nameof(token));
 
-            string[] parts = token.Split(new[] { ',' }, StringSplitOptions.None);
+            var parts = token
+                .SplitQuoted(',', '\'')
+                .Select(x => x.Trim())
+                .ToList();
+
             if (parts.Any(string.IsNullOrWhiteSpace))
                 throw new ArgumentException("Double commas found", nameof(token));
 
-            var names = new List<string>();
-            string current = null;
-            bool isInsideLiteral = false;
-            foreach (string part in parts)
-            {
-                for (int nextIndex = 0; nextIndex < part.Length; )
-                {
-                    int index = part.IndexOf('\'', nextIndex);
-                    if (index == -1)
-                    {
-                        if (isInsideLiteral)
-                        {
-                            if (current == null)
-                                current = part.Substring(nextIndex) + ',';
-                            else
-                                current += part.Substring(nextIndex) + ',';
-                        }
+            var names = parts
+                .Select(x => x.Trim('\''))
+                .ToList();
 
-                        break;
-                    }
-
-                    if (!isInsideLiteral)
-                    {
-                        for (int i = nextIndex; i < index; ++i)
-                        {
-                            if (!AllowedCharactersOutsideQuotesInsideBrackets.Contains(part[i]))
-                                throw new ArgumentException($"Not allowed character inside brackets: {part[i]}",
-                                    nameof(token));
-                        }
-                    }
-
-                    if (isInsideLiteral)
-                    {
-                        string name = current == null
-                            ? part.Substring(nextIndex, index - nextIndex)
-                            : current + part.Substring(nextIndex, index - nextIndex);
-
-                        names.Add(name);
-                        current = null;
-                    }
-
-                    isInsideLiteral = !isInsideLiteral;
-                    nextIndex = index + 1;
-                }
-            }
-
-            if (isInsideLiteral)
-                throw new ArgumentException("Missing closing single quote", nameof(token));
+            if (names.Any(x => x.Contains('\'')))
+                throw new ArgumentException("Non-matching single quotes found", nameof(token));
 
             return names.Count == 1
                 ? (JsonPathElement)new JsonPathPropertyElement(names[0])
@@ -290,11 +252,6 @@ namespace JsonPathExpressions.Conversion
             }
 
             return -1;
-        }
-
-        private static bool EndsWith(this string inString, int atPosition)
-        {
-            return atPosition == inString.Length - 1;
         }
 
         private static bool ContainsAt(this string inString, char character, int atPosition)
