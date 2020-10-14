@@ -27,6 +27,7 @@ namespace JsonPathExpressions.Elements
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using Utils;
 
     /// <summary>
@@ -53,7 +54,7 @@ namespace JsonPathExpressions.Elements
                 throw new ArgumentOutOfRangeException(nameof(indexes), indexes, "Array index must not be negative");
 
             _indexes = new HashSet<int>(indexes);
-            _isNormalized = new Lazy<bool>(ComputeIsNormalized);
+            _isNormalized = new Lazy<bool>(ComputeIsNormalized, LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <inheritdoc />

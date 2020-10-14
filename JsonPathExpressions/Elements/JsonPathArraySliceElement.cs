@@ -27,6 +27,7 @@ namespace JsonPathExpressions.Elements
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
 
     // TODO: add negative start support
     /// <summary>
@@ -53,7 +54,7 @@ namespace JsonPathExpressions.Elements
             End = end;
             Step = step;
 
-            _indexRange = new Lazy<IndexRange>(CreateIndexRange);
+            _indexRange = new Lazy<IndexRange>(CreateIndexRange, LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <inheritdoc />

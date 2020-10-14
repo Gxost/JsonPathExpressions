@@ -27,6 +27,7 @@ namespace JsonPathExpressions
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using Builders;
     using Conversion;
     using Elements;
@@ -79,10 +80,10 @@ namespace JsonPathExpressions
             ValidateElements(elements, isAbsolutePath);
 
             Elements = new List<JsonPathElement>(elements);
-            _isStrict = new Lazy<bool>(ComputeIsStrict);
-            _isNormalized = new Lazy<bool>(ComputeIsNormalized);
-            _hashCode = new Lazy<int>(ComputeHashCode);
-            _stringPath = new Lazy<string>(BuildString);
+            _isStrict = new Lazy<bool>(ComputeIsStrict, LazyThreadSafetyMode.PublicationOnly);
+            _isNormalized = new Lazy<bool>(ComputeIsNormalized, LazyThreadSafetyMode.PublicationOnly);
+            _hashCode = new Lazy<int>(ComputeHashCode, LazyThreadSafetyMode.PublicationOnly);
+            _stringPath = new Lazy<string>(BuildString, LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <summary>
