@@ -24,7 +24,6 @@
 
 namespace JsonPathExpressions.Utils
 {
-    using System;
     using System.Collections.Generic;
 
     internal static class CollectionHelper
@@ -32,9 +31,6 @@ namespace JsonPathExpressions.Utils
         // could be replaced with LINQ Prepend but Prepend is missing in .NET 4.6.1
         public static IReadOnlyCollection<T> Concatenate<T>(T head, IReadOnlyCollection<T> tail)
         {
-            if (tail == null)
-                throw new ArgumentNullException(nameof(tail));
-
             var result = new List<T>(tail.Count + 1) { head };
             result.AddRange(tail);
 

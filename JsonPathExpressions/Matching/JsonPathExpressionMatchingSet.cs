@@ -53,7 +53,7 @@ namespace JsonPathExpressions.Matching
         public JsonPathExpressionMatchingSet(IEnumerable<TJsonPathExpression> jsonPaths)
             : this()
         {
-            if (jsonPaths == null)
+            if (jsonPaths is null)
                 throw new ArgumentNullException(nameof(jsonPaths));
 
             foreach (var path in jsonPaths)
@@ -92,7 +92,7 @@ namespace JsonPathExpressions.Matching
         /// <inheritdoc />
         public bool? Matches(TJsonPathExpression jsonPath)
         {
-            if (jsonPath == null)
+            if (jsonPath is null)
                 throw new ArgumentNullException(nameof(jsonPath));
 
             return _matchingNode.Matches(jsonPath);
@@ -101,7 +101,7 @@ namespace JsonPathExpressions.Matching
         /// <inheritdoc />
         public bool Matches(TJsonPathExpression jsonPath, out List<TJsonPathExpression> matchedBy)
         {
-            if (jsonPath == null)
+            if (jsonPath is null)
                 throw new ArgumentNullException(nameof(jsonPath));
 
             matchedBy = new List<TJsonPathExpression>();
@@ -118,9 +118,9 @@ namespace JsonPathExpressions.Matching
         /// </summary>
         /// <param name="jsonPath">JsonPath expression to add</param>
         /// <returns>True if <paramref name="jsonPath"/> is added to the set</returns>
-        public bool Add(TJsonPathExpression jsonPath)
+        public bool Add(TJsonPathExpression? jsonPath)
         {
-            if (jsonPath == null)
+            if (jsonPath is null)
                 throw new ArgumentNullException(nameof(jsonPath));
 
             if (!_hashSet.Add(jsonPath))
@@ -139,7 +139,7 @@ namespace JsonPathExpressions.Matching
         /// <returns>True if <paramref name="jsonPath"/> is removed from the set</returns>
         public bool Remove(TJsonPathExpression jsonPath)
         {
-            if (jsonPath == null)
+            if (jsonPath is null)
                 throw new ArgumentNullException(nameof(jsonPath));
 
             if (!_hashSet.Remove(jsonPath))

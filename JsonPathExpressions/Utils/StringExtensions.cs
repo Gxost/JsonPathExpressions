@@ -34,8 +34,6 @@ namespace JsonPathExpressions.Utils
 
         public static IReadOnlyCollection<string> SplitQuoted(this string str, char delimiter, char quote)
         {
-            if (str == null)
-                throw new ArgumentNullException(nameof(str));
             if (quote == delimiter)
                 throw new ArgumentException("Quote character is equal to delimiter", nameof(quote));
 
@@ -60,8 +58,6 @@ namespace JsonPathExpressions.Utils
 
         public static int IndexOfOutsideQuotes(this string str, char value, char quote, int startIndex)
         {
-            if (str == null)
-                throw new ArgumentNullException(nameof(str));
             if (quote == value)
                 throw new ArgumentException("Quote character is equal to searched value", nameof(quote));
 
@@ -70,17 +66,11 @@ namespace JsonPathExpressions.Utils
 
         public static bool EndsWith(this string str, int position)
         {
-            if (str == null)
-                throw new ArgumentNullException(nameof(str));
-
             return position == str.Length - 1;
         }
 
         public static bool ContainsAt(this string str, char value, int atPosition)
         {
-            if (str == null)
-                throw new ArgumentNullException(nameof(str));
-
             return atPosition < str.Length && str[atPosition] == value;
         }
 

@@ -39,7 +39,7 @@ namespace JsonPathExpressions.Elements
         /// <exception cref="ArgumentException"><paramref name="appliedToElement"/> is <see cref="JsonPathRootElement"/> or <see cref="JsonPathRecursiveDescentElement"/></exception>
         public JsonPathRecursiveDescentElement(JsonPathElement appliedToElement)
         {
-            if (appliedToElement == null)
+            if (appliedToElement is null)
                 throw new ArgumentNullException(nameof(appliedToElement));
             if (appliedToElement.Type == JsonPathElementType.Root)
                 throw new ArgumentException("Recursive descent must not be applied to root element");
@@ -76,7 +76,7 @@ namespace JsonPathExpressions.Elements
         /// <inheritdoc />
         public override bool? Matches(JsonPathElement element)
         {
-            if (element == null)
+            if (element is null)
                 throw new ArgumentNullException(nameof(element));
 
             if (element is JsonPathRecursiveDescentElement recursiveDescentElement)
@@ -129,12 +129,8 @@ namespace JsonPathExpressions.Elements
 
         internal override bool? Matches(IReadOnlyList<JsonPathElement> elements, int index, IReadOnlyList<JsonPathElement> otherElements, int otherIndex)
         {
-            if (elements == null)
-                throw new ArgumentNullException(nameof(elements));
             if (index < 0 || index >= elements.Count)
                 throw new ArgumentOutOfRangeException(nameof(index), index, "Elements index is out of range");
-            if (otherElements == null)
-                throw new ArgumentNullException(nameof(otherElements));
             if (otherIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(otherIndex), otherIndex, "Index must not be negative");
             if (!ReferenceEquals(this, elements[index]))

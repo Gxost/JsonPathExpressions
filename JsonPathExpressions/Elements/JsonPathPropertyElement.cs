@@ -38,7 +38,7 @@ namespace JsonPathExpressions.Elements
         /// <param name="name">Property name</param>
         public JsonPathPropertyElement(string name)
         {
-            if (name == null)
+            if (name is null)
                 throw new ArgumentNullException(nameof(name));
             if (name.Contains('\''))
                 throw new ArgumentException("Single quote in property name is not allowed", nameof(name));
@@ -69,7 +69,7 @@ namespace JsonPathExpressions.Elements
         /// <inheritdoc />
         public override bool? Matches(JsonPathElement element)
         {
-            if (element == null)
+            if (element is null)
                 throw new ArgumentNullException(nameof(element));
 
             switch (element)

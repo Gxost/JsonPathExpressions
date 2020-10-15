@@ -52,7 +52,7 @@ namespace JsonPathExpressions.Elements
         /// <inheritdoc />
         public override bool? Matches(JsonPathElement element)
         {
-            if (element == null)
+            if (element is null)
                 throw new ArgumentNullException(nameof(element));
 
             return Equals(element);
@@ -61,7 +61,7 @@ namespace JsonPathExpressions.Elements
         /// <inheritdoc cref="IEquatable{T}"/>
         public bool Equals(JsonPathRootElement other)
         {
-            return other != null;
+            return !(other is null);
         }
 
         /// <inheritdoc />

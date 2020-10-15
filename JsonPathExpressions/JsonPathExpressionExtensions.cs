@@ -43,9 +43,9 @@ namespace JsonPathExpressions
         /// <returns>True if <paramref name="path"/> starts with <paramref name="prefix"/></returns>
         public static bool StartsWith(this JsonPathExpression path, JsonPathExpression prefix)
         {
-            if (path == null)
+            if (path is null)
                 throw new ArgumentNullException(nameof(path));
-            if (prefix == null)
+            if (prefix is null)
                 throw new ArgumentNullException(nameof(prefix));
 
             if (prefix.Elements.Count >= path.Elements.Count)
@@ -69,9 +69,9 @@ namespace JsonPathExpressions
         /// <remarks>Returns null if it's not possible to check if a set of JSON tree elements represented by the JsonPath expression contain JSON tree elements represented by another JsonPath expression</remarks>
         public static bool? Matches(this JsonPathExpression path, JsonPathExpression other)
         {
-            if (path == null)
+            if (path is null)
                 throw new ArgumentNullException(nameof(path));
-            if (other == null)
+            if (other is null)
                 throw new ArgumentNullException(nameof(other));
 
             return path.Elements[0].Matches(path.Elements, 0, other.Elements, 0);
@@ -89,7 +89,7 @@ namespace JsonPathExpressions
         /// </remarks>
         public static AbsoluteJsonPathExpression ToAbsolute(this JsonPathExpression path)
         {
-            if (path == null)
+            if (path is null)
                 throw new ArgumentNullException(nameof(path));
 
             if (path is AbsoluteJsonPathExpression absolutePath)
@@ -114,7 +114,7 @@ namespace JsonPathExpressions
         public static TJsonPathExpression GetNormalized<TJsonPathExpression>(this TJsonPathExpression path)
             where TJsonPathExpression : JsonPathExpression
         {
-            if (path == null)
+            if (path is null)
                 throw new ArgumentNullException(nameof(path));
 
             if (path.IsNormalized)
@@ -140,12 +140,12 @@ namespace JsonPathExpressions
         /// <para>If <paramref name="other"/> starts with <paramref name="path"/>, <paramref name="path"/> is returned</para>
         /// <para>If there is no parent for both expressions, null is returned</para>
         /// </remarks>
-        public static TJsonPathExpression GetParentWith<TJsonPathExpression>(this TJsonPathExpression path, TJsonPathExpression other)
+        public static TJsonPathExpression? GetParentWith<TJsonPathExpression>(this TJsonPathExpression path, TJsonPathExpression other)
             where TJsonPathExpression : JsonPathExpression
         {
-            if (path == null)
+            if (path is null)
                 throw new ArgumentNullException(nameof(path));
-            if (other == null)
+            if (other is null)
                 throw new ArgumentNullException(nameof(other));
 
             int minLength = Math.Min(path.Elements.Count, other.Elements.Count);
@@ -176,11 +176,11 @@ namespace JsonPathExpressions
         /// <remarks>
         /// If <paramref name="childPath"/> does not start with <paramref name="path"/>, or is equal to <paramref name="path"/>, null is returned
         /// </remarks>
-        public static RelativeJsonPathExpression GetRelativePathTo(this JsonPathExpression path, JsonPathExpression childPath)
+        public static RelativeJsonPathExpression? GetRelativePathTo(this JsonPathExpression path, JsonPathExpression childPath)
         {
-            if (path == null)
+            if (path is null)
                 throw new ArgumentNullException(nameof(path));
-            if (childPath == null)
+            if (childPath is null)
                 throw new ArgumentNullException(nameof(childPath));
 
             if (path.Elements.Count >= childPath.Elements.Count)
@@ -209,18 +209,18 @@ namespace JsonPathExpressions
         public static TJsonPathExpression Append<TJsonPathExpression>(this TJsonPathExpression path, params JsonPathElement[] elements)
             where TJsonPathExpression : JsonPathExpression
         {
-            if (path == null)
+            if (path is null)
                 throw new ArgumentNullException(nameof(path));
-            if (elements == null)
+            if (elements is null)
                 throw new ArgumentNullException(nameof(elements));
-            if (elements.Contains(null))
+            if (elements.Contains(null!))
                 throw new ArgumentException("At least one element is null", nameof(elements));
 
             if (elements.Length == 0)
                 return path;
 
             var resultElements = new List<JsonPathElement>(path.Elements);
-            resultElements.AddRange(elements);
+            resultElements.AddRange(elements!);
 
             return (TJsonPathExpression) path.Create(resultElements);
         }
@@ -235,9 +235,9 @@ namespace JsonPathExpressions
         public static TJsonPathExpression Append<TJsonPathExpression>(this TJsonPathExpression path, RelativeJsonPathExpression relativePath)
             where TJsonPathExpression : JsonPathExpression
         {
-            if (path == null)
+            if (path is null)
                 throw new ArgumentNullException(nameof(path));
-            if (relativePath == null)
+            if (relativePath is null)
                 throw new ArgumentNullException(nameof(relativePath));
 
             var elements = new List<JsonPathElement>(path.Elements);
@@ -256,9 +256,9 @@ namespace JsonPathExpressions
         public static TJsonPathExpression ReplaceLastWith<TJsonPathExpression>(this TJsonPathExpression path, JsonPathElement element)
             where TJsonPathExpression : JsonPathExpression
         {
-            if (path == null)
+            if (path is null)
                 throw new ArgumentNullException(nameof(path));
-            if (element == null)
+            if (element is null)
                 throw new ArgumentNullException(nameof(element));
 
             var elements = new List<JsonPathElement>(path.Elements) { [path.Elements.Count - 1] = element };
@@ -277,10 +277,10 @@ namespace JsonPathExpressions
         /// <remarks>
         /// If <paramref name="count"/> is greater or equal to than <see cref="JsonPathExpression.Length"/>, null is returned
         /// </remarks>
-        public static TJsonPathExpression RemoveLast<TJsonPathExpression>(this TJsonPathExpression path, int count = 1)
+        public static TJsonPathExpression? RemoveLast<TJsonPathExpression>(this TJsonPathExpression path, int count = 1)
             where TJsonPathExpression : JsonPathExpression
         {
-            if (path == null)
+            if (path is null)
                 throw new ArgumentNullException(nameof(path));
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count), count, null);

@@ -26,6 +26,7 @@ namespace JsonPathExpressions
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Threading;
     using Builders;
@@ -70,11 +71,11 @@ namespace JsonPathExpressions
         /// <exception cref="ArgumentException">Empty elements collection provided</exception>
         protected JsonPathExpression(IReadOnlyCollection<JsonPathElement> elements, bool? isAbsolutePath)
         {
-            if (elements == null)
+            if (elements is null)
                 throw new ArgumentNullException(nameof(elements));
             if (elements.Count == 0)
                 throw new ArgumentException("No elements provided", nameof(elements));
-            if (elements.Contains(null))
+            if (elements.Contains(null!))
                 throw new ArgumentException("At least one element is null", nameof(elements));
 
             ValidateElements(elements, isAbsolutePath);
@@ -187,12 +188,10 @@ namespace JsonPathExpressions
         /// <remarks>
         /// Null <see cref="JsonPathExpression"/> is converted to null <see cref="string"/>
         /// </remarks>
-        public static explicit operator string(JsonPathExpression path)
+        [return: NotNullIfNotNull("path")]
+        public static explicit operator string?(JsonPathExpression? path)
         {
-            if (path == null)
-                return null;
-
-            return path.ToString();
+            return path?.ToString();
         }
 
         /// <summary>
@@ -202,9 +201,10 @@ namespace JsonPathExpressions
         /// <remarks>
         /// Null <see cref="string"/> is converted to null <see cref="JsonPathExpression"/>
         /// </remarks>
-        public static explicit operator JsonPathExpression(string path)
+        [return: NotNullIfNotNull("path")]
+        public static explicit operator JsonPathExpression?(string? path)
         {
-            if (path == null)
+            if (path is null)
                 return null;
 
             return new JsonPathExpression(path);

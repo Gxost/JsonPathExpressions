@@ -35,7 +35,7 @@ namespace JsonPathExpressions.Elements
     /// </summary>
     public sealed class JsonPathArraySliceElement : JsonPathElement, IEquatable<JsonPathArraySliceElement>
     {
-        private readonly Lazy<IndexRange> _indexRange;
+        private readonly Lazy<IndexRange?> _indexRange;
 
         /// <summary>
         /// Create <see cref="JsonPathArraySliceElement"/> instance
@@ -54,7 +54,7 @@ namespace JsonPathExpressions.Elements
             End = end;
             Step = step;
 
-            _indexRange = new Lazy<IndexRange>(CreateIndexRange, LazyThreadSafetyMode.PublicationOnly);
+            _indexRange = new Lazy<IndexRange?>(CreateIndexRange, LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <inheritdoc />
@@ -97,9 +97,9 @@ namespace JsonPathExpressions.Elements
         /// </summary>
         public bool ContainsAllIndexes => IndexRange?.ContainsAllIndexes ?? false;
 
-        private IndexRange IndexRange => _indexRange.Value;
-        private bool IsLastElement => Start == -1 && End == null && Step == 1;
-        private bool IsNotNormalizedEmptySlice => IndexCount == 0 && !(Start == null && End == 0 && Step == 1);
+        private IndexRange? IndexRange => _indexRange.Value;
+        private bool IsLastElement => Start == -1 && End is null && Step == 1;
+        private bool IsNotNormalizedEmptySlice => IndexCount == 0 && !(Start is null && End == 0 && Step == 1);
 
         /// <inheritdoc />
         public override JsonPathElement GetNormalized()
@@ -107,7 +107,7 @@ namespace JsonPathExpressions.Elements
             if (IsNotNormalizedEmptySlice)
                 return new JsonPathArraySliceElement(null, 0, 1);
             if (IndexCount == 1)
-                return new JsonPathArrayIndexElement(IndexRange.GetIndexes().First());
+                return new JsonPathArrayIndexElement(IndexRange!.GetIndexes().First());
             if (ContainsAllIndexes)
                 return new JsonPathAnyArrayIndexElement();
             if (Start == 0)
@@ -119,7 +119,7 @@ namespace JsonPathExpressions.Elements
         /// <inheritdoc />
         public override bool? Matches(JsonPathElement element)
         {
-            if (element == null)
+            if (element is null)
                 throw new ArgumentNullException(nameof(element));
 
             switch (element)
@@ -202,14 +202,14 @@ namespace JsonPathExpressions.Elements
         /// Return enumerable representing all indexes in the slice
         /// </summary>
         /// <returns><see cref="IEnumerable{T}"/> representing all indexes in the slice; null if it's not possible to get indexes in the slice</returns>
-        public IEnumerable<int> GetIndexes()
+        public IEnumerable<int>? GetIndexes()
         {
             return IndexRange?.GetIndexes();
         }
 
         private bool? ContainsIndexes(IEnumerable<int> indexes)
         {
-            if (indexes == null)
+            if (indexes is null)
                 throw new ArgumentNullException(nameof(indexes));
 
             if (ContainsAllIndexes)
@@ -225,12 +225,12 @@ namespace JsonPathExpressions.Elements
             if (Equals(other))
                 return true;
 
-            return IndexRange != null
-                   && other.IndexRange != null
+            return !(IndexRange is null)
+                   && !(other.IndexRange is null)
                    && IndexRange.Contains(other.IndexRange);
         }
 
-        private IndexRange CreateIndexRange()
+        private IndexRange? CreateIndexRange()
         {
             if (Start < 0 || End < 0)
                 return null;

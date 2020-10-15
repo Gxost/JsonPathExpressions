@@ -26,6 +26,7 @@ namespace JsonPathExpressions
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using Builders;
     using Conversion;
     using Elements;
@@ -72,9 +73,10 @@ namespace JsonPathExpressions
         /// <remarks>
         /// Null <see cref="string"/> is converted to null <see cref="AbsoluteJsonPathExpression"/>
         /// </remarks>
-        public static explicit operator AbsoluteJsonPathExpression(string path)
+        [return: NotNullIfNotNull("path")]
+        public static explicit operator AbsoluteJsonPathExpression?(string? path)
         {
-            if (path == null)
+            if (path is null)
                 return null;
 
             return new AbsoluteJsonPathExpression(path);

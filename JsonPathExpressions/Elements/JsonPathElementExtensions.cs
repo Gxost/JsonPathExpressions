@@ -40,7 +40,7 @@ namespace JsonPathExpressions.Elements
         /// <returns>True if JsonPath element has same type as passed or element is a recursive descent applied to JsonPath element with same type as passed</returns>
         public static bool IsOfType(this JsonPathElement element, JsonPathElementType type)
         {
-            if (element == null)
+            if (element is null)
                 throw new ArgumentNullException(nameof(element));
 
             while (true)
@@ -62,11 +62,11 @@ namespace JsonPathExpressions.Elements
         /// <param name="types">Array of JsonPath element types to check</param>
         /// <returns>True if JsonPath element has same type as passed or element is a recursive descent applied to JsonPath element with same type as passed</returns>
         /// <exception cref="ArgumentException">No element types provided</exception>
-        public static bool IsOfType(this JsonPathElement element, params JsonPathElementType[] types)
+        public static bool IsOfType(this JsonPathElement? element, params JsonPathElementType[] types)
         {
-            if (element == null)
+            if (element is null)
                 throw new ArgumentNullException(nameof(element));
-            if (types == null)
+            if (types is null)
                 throw new ArgumentNullException(nameof(types));
             if (types.Length == 0)
                 throw new ArgumentException("No element types provided", nameof(types));
@@ -93,7 +93,7 @@ namespace JsonPathExpressions.Elements
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lastType"/> is less than <paramref name="firstType"/></exception>
         public static bool IsOfTypeInRange(this JsonPathElement element, JsonPathElementType firstType, JsonPathElementType lastType)
         {
-            if (element == null)
+            if (element is null)
                 throw new ArgumentNullException(nameof(element));
             if (lastType < firstType)
                 throw new ArgumentOutOfRangeException(nameof(lastType), lastType, "Last type is less than first type");
@@ -120,7 +120,7 @@ namespace JsonPathExpressions.Elements
         /// </remarks>
         public static JsonPathElement GetUnderlyingElement(this JsonPathElement element)
         {
-            if (element == null)
+            if (element is null)
                 throw new ArgumentNullException(nameof(element));
 
             return element.Type == JsonPathElementType.RecursiveDescent
@@ -135,12 +135,12 @@ namespace JsonPathExpressions.Elements
         /// <param name="element">JsonPath element</param>
         /// <returns>JsonPath element or element to which recursive descent is applied cast to derived type</returns>
         /// <exception cref="InvalidCastException">Invalid casting from JsonPathElement to <typeparamref name="TJsonPathElement"/></exception>
-        public static TJsonPathElement CastTo<TJsonPathElement>(this JsonPathElement element)
+        public static TJsonPathElement? CastTo<TJsonPathElement>(this JsonPathElement? element)
             where TJsonPathElement : JsonPathElement
         {
             return typeof(TJsonPathElement) != typeof(JsonPathRecursiveDescentElement) && element is JsonPathRecursiveDescentElement recursiveDescentElement
-                ? (TJsonPathElement)recursiveDescentElement.AppliedToElement
-                : (TJsonPathElement)element;
+                ? (TJsonPathElement?)recursiveDescentElement.AppliedToElement
+                : (TJsonPathElement?)element;
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace JsonPathExpressions.Elements
         /// <typeparam name="TJsonPathElement">Derived JsonPath element type</typeparam>
         /// <param name="element">JsonPath element</param>
         /// <returns>JsonPath element or element to which recursive descent is applied cast to derived type, or null</returns>
-        public static TJsonPathElement As<TJsonPathElement>(this JsonPathElement element)
+        public static TJsonPathElement? As<TJsonPathElement>(this JsonPathElement? element)
             where TJsonPathElement : JsonPathElement
         {
             return typeof(TJsonPathElement) != typeof(JsonPathRecursiveDescentElement) && element is JsonPathRecursiveDescentElement recursiveDescentElement

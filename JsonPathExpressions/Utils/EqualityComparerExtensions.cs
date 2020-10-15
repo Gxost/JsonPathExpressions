@@ -24,20 +24,12 @@
 
 namespace JsonPathExpressions.Utils
 {
-    using System;
     using System.Collections.Generic;
 
     internal static class EqualityComparerExtensions
     {
         public static bool CollectionsEqual<T>(this IEqualityComparer<T> equalityComparer, IReadOnlyCollection<T> first, IReadOnlyCollection<T> second)
         {
-            if (equalityComparer == null)
-                throw new ArgumentNullException(nameof(equalityComparer));
-            if (first == null)
-                throw new ArgumentNullException(nameof(first));
-            if (second == null)
-                throw new ArgumentNullException(nameof(second));
-
             int firstCount = first.Count;
             int secondCount = second.Count;
             if (firstCount != secondCount)
@@ -46,20 +38,19 @@ namespace JsonPathExpressions.Utils
             if (firstCount == 0 && secondCount == 0)
                 return true;
 
-            using (var firstEnumerator = first.GetEnumerator())
-            using (var secondEnumerator = second.GetEnumerator())
+            using var firstEnumerator = first.GetEnumerator();
+            using var secondEnumerator = second.GetEnumerator();
+
+            while (firstEnumerator.MoveNext() && secondEnumerator.MoveNext())
             {
-                while (firstEnumerator.MoveNext() && secondEnumerator.MoveNext())
-                {
-                    var firstItem = firstEnumerator.Current;
-                    var secondItem = secondEnumerator.Current;
+                var firstItem = firstEnumerator.Current;
+                var secondItem = secondEnumerator.Current;
 
-                    bool itemsEqual = ReferenceEquals(firstItem, secondItem)
-                                      || firstItem != null && equalityComparer.Equals(firstItem, secondItem);
+                bool itemsEqual = ReferenceEquals(firstItem, secondItem)
+                                  || equalityComparer.Equals(firstItem, secondItem);
 
-                    if (!itemsEqual)
-                        return false;
-                }
+                if (!itemsEqual)
+                    return false;
             }
 
             return true;
@@ -67,11 +58,6 @@ namespace JsonPathExpressions.Utils
 
         public static int GetCollectionHashCode<T>(this IEqualityComparer<T> equalityComparer, IEnumerable<T> collection)
         {
-            if (equalityComparer == null)
-                throw new ArgumentNullException(nameof(equalityComparer));
-            if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
-
             unchecked
             {
                 int hashCode = 0;
@@ -80,7 +66,7 @@ namespace JsonPathExpressions.Utils
                 foreach (var item in collection)
                 {
                     ++count;
-                    hashCode = (hashCode * 397) ^ (item != null ? equalityComparer.GetHashCode(item) : 0);
+                    hashCode = (hashCode * 397) ^ equalityComparer.GetHashCode(item);
                 }
 
                 hashCode = (hashCode * 397) ^ count;

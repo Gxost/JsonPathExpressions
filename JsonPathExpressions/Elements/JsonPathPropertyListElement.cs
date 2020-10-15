@@ -44,13 +44,13 @@ namespace JsonPathExpressions.Elements
         /// <exception cref="ArgumentOutOfRangeException">At least one property name is null or contains single quote</exception>
         public JsonPathPropertyListElement(IReadOnlyCollection<string> names)
         {
-            if (names == null)
+            if (names is null)
                 throw new ArgumentNullException(nameof(names));
             if (names.Count == 0)
                 throw new ArgumentException("No names provided", nameof(names));
-            if (names.Contains(null))
+            if (names.Contains(null!))
                 throw new ArgumentOutOfRangeException(nameof(names), names, "At least one name is null");
-            if (names.Any(x => x.Contains('\'')))
+            if (names.Any(x => x!.Contains('\'')))
                 throw new ArgumentException("Single quote in property name is not allowed", nameof(names));
 
             _names = new HashSet<string>(names, StringComparer.Ordinal);
@@ -85,7 +85,7 @@ namespace JsonPathExpressions.Elements
         /// <inheritdoc />
         public override bool? Matches(JsonPathElement element)
         {
-            if (element == null)
+            if (element is null)
                 throw new ArgumentNullException(nameof(element));
 
             switch (element)

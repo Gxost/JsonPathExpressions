@@ -37,7 +37,7 @@ namespace JsonPathExpressions.Matching
         private readonly Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>> _properties;
         private readonly Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>> _indexes;
         private readonly HashSet<TJsonPathExpression> _recursiveDescents;
-        private TJsonPathExpression _current;
+        private TJsonPathExpression? _current;
 
         public JsonPathExpressionMatchingNode(int index)
         {
@@ -58,16 +58,13 @@ namespace JsonPathExpressions.Matching
                    && _properties.Count == 0
                    && _indexes.Count == 0
                    && _recursiveDescents.Count == 0
-                   && _current == null;
+                   && _current is null;
         }
 
         public bool? Matches(TJsonPathExpression jsonPath)
         {
-            if (jsonPath == null)
-                throw new ArgumentNullException(nameof(jsonPath));
-
             if (Index == jsonPath.Elements.Count)
-                return _current != null;
+                return !(_current is null);
 
             var element = jsonPath.Elements[Index];
             if (element.Type != JsonPathElementType.RecursiveDescent)
@@ -97,7 +94,7 @@ namespace JsonPathExpressions.Matching
                     result = null;
                 }
 
-                if (result == null)
+                if (result is null)
                     return null;
             }
 
@@ -113,14 +110,9 @@ namespace JsonPathExpressions.Matching
 
         public bool Matches(TJsonPathExpression jsonPath, List<TJsonPathExpression> matchedBy)
         {
-            if (jsonPath == null)
-                throw new ArgumentNullException(nameof(jsonPath));
-            if (matchedBy == null)
-                throw new ArgumentNullException(nameof(matchedBy));
-
             if (Index == jsonPath.Elements.Count)
             {
-                if (_current == null)
+                if (_current is null)
                     return false;
 
                 matchedBy.Add(_current);
@@ -159,9 +151,6 @@ namespace JsonPathExpressions.Matching
 
         public bool Add(TJsonPathExpression jsonPath)
         {
-            if (jsonPath == null)
-                throw new ArgumentNullException(nameof(jsonPath));
-
             if (Index == jsonPath.Elements.Count)
                 return AddCurrent(jsonPath);
 
@@ -174,9 +163,6 @@ namespace JsonPathExpressions.Matching
 
         public bool Remove(TJsonPathExpression jsonPath)
         {
-            if (jsonPath == null)
-                throw new ArgumentNullException(nameof(jsonPath));
-
             if (Index == jsonPath.Elements.Count)
                 return RemoveCurrent();
 
@@ -308,7 +294,7 @@ namespace JsonPathExpressions.Matching
 
         private bool AddCurrent(TJsonPathExpression jsonPath)
         {
-            if (_current != null)
+            if (!(_current is null))
                 return false;
 
             _current = jsonPath;
@@ -317,7 +303,7 @@ namespace JsonPathExpressions.Matching
 
         private bool RemoveCurrent()
         {
-            if (_current == null)
+            if (_current is null)
                 return false;
 
             _current = null;

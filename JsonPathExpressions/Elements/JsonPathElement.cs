@@ -80,12 +80,8 @@ namespace JsonPathExpressions.Elements
 
         internal virtual bool? Matches(IReadOnlyList<JsonPathElement> elements, int index, IReadOnlyList<JsonPathElement> otherElements, int otherIndex)
         {
-            if (elements == null)
-                throw new ArgumentNullException(nameof(elements));
             if (index < 0 || index >= elements.Count)
                 throw new ArgumentOutOfRangeException(nameof(index), index, "Elements index is out of range");
-            if (otherElements == null)
-                throw new ArgumentNullException(nameof(otherElements));
             if (otherIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(otherIndex), otherIndex, "Index must not be negative");
             if (!ReferenceEquals(this, elements[index])

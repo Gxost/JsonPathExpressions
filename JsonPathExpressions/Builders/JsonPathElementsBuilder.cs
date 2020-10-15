@@ -61,7 +61,7 @@ namespace JsonPathExpressions.Builders
 
         public JsonPathElementsBuilder Property(string name)
         {
-            if (name == null)
+            if (name is null)
                 throw new ArgumentNullException(nameof(name));
 
             AddElement(new JsonPathPropertyElement(name));
@@ -76,9 +76,9 @@ namespace JsonPathExpressions.Builders
 
         public JsonPathElementsBuilder Properties(string firstName, params string[] names)
         {
-            if (firstName == null)
+            if (firstName is null)
                 throw new ArgumentNullException(nameof(firstName));
-            if (names == null)
+            if (names is null)
                 throw new ArgumentNullException(nameof(names));
 
             return Properties(CollectionHelper.Concatenate(firstName, names));
@@ -86,7 +86,7 @@ namespace JsonPathExpressions.Builders
 
         public JsonPathElementsBuilder Properties(IReadOnlyCollection<string> names)
         {
-            if (names == null)
+            if (names is null)
                 throw new ArgumentNullException(nameof(names));
             if (names.Count == 0)
                 throw new ArgumentException("No property names provided");
@@ -113,7 +113,7 @@ namespace JsonPathExpressions.Builders
 
         public JsonPathElementsBuilder ArrayIndexes(int firstIndex, params int[] indexes)
         {
-            if (indexes == null)
+            if (indexes is null)
                 throw new ArgumentNullException(nameof(indexes));
 
             return ArrayIndexes(CollectionHelper.Concatenate(firstIndex, indexes));
@@ -121,7 +121,7 @@ namespace JsonPathExpressions.Builders
 
         public JsonPathElementsBuilder ArrayIndexes(IReadOnlyCollection<int> indexes)
         {
-            if (indexes == null)
+            if (indexes is null)
                 throw new ArgumentNullException(nameof(indexes));
             if (indexes.Count == 0)
                 throw new ArgumentException("No array indexes provided");

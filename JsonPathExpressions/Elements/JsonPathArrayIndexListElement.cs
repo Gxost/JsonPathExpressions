@@ -46,7 +46,7 @@ namespace JsonPathExpressions.Elements
         /// <exception cref="ArgumentOutOfRangeException">At least one index is negative</exception>
         public JsonPathArrayIndexListElement(IReadOnlyCollection<int> indexes)
         {
-            if (indexes == null)
+            if (indexes is null)
                 throw new ArgumentNullException(nameof(indexes));
             if (indexes.Count == 0)
                 throw new ArgumentException("No indexes provided", nameof(indexes));
@@ -88,7 +88,7 @@ namespace JsonPathExpressions.Elements
         /// <inheritdoc />
         public override bool? Matches(JsonPathElement element)
         {
-            if (element == null)
+            if (element is null)
                 throw new ArgumentNullException(nameof(element));
 
             switch (element)
@@ -172,14 +172,14 @@ namespace JsonPathExpressions.Elements
 
             foreach (int index in sortedIndexes)
             {
-                if (first == null)
+                if (first is null)
                 {
                     first = index;
                     last = index;
                     continue;
                 }
 
-                if (second == null)
+                if (second is null)
                 {
                     second = index;
                     last = index;

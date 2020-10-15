@@ -74,9 +74,6 @@ namespace JsonPathExpressions.Elements
 
         public bool Contains(IndexRange other)
         {
-            if (other == null)
-                throw new ArgumentNullException(nameof(other));
-
             // check steps
             if (Math.Abs(Step) != Math.Abs(other.Step))
             {
