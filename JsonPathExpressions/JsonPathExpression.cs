@@ -211,11 +211,11 @@ namespace JsonPathExpressions
         }
 
         /// <summary>
-        /// Create a JsonPath expression with the same type as this
+        /// Create a JsonPath expression with exactly the same type as current instance
         /// </summary>
         /// <param name="elements">Collection of JsonPath elements</param>
         /// <returns>JsonPath expression with the same type as this</returns>
-        protected internal virtual JsonPathExpression Create(IReadOnlyCollection<JsonPathElement> elements)
+        public virtual JsonPathExpression Create(IReadOnlyCollection<JsonPathElement> elements)
         {
             return new JsonPathExpression(elements);
         }

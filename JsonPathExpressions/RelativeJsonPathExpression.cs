@@ -83,7 +83,7 @@ namespace JsonPathExpressions
         }
 
         /// <inheritdoc />
-        protected internal override JsonPathExpression Create(IReadOnlyCollection<JsonPathElement> elements)
+        public override JsonPathExpression Create(IReadOnlyCollection<JsonPathElement> elements)
         {
             return new RelativeJsonPathExpression(elements);
         }
