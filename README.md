@@ -1,6 +1,6 @@
-# JSONPath expressions
+# JSONPath expressions [![Nuget](https://img.shields.io/nuget/v/JsonPathExpressions)](https://www.nuget.org/packages/JsonPathExpressions)
 
-This project allows to create, parse, analyze and modify JSONPath expressions.
+This package allows to create, parse, modify and analyze JSONPath expressions.
 
 ## What is JSONPath
 
@@ -22,9 +22,12 @@ var expr2 = new JsonPathExpression(new JsonPathElement[]{
     new JsonPathPropertyElement("b"),
     new JsonPathPropertyElement("c")
     });
+// fluent syntax is safer because it restricts expression to valid form
 var expr3 = JsonPathExpression.Builder.Root().Property("a").Property("b").Property("c").Build();
+var expr4 = JsonPathExpression.Builder.Root()["a"]["b"]["c"].Build(); // alternative short variant
 bool equal1and2 = expr1.Equals(expr2); // returns true
 bool equal1and3 = expr1.Equals(expr3); // returns true
+bool equal1and4 = expr1.Equals(expr4); // returns true
 ```
 
 You can modify existing expressions:
@@ -77,7 +80,7 @@ var expr2 = new JsonPathExpression("$.a.b.c[42]");
 bool? matches = expr1.Matches(expr2); // returns true
 ```
 
-The method returns `bool?` because for some expression elements it's not easy or possible to check if they exactly match. In this case `null` means "neither true nor false":
+The method returns `bool?` because for some expression elements it's not easy or not possible to check if they exactly match. In this case `null` means "neither true nor false":
 
 ```csharp
 var expr1 = new JsonPathExpression("$.a.*.c[-1:]"); // ends with last array element
