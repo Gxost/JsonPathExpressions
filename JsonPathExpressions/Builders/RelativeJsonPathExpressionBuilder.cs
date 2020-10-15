@@ -35,6 +35,10 @@ namespace JsonPathExpressions.Builders
             _elementsBuilder = new JsonPathElementsBuilder();
         }
 
+        public INextRelativePathElementSyntax this[string propertyName] => Property(propertyName);
+
+        public INextRelativePathElementSyntax this[int index] => ArrayIndex(index);
+
         public IRelativePathElementSyntax RecursiveDescentTo()
         {
             _elementsBuilder.RecursiveDescentTo();

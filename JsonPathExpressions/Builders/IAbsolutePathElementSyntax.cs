@@ -34,6 +34,20 @@ namespace JsonPathExpressions.Builders
         /// <summary>
         /// Add property element
         /// </summary>
+        /// <param name="propertyName">Property name</param>
+        /// <returns><see cref="INextAbsolutePathElementSyntax"/></returns>
+        INextAbsolutePathElementSyntax this[string propertyName] { get; }
+
+        /// <summary>
+        /// Add array index element
+        /// </summary>
+        /// <param name="index">Array index</param>
+        /// <returns><see cref="INextAbsolutePathElementSyntax"/></returns>
+        INextAbsolutePathElementSyntax this[int index] { get; }
+
+        /// <summary>
+        /// Add property element
+        /// </summary>
         /// <param name="name">Property name</param>
         /// <returns><see cref="INextAbsolutePathElementSyntax"/></returns>
         INextAbsolutePathElementSyntax Property(string name);

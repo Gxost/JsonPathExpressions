@@ -35,6 +35,10 @@ namespace JsonPathExpressions.Builders
             _elementsBuilder = new JsonPathElementsBuilder();
         }
 
+        public INextPathElementSyntax this[string propertyName] => Property(propertyName);
+
+        public INextPathElementSyntax this[int index] => ArrayIndex(index);
+
         public INextPathElementSyntax Root()
         {
             _elementsBuilder.Root();
