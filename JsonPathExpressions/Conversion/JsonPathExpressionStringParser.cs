@@ -32,8 +32,9 @@ namespace JsonPathExpressions.Conversion
 
     internal static class JsonPathExpressionStringParser
     {
-        private static readonly char[] StopCharsOutsideBrackets = {'.', '['};
-        private static readonly char[] StopCharsInsideBrackets = {'\'', ']'};
+        private static readonly char[] Comma = {','};
+        private static readonly char[] Colon = {':'};
+        private static readonly char[] DotAndSquareBracket = {'.', '['};
         private static readonly char[] ForbiddenCharactersOutsideBrackets = {'[', ']'};
 
         public static List<JsonPathElement> Parse(string jsonPath)
@@ -47,7 +48,7 @@ namespace JsonPathExpressions.Conversion
             bool isRecursiveDescentApplied = false;
             while (nextIndex < jsonPath.Length)
             {
-                int index = jsonPath.IndexOfAny(StopCharsOutsideBrackets, nextIndex);
+                int index = jsonPath.IndexOfAny(DotAndSquareBracket, nextIndex);
                 if (index == -1)
                 {
                     elements.Add(ParseToken(jsonPath.Substring(nextIndex), nextIndex == 0, isRecursiveDescentApplied));
@@ -84,7 +85,7 @@ namespace JsonPathExpressions.Conversion
                             throw new ArgumentException("Path ends with dot", nameof(jsonPath));
                         break;
                     case '[':
-                        int closingIndex = GetClosingBracketIndex(jsonPath, index + 1);
+                        int closingIndex = jsonPath.IndexOfOutsideQuotes(']', '\'', index + 1);
                         if (closingIndex == -1)
                             throw new ArgumentException("No matching closing bracket found", nameof(jsonPath));
                         if (closingIndex - index == 1)
@@ -157,7 +158,7 @@ namespace JsonPathExpressions.Conversion
 
         private static JsonPathElement ParseArrayIndexListToken(string token)
         {
-            string[] parts = token.Split(new[] { ',' }, StringSplitOptions.None);
+            string[] parts = token.Split(Comma, StringSplitOptions.None);
             if (parts.Any(string.IsNullOrWhiteSpace))
                 throw new ArgumentException("Double commas found", nameof(token));
 
@@ -170,7 +171,7 @@ namespace JsonPathExpressions.Conversion
 
         private static JsonPathElement ParseArraySliceToken(string token)
         {
-            string[] parts = token.Split(new[] { ':' }, StringSplitOptions.None);
+            string[] parts = token.Split(Colon, StringSplitOptions.None);
             if (parts.Length == 0 || parts.Length > 3)
                 throw new ArgumentException("Array slice contains insufficient number of arguments", nameof(token));
 
@@ -226,37 +227,6 @@ namespace JsonPathExpressions.Conversion
                 throw new ArgumentException("No closing brace found", nameof(token));
 
             return new JsonPathFilterExpressionElement(token.Substring(2, token.Length - 3));
-        }
-
-        private static int GetClosingBracketIndex(string expression, int startIndex)
-        {
-            bool isInsideLiteral = false;
-            for (int index = startIndex; index < expression.Length; ++index)
-            {
-                index = expression.IndexOfAny(StopCharsInsideBrackets, index);
-                if (index == -1)
-                    break;
-
-                switch (expression[index])
-                {
-                    case '\'':
-                        isInsideLiteral = !isInsideLiteral;
-                        break;
-                    case ']':
-                        if (!isInsideLiteral)
-                            return index;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-
-            return -1;
-        }
-
-        private static bool ContainsAt(this string inString, char character, int atPosition)
-        {
-            return atPosition < inString.Length && inString[atPosition] == character;
         }
     }
 }

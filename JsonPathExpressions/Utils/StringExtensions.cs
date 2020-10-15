@@ -29,6 +29,9 @@ namespace JsonPathExpressions.Utils
 
     internal static class StringExtensions
     {
+        private static readonly char[] CommaWithSingleQuote = {',', '\''};
+        private static readonly char[] ClosingSquareBracketWithSingleQuote = {']', '\''};
+
         public static IReadOnlyCollection<string> SplitQuoted(this string str, char delimiter, char quote)
         {
             if (str == null)
@@ -37,11 +40,11 @@ namespace JsonPathExpressions.Utils
                 throw new ArgumentException("Quote character is equal to delimiter", nameof(quote));
 
             var parts = new List<string>();
-            var delimiterAndQuote = new[] { delimiter, quote };
+            var valueWithQuote = GetValueWithQuote(delimiter, quote);
 
             for (int nextIndex = 0; nextIndex < str.Length;)
             {
-                int index = str.IndexOfDelimiter(delimiter, quote, nextIndex, delimiterAndQuote);
+                int index = str.IndexOfOutsideQuotes(delimiter, quote, nextIndex, valueWithQuote);
                 if (index == -1)
                 {
                     parts.Add(str.Substring(nextIndex));
@@ -55,6 +58,16 @@ namespace JsonPathExpressions.Utils
             return parts;
         }
 
+        public static int IndexOfOutsideQuotes(this string str, char value, char quote, int startIndex)
+        {
+            if (str == null)
+                throw new ArgumentNullException(nameof(str));
+            if (quote == value)
+                throw new ArgumentException("Quote character is equal to searched value", nameof(quote));
+
+            return str.IndexOfOutsideQuotes(value, quote, startIndex, GetValueWithQuote(value, quote));
+        }
+
         public static bool EndsWith(this string str, int position)
         {
             if (str == null)
@@ -63,12 +76,20 @@ namespace JsonPathExpressions.Utils
             return position == str.Length - 1;
         }
 
-        private static int IndexOfDelimiter(this string str, char delimiter, char quote, int startIndex, char[] delimiterAndQuote)
+        public static bool ContainsAt(this string str, char value, int atPosition)
+        {
+            if (str == null)
+                throw new ArgumentNullException(nameof(str));
+
+            return atPosition < str.Length && str[atPosition] == value;
+        }
+
+        private static int IndexOfOutsideQuotes(this string str, char value, char quote, int startIndex, char[] valueWithQuote)
         {
             while (startIndex < str.Length)
             {
-                int index = str.IndexOfAny(delimiterAndQuote, startIndex);
-                if (index == -1 || str[index] == delimiter)
+                int index = str.IndexOfAny(valueWithQuote, startIndex);
+                if (index == -1 || str[index] == value)
                     return index;
                 if (str.EndsWith(index))
                     return -1;
@@ -81,6 +102,22 @@ namespace JsonPathExpressions.Utils
             }
 
             return -1;
+        }
+
+        private static char[] GetValueWithQuote(char value, char quote)
+        {
+            if (quote == '\'')
+            {
+                switch (value)
+                {
+                    case ',':
+                        return CommaWithSingleQuote;
+                    case ']':
+                        return ClosingSquareBracketWithSingleQuote;
+                }
+            }
+
+            return new[] { value, quote };
         }
     }
 }
