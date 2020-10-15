@@ -62,6 +62,7 @@ namespace JsonPathExpressions.Tests.Elements
         [Theory]
         [InlineData(null, 0, 1, 0)]
         [InlineData(42, 42, 1, 0)]
+        [InlineData(42, 0, 1, 0)]
         [InlineData(null, 1, 1, 1)]
         [InlineData(null, 1, 2, 1)]
         [InlineData(10, 20, 1, 10)]

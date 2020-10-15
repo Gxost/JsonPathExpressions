@@ -202,22 +202,14 @@ namespace JsonPathExpressions.Tests.Conversion
         [InlineData("['',,'']")]
         [InlineData("[1,,2]")]
         [InlineData("[:::]")]
-        public void Parse_ThrowsArgumentException(string expression)
-        {
-            Action action = () => JsonPathExpressionStringParser.Parse(expression);
-
-            action.Should().Throw<ArgumentException>();
-        }
-
-        [Theory]
         [InlineData("[abc]")]
         [InlineData("[abc,def]")]
         [InlineData("[abc:def]")]
-        public void Parse_ThrowsFormatException(string expression)
+        public void Parse_Throws(string expression)
         {
             Action action = () => JsonPathExpressionStringParser.Parse(expression);
 
-            action.Should().Throw<FormatException>();
+            action.Should().Throw<JsonPathExpressionParsingException>();
         }
 
         private void Parse_Worker(string expression, bool expectedRecursiveDescent, JsonPathElement expectedElement)
