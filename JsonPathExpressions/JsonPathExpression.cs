@@ -181,6 +181,36 @@ namespace JsonPathExpressions
         }
 
         /// <summary>
+        /// Convert <see cref="JsonPathExpression"/> to <see cref="string"/>
+        /// </summary>
+        /// <param name="path">JsonPath expression</param>
+        /// <remarks>
+        /// Null <see cref="JsonPathExpression"/> is converted to null <see cref="string"/>
+        /// </remarks>
+        public static explicit operator string(JsonPathExpression path)
+        {
+            if (path == null)
+                return null;
+
+            return path.ToString();
+        }
+
+        /// <summary>
+        /// Convert <see cref="string"/> to <see cref="JsonPathExpression"/>
+        /// </summary>
+        /// <param name="path">String representing JsonPath expression</param>
+        /// <remarks>
+        /// Null <see cref="string"/> is converted to null <see cref="JsonPathExpression"/>
+        /// </remarks>
+        public static explicit operator JsonPathExpression(string path)
+        {
+            if (path == null)
+                return null;
+
+            return new JsonPathExpression(path);
+        }
+
+        /// <summary>
         /// Create a JsonPath expression with the same type as this
         /// </summary>
         /// <param name="elements">Collection of JsonPath elements</param>

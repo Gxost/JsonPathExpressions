@@ -65,6 +65,21 @@ namespace JsonPathExpressions
         /// </summary>
         public static new IFirstRelativePathElementSyntax Builder => RelativeJsonPathExpressionBuilder.Create();
 
+        /// <summary>
+        /// Convert <see cref="string"/> to <see cref="RelativeJsonPathExpression"/>
+        /// </summary>
+        /// <param name="path">String representing JsonPath expression</param>
+        /// <remarks>
+        /// Null <see cref="string"/> is converted to null <see cref="RelativeJsonPathExpression"/>
+        /// </remarks>
+        public static explicit operator RelativeJsonPathExpression(string path)
+        {
+            if (path == null)
+                return null;
+
+            return new RelativeJsonPathExpression(path);
+        }
+
         /// <inheritdoc />
         protected internal override JsonPathExpression Create(IReadOnlyCollection<JsonPathElement> elements)
         {

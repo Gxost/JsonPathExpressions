@@ -65,6 +65,21 @@ namespace JsonPathExpressions
             return Equals((JsonPathExpression)other);
         }
 
+        /// <summary>
+        /// Convert <see cref="string"/> to <see cref="AbsoluteJsonPathExpression"/>
+        /// </summary>
+        /// <param name="path">String representing JsonPath expression</param>
+        /// <remarks>
+        /// Null <see cref="string"/> is converted to null <see cref="AbsoluteJsonPathExpression"/>
+        /// </remarks>
+        public static explicit operator AbsoluteJsonPathExpression(string path)
+        {
+            if (path == null)
+                return null;
+
+            return new AbsoluteJsonPathExpression(path);
+        }
+
         /// <inheritdoc />
         protected internal override JsonPathExpression Create(IReadOnlyCollection<JsonPathElement> elements)
         {
