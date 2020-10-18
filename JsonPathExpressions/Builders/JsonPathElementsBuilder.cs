@@ -41,50 +41,46 @@ namespace JsonPathExpressions.Builders
             _isRecursiveDescent = false;
         }
 
-        public JsonPathElementsBuilder Root()
+        public void Root()
         {
             if (_elements.Count > 0 || _isRecursiveDescent)
                 throw new InvalidOperationException("Root element must be first element of the expression");
 
             _elements.Add(new JsonPathRootElement());
-            return this;
         }
 
-        public JsonPathElementsBuilder RecursiveDescentTo()
+        public void RecursiveDescentTo()
         {
             if (_isRecursiveDescent)
                 throw new InvalidOperationException("Recursive descent must not follow recursive descent");
 
             _isRecursiveDescent = true;
-            return this;
         }
 
-        public JsonPathElementsBuilder Property(string name)
+        public void Property(string name)
         {
             if (name is null)
                 throw new ArgumentNullException(nameof(name));
 
             AddElement(new JsonPathPropertyElement(name));
-            return this;
         }
 
-        public JsonPathElementsBuilder AnyProperty()
+        public void AnyProperty()
         {
             AddElement(new JsonPathAnyPropertyElement());
-            return this;
         }
 
-        public JsonPathElementsBuilder Properties(string firstName, params string[] names)
+        public void Properties(string firstName, params string[] names)
         {
             if (firstName is null)
                 throw new ArgumentNullException(nameof(firstName));
             if (names is null)
                 throw new ArgumentNullException(nameof(names));
 
-            return Properties(CollectionHelper.Concatenate(firstName, names));
+            Properties(CollectionHelper.Concatenate(firstName, names));
         }
 
-        public JsonPathElementsBuilder Properties(IReadOnlyCollection<string> names)
+        public void Properties(IReadOnlyCollection<string> names)
         {
             if (names is null)
                 throw new ArgumentNullException(nameof(names));
@@ -95,31 +91,27 @@ namespace JsonPathExpressions.Builders
                 AddElement(new JsonPathPropertyElement(names.First()));
             else
                 AddElement(new JsonPathPropertyListElement(names));
-
-            return this;
         }
 
-        public JsonPathElementsBuilder ArrayIndex(int index)
+        public void ArrayIndex(int index)
         {
             AddElement(new JsonPathArrayIndexElement(index));
-            return this;
         }
 
-        public JsonPathElementsBuilder AnyArrayIndex()
+        public void AnyArrayIndex()
         {
             AddElement(new JsonPathAnyArrayIndexElement());
-            return this;
         }
 
-        public JsonPathElementsBuilder ArrayIndexes(int firstIndex, params int[] indexes)
+        public void ArrayIndexes(int firstIndex, params int[] indexes)
         {
             if (indexes is null)
                 throw new ArgumentNullException(nameof(indexes));
 
-            return ArrayIndexes(CollectionHelper.Concatenate(firstIndex, indexes));
+            ArrayIndexes(CollectionHelper.Concatenate(firstIndex, indexes));
         }
 
-        public JsonPathElementsBuilder ArrayIndexes(IReadOnlyCollection<int> indexes)
+        public void ArrayIndexes(IReadOnlyCollection<int> indexes)
         {
             if (indexes is null)
                 throw new ArgumentNullException(nameof(indexes));
@@ -130,32 +122,27 @@ namespace JsonPathExpressions.Builders
                 AddElement(new JsonPathArrayIndexElement(indexes.First()));
             else
                 AddElement(new JsonPathArrayIndexListElement(indexes));
-
-            return this;
         }
 
-        public JsonPathElementsBuilder ArraySlice(int? start, int? end, int step = 1)
+        public void ArraySlice(int? start, int? end, int step = 1)
         {
             AddElement(new JsonPathArraySliceElement(start, end, step));
-            return this;
         }
 
-        public JsonPathElementsBuilder Expression(string expression)
+        public void Expression(string expression)
         {
             if (string.IsNullOrEmpty(expression))
                 throw new ArgumentNullException(nameof(expression));
 
             AddElement(new JsonPathExpressionElement(expression));
-            return this;
         }
 
-        public JsonPathElementsBuilder FilterExpression(string expression)
+        public void FilterExpression(string expression)
         {
             if (string.IsNullOrEmpty(expression))
                 throw new ArgumentNullException(nameof(expression));
 
             AddElement(new JsonPathFilterExpressionElement(expression));
-            return this;
         }
 
         public IReadOnlyCollection<JsonPathElement> Build()

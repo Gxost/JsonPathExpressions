@@ -69,7 +69,7 @@ namespace JsonPathExpressions.Conversion
                 switch (jsonPath[index])
                 {
                     case '.':
-                        nextIndex = HandleDot(jsonPath, nextIndex, index, ref isRecursiveDescentApplied);
+                        nextIndex = HandleDot(jsonPath, index, ref isRecursiveDescentApplied);
                         break;
                     case '[':
                         nextIndex = HandleSquareBracket(jsonPath, index, ref isRecursiveDescentApplied, elements);
@@ -85,7 +85,7 @@ namespace JsonPathExpressions.Conversion
             return elements;
         }
 
-        private static int HandleDot(string jsonPath, int startIndex, int index, ref bool isRecursiveDescentApplied)
+        private static int HandleDot(string jsonPath, int index, ref bool isRecursiveDescentApplied)
         {
             if (isRecursiveDescentApplied)
                 throw new JsonPathExpressionParsingException("Dot must not follow recursive descent");
