@@ -37,6 +37,7 @@ namespace JsonPathExpressions.Tests.Elements
         [InlineData(0, 2, 1, false)]
         [InlineData(0, 1, 2, true)]
         [InlineData(1, 0, -1, true)]
+        [InlineData(-1, 0, 1, false)]
         public void IsStrict(int? start, int? end, int step, bool expected)
         {
             var element = new JsonPathArraySliceElement(start, end, step);
@@ -70,7 +71,8 @@ namespace JsonPathExpressions.Tests.Elements
         [InlineData(10, 0, -1, 10)]
         [InlineData(10, 0, -2, 5)]
         [InlineData(-1, null, 1, 1)]
-        public void IndexCount(int? start, int? end, int step, int expected)
+        [InlineData(-2, null, 1, null)]
+        public void IndexCount(int? start, int? end, int step, int? expected)
         {
             var element = new JsonPathArraySliceElement(start, end, step);
 

@@ -192,6 +192,10 @@ namespace JsonPathExpressions.Tests.Conversion
         [InlineData(".")]
         [InlineData("[")]
         [InlineData("]")]
+        [InlineData("a.")]
+        [InlineData("a..")]
+        [InlineData("a[")]
+        [InlineData("a[7")]
         [InlineData("...name")]
         [InlineData("[]")]
         [InlineData("[,]")]
@@ -202,9 +206,11 @@ namespace JsonPathExpressions.Tests.Conversion
         [InlineData("['',,'']")]
         [InlineData("[1,,2]")]
         [InlineData("[:::]")]
+        [InlineData("[a:]")]
+        [InlineData("[:b]")]
+        [InlineData("[::c]")]
         [InlineData("[abc]")]
         [InlineData("[abc,def]")]
-        [InlineData("[abc:def]")]
         public void Parse_Throws(string expression)
         {
             Action action = () => JsonPathExpressionStringParser.Parse(expression);
