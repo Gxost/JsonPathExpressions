@@ -44,7 +44,9 @@ namespace JsonPathExpressions.Elements
         /// <param name="end">Slice end</param>
         /// <param name="step">Slice step</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="step"/> is zero</exception>
-        // TODO: add detailed slice description
+        /// <remarks>
+        /// Array slice represents indexes in range from <paramref name="start"/> to <paramref name="end"/> (but not including <paramref name="end"/>) with <paramref name="step"/>
+        /// </remarks>
         public JsonPathArraySliceElement(int? start, int? end, int step = 1)
         {
             if (step == 0)

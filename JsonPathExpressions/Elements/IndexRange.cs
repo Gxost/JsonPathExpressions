@@ -74,51 +74,10 @@ namespace JsonPathExpressions.Elements
 
         public bool Contains(IndexRange other)
         {
-            // check steps
-            if (Math.Abs(Step) != Math.Abs(other.Step))
-            {
-                if (Math.Abs(Step) > Math.Abs(other.Step))
-                {
-                    if (Step % other.Step != 0)
-                        return false;
-                }
-                else
-                {
-                    if (other.Step % Step != 0)
-                        return false;
-                }
-            }
-
-            // check left
-            if (other.Left < Left)
-            {
-                if (other.Step > 0)
-                    return false;
-                if (other.Left - Left <= other.Step)
-                    return false;
-                for (int i = other.Left; i < Left; ++i)
-                {
-                    if ((other.Right - i) % other.Step == 0)
-                        return false;
-                }
-            }
-
-            // check right
-            if (other.Right > Right)
-            {
-                if (other.Step < 0)
-                    return false;
-
-                if (other.Right - Right >= other.Step)
-                    return false;
-                for (int i = other.Right; i > Right; --i)
-                {
-                    if ((i - other.Left) % other.Step == 0)
-                        return false;
-                }
-            }
-
-            return (other.Start - Start) % Step == 0;
+            return IsStepCompatible(other.Step)
+                   && IsInsideLeftBoundary(other)
+                   && IsInsideRightBoundary(other)
+                   && (other.Start - Start) % Step == 0;
         }
 
         public IEnumerable<int> GetIndexes()
@@ -133,6 +92,54 @@ namespace JsonPathExpressions.Elements
                 for (int i = Right; i >= Left; i += Step)
                     yield return i;
             }
+        }
+
+        private bool IsStepCompatible(int otherStep)
+        {
+            if (Math.Abs(Step) == Math.Abs(otherStep))
+                return true;
+
+            return Math.Abs(Step) > Math.Abs(otherStep)
+                ? (Step % otherStep == 0)
+                : (otherStep % Step == 0);
+        }
+
+        private bool IsInsideLeftBoundary(IndexRange other)
+        {
+            if (other.Left >= Left)
+                return true;
+
+            if (other.Step > 0)
+                return false;
+            if (other.Left - Left <= other.Step)
+                return false;
+
+            for (int i = other.Left; i < Left; ++i)
+            {
+                if ((other.Right - i) % other.Step == 0)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool IsInsideRightBoundary(IndexRange other)
+        {
+            if (other.Right <= Right)
+                return true;
+
+            if (other.Step < 0)
+                return false;
+            if (other.Right - Right >= other.Step)
+                return false;
+
+            for (int i = other.Right; i > Right; --i)
+            {
+                if ((i - other.Left) % other.Step == 0)
+                    return false;
+            }
+
+            return true;
         }
     }
 }

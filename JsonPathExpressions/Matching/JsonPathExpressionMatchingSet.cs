@@ -78,9 +78,9 @@ namespace JsonPathExpressions.Matching
         }
 
         /// <inheritdoc cref="ICollection{T}" />
-        public bool Contains(TJsonPathExpression jsonPath)
+        public bool Contains(TJsonPathExpression item)
         {
-            return _hashSet.Contains(jsonPath);
+            return _hashSet.Contains(item);
         }
 
         /// <inheritdoc cref="ICollection{T}" />
@@ -108,9 +108,9 @@ namespace JsonPathExpressions.Matching
             return _matchingNode.Matches(jsonPath, matchedBy);
         }
 
-        void ICollection<TJsonPathExpression>.Add(TJsonPathExpression jsonPath)
+        void ICollection<TJsonPathExpression>.Add(TJsonPathExpression item)
         {
-            Add(jsonPath);
+            Add(item);
         }
 
         /// <summary>
@@ -127,33 +127,27 @@ namespace JsonPathExpressions.Matching
                 return false;
             
             if (!_matchingNode.Add(jsonPath))
-                throw new Exception("This should not happen: JsonPath was added to hash set but not to matching tree");
+                throw new InvalidOperationException("This should not happen: JsonPath was added to hash set but not to matching tree");
 
             return true;
         }
 
-        /// <summary>
-        /// Remove JsonPath expression from the set
-        /// </summary>
-        /// <param name="jsonPath">JsonPath expression to remove</param>
-        /// <returns>True if <paramref name="jsonPath"/> is removed from the set</returns>
-        public bool Remove(TJsonPathExpression jsonPath)
+        /// <inheritdoc />
+        public bool Remove(TJsonPathExpression item)
         {
-            if (jsonPath is null)
-                throw new ArgumentNullException(nameof(jsonPath));
+            if (item is null)
+                throw new ArgumentNullException(nameof(item));
 
-            if (!_hashSet.Remove(jsonPath))
+            if (!_hashSet.Remove(item))
                 return false;
 
-            if (!_matchingNode.Remove(jsonPath))
-                throw new Exception("This should not happen: JsonPath was removed from hash set but not from matching tree");
+            if (!_matchingNode.Remove(item))
+                throw new InvalidOperationException("This should not happen: JsonPath was removed from hash set but not from matching tree");
 
             return true;
         }
 
-        /// <summary>
-        /// Clear the set
-        /// </summary>
+        /// <inheritdoc />
         public void Clear()
         {
             _hashSet.Clear();

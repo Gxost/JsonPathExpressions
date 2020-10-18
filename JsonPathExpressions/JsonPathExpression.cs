@@ -126,7 +126,7 @@ namespace JsonPathExpressions
         public static IFirstPathElementSyntax Builder => JsonPathExpressionBuilder.Create();
 
         /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(JsonPathExpression other)
+        public virtual bool Equals(JsonPathExpression other)
         {
             if (ReferenceEquals(null, other))
                 return false;
@@ -242,29 +242,24 @@ namespace JsonPathExpressions
 
         private static void ValidateElements(IReadOnlyCollection<JsonPathElement> elements, bool? isAbsolutePath)
         {
-            bool isFirstElement = true;
-            foreach (var element in elements)
-            {
-                if (isFirstElement)
-                {
-                    if (element.Type == JsonPathElementType.Root)
-                    {
-                        if (isAbsolutePath == false)
-                            throw new ArgumentException("Relative path must not start with root element", nameof(elements));
-                    }
-                    else
-                    {
-                        if (isAbsolutePath == true)
-                            throw new ArgumentException("Absolute path must start with root element", nameof(elements));
-                    }
+            if (isAbsolutePath != null)
+                ValidateFirstElement(elements, isAbsolutePath.Value);
 
-                    isFirstElement = false;
-                }
-                else if (element.Type == JsonPathElementType.Root)
-                {
-                    throw new ArgumentException("Root element must only appear at the start of the path", nameof(elements));
-                }
-            }
+            if (elements.Skip(1).Any(x => x.Type == JsonPathElementType.Root))
+                throw new ArgumentException("Root element must only appear at the start of the path", nameof(elements));
+        }
+
+        private static void ValidateFirstElement(IReadOnlyCollection<JsonPathElement> elements, bool isAbsolutePath)
+        {
+            bool startsWithRoot = elements.First().Type == JsonPathElementType.Root;
+            if (startsWithRoot == isAbsolutePath)
+                return;
+
+            string message = isAbsolutePath
+                ? "Absolute path must start with root element"
+                : "Relative path must not start with root element";
+
+            throw new ArgumentException(message, nameof(elements));
         }
     }
 }

@@ -66,36 +66,11 @@ namespace JsonPathExpressions.Matching
             if (Index == jsonPath.Elements.Count)
                 return !(_current is null);
 
-            var element = jsonPath.Elements[Index];
-            if (element.Type != JsonPathElementType.RecursiveDescent)
+            if (jsonPath.Elements[Index].Type != JsonPathElementType.RecursiveDescent)
             {
-                bool? result = false;
-                if (IsStrict(element))
-                {
-                    result = Matches(jsonPath, _strict);
-                    if (result == true)
-                        return true;
-                }
-
-                var nonStrict = GetNonStrictNodes(element);
-                foreach (var item in nonStrict)
-                {
-                    bool? elementMatches = item.Key.Matches(element);
-                    if (elementMatches == false)
-                        continue;
-
-                    bool? nodeMatches = item.Value.Matches(jsonPath);
-                    if (nodeMatches == false)
-                        continue;
-
-                    if (elementMatches == true && nodeMatches == true)
-                        return true;
-
-                    result = null;
-                }
-
-                if (result is null)
-                    return null;
+                bool? matches = MatchesNonRecursiveDescent(jsonPath);
+                if (matches != false)
+                    return matches;
             }
 
             foreach (var item in _recursiveDescents)
@@ -182,6 +157,36 @@ namespace JsonPathExpressions.Matching
             _current = null;
         }
 
+        private bool? MatchesNonRecursiveDescent(TJsonPathExpression jsonPath)
+        {
+            var element = jsonPath.Elements[Index];
+            bool? result = IsStrict(element)
+                ? Matches(jsonPath, _strict)
+                : false;
+
+            if (result == true)
+                return true;
+
+            var nonStrict = GetNonStrictNodes(element);
+            foreach (var item in nonStrict)
+            {
+                bool? elementMatches = item.Key.Matches(element);
+                if (elementMatches == false)
+                    continue;
+
+                bool? nodeMatches = item.Value.Matches(jsonPath);
+                if (nodeMatches == false)
+                    continue;
+
+                if (elementMatches == true && nodeMatches == true)
+                    return true;
+
+                result = null;
+            }
+
+            return result;
+        }
+
         private static bool IsStrict(JsonPathElement element)
         {
             switch (element.Type)
@@ -220,6 +225,8 @@ namespace JsonPathExpressions.Matching
                 case JsonPathElementType.Expression:
                 case JsonPathElementType.FilterExpression:
                     return _indexes;
+                case JsonPathElementType.RecursiveDescent:
+                    throw new ArgumentOutOfRangeException(nameof(element), element, "This should not happen: recursive descent is not allowed here");
                 default:
                     throw new ArgumentOutOfRangeException(nameof(element), element, $"Unknown JSON path element type: {element.GetType()}");
             }
@@ -242,6 +249,8 @@ namespace JsonPathExpressions.Matching
                 case JsonPathElementType.Expression:
                 case JsonPathElementType.FilterExpression:
                     return _indexes;
+                case JsonPathElementType.RecursiveDescent:
+                    throw new ArgumentOutOfRangeException(nameof(element), element, "This should not happen: recursive descent is not allowed here");
                 default:
                     throw new ArgumentOutOfRangeException(nameof(element), element, $"Unknown JSON path element type: {element.GetType()}");
             }

@@ -25,10 +25,12 @@
 namespace JsonPathExpressions.Conversion
 {
     using System;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// JsonPath expression parsing error
     /// </summary>
+    [Serializable]
     public class JsonPathExpressionParsingException : Exception
     {
         /// <summary>
@@ -47,6 +49,12 @@ namespace JsonPathExpressions.Conversion
         /// <param name="innerException">Inner exception</param>
         public JsonPathExpressionParsingException(string message, Exception innerException)
             : base(message, innerException)
+        {
+        }
+
+        /// <inheritdoc />
+        protected JsonPathExpressionParsingException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

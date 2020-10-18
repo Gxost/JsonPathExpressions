@@ -42,85 +42,84 @@ namespace JsonPathExpressions.Conversion
             if (string.IsNullOrEmpty(jsonPath))
                 throw new ArgumentNullException(nameof(jsonPath));
 
-            try
+            var elements = new List<JsonPathElement>();
+
+            int nextIndex = 0;
+            bool isRecursiveDescentApplied = false;
+            while (nextIndex < jsonPath.Length)
             {
-                var elements = new List<JsonPathElement>();
-
-                int nextIndex = 0;
-                bool isRecursiveDescentApplied = false;
-                while (nextIndex < jsonPath.Length)
+                bool isFirstToken = nextIndex == 0;
+                int index = jsonPath.IndexOfAny(DotAndSquareBracket, nextIndex);
+                if (index == -1)
                 {
-                    int index = jsonPath.IndexOfAny(DotAndSquareBracket, nextIndex);
-                    if (index == -1)
-                    {
-                        elements.Add(ParseToken(jsonPath.Substring(nextIndex), nextIndex == 0, isRecursiveDescentApplied));
-                        isRecursiveDescentApplied = false;
-                        break;
-                    }
-
-                    if (jsonPath.EndsWith(index))
-                        throw new JsonPathExpressionParsingException($"Expression ends with '{jsonPath[index]}'");
-
-                    if (index > nextIndex)
-                    {
-                        elements.Add(ParseToken(jsonPath.Substring(nextIndex, index - nextIndex), nextIndex == 0, isRecursiveDescentApplied));
-                        isRecursiveDescentApplied = false;
-                    }
-
-                    switch (jsonPath[index])
-                    {
-                        case '.':
-                            if (isRecursiveDescentApplied)
-                                throw new JsonPathExpressionParsingException("Dot must not follow recursive descent");
-
-                            if (jsonPath.ContainsAt('.', index + 1))
-                            {
-                                isRecursiveDescentApplied = true;
-                                nextIndex = index + 2;
-                            }
-                            else
-                            {
-                                nextIndex = index + 1;
-                            }
-
-                            if (nextIndex >= jsonPath.Length)
-                                throw new JsonPathExpressionParsingException("Expression ends with dot");
-                            break;
-                        case '[':
-                            int closingIndex = jsonPath.IndexOfOutsideQuotes(']', '\'', index + 1);
-                            if (closingIndex == -1)
-                                throw new JsonPathExpressionParsingException("No matching closing square bracket found");
-                            if (closingIndex - index == 1)
-                                throw new JsonPathExpressionParsingException("No content inside square brackets");
-
-                            elements.Add(ParseTokenInsideBrackets(jsonPath.Substring(index + 1, closingIndex - index - 1), isRecursiveDescentApplied));
-                            isRecursiveDescentApplied = false;
-                            nextIndex = closingIndex + 1;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                    elements.Add(ParseToken(jsonPath.Substring(nextIndex), isFirstToken, isRecursiveDescentApplied));
+                    isRecursiveDescentApplied = false;
+                    break;
                 }
 
-                if (isRecursiveDescentApplied)
-                    throw new JsonPathExpressionParsingException("Recursive descent must be followed by another expression element");
+                if (jsonPath.EndsWith(index))
+                    throw new JsonPathExpressionParsingException($"Expression ends with '{jsonPath[index]}'");
 
-                return elements;
+                if (index > nextIndex)
+                {
+                    elements.Add(ParseToken(jsonPath.Substring(nextIndex, index - nextIndex), isFirstToken, isRecursiveDescentApplied));
+                    isRecursiveDescentApplied = false;
+                }
+
+                switch (jsonPath[index])
+                {
+                    case '.':
+                        nextIndex = HandleDot(jsonPath, nextIndex, index, ref isRecursiveDescentApplied);
+                        break;
+                    case '[':
+                        nextIndex = HandleSquareBracket(jsonPath, index, ref isRecursiveDescentApplied, elements);
+                        break;
+                    default:
+                        throw new InvalidOperationException($"This should not happen: unknown character found: {jsonPath[index]}");
+                }
             }
-            catch (JsonPathExpressionParsingException)
+
+            if (isRecursiveDescentApplied)
+                throw new JsonPathExpressionParsingException("Recursive descent must be followed by another expression element");
+
+            return elements;
+        }
+
+        private static int HandleDot(string jsonPath, int startIndex, int index, ref bool isRecursiveDescentApplied)
+        {
+            if (isRecursiveDescentApplied)
+                throw new JsonPathExpressionParsingException("Dot must not follow recursive descent");
+
+            isRecursiveDescentApplied = jsonPath.ContainsAt('.', index + 1);
+            int nextIndex = index + (isRecursiveDescentApplied ? 2 : 1);
+
+            if (nextIndex >= jsonPath.Length)
             {
-                throw;
+                string message = isRecursiveDescentApplied
+                    ? "Recursive descent must be followed by another expression element"
+                    : "Expression ends with dot";
+
+                throw new JsonPathExpressionParsingException(message);
             }
-            catch (Exception e)
-            {
-                throw new JsonPathExpressionParsingException("Failed to parse expression", e);
-            }
+
+            return nextIndex;
+        }
+
+        private static int HandleSquareBracket(string jsonPath, int index, ref bool isRecursiveDescentApplied, List<JsonPathElement> elements)
+        {
+            int closingIndex = jsonPath.IndexOfOutsideQuotes(']', '\'', index + 1);
+            if (closingIndex == -1)
+                throw new JsonPathExpressionParsingException("No matching closing square bracket found");
+
+            elements.Add(ParseTokenInsideBrackets(jsonPath.Substring(index + 1, closingIndex - index - 1), isRecursiveDescentApplied));
+            isRecursiveDescentApplied = false;
+            return closingIndex + 1;
         }
 
         private static JsonPathElement ParseToken(string token, bool isFirstToken, bool isRecursiveDescentApplied)
         {
             if (isFirstToken && isRecursiveDescentApplied)
-                throw new ArgumentException("Recursive descent can not be applied to first token", nameof(isRecursiveDescentApplied));
+                throw new InvalidOperationException("This should not happen: recursive descent can not be applied to first token");
             if (token.IndexOfAny(ForbiddenCharactersOutsideBrackets) != -1)
                 throw new JsonPathExpressionParsingException($"Forbidden characters found outside square brackets: {string.Join(" ", ForbiddenCharactersOutsideBrackets)}");
 
@@ -138,6 +137,9 @@ namespace JsonPathExpressions.Conversion
 
         private static JsonPathElement ParseTokenInsideBrackets(string token, bool isRecursiveDescentApplied)
         {
+            if (string.IsNullOrEmpty(token))
+                throw new JsonPathExpressionParsingException("No content inside square brackets");
+
             var element = ParseTokenInsideBrackets(token.Trim());
             return isRecursiveDescentApplied
                 ? new JsonPathRecursiveDescentElement(element)
@@ -164,7 +166,14 @@ namespace JsonPathExpressions.Conversion
 
         private static JsonPathElement ParseArrayIndexToken(string token)
         {
-            return new JsonPathArrayIndexElement(int.Parse(token));
+            try
+            {
+                return new JsonPathArrayIndexElement(int.Parse(token));
+            }
+            catch (Exception e)
+            {
+                throw new JsonPathExpressionParsingException("Failed to parse expression", e);
+            }
         }
 
         private static JsonPathElement ParseArrayIndexListToken(string token)
@@ -173,11 +182,18 @@ namespace JsonPathExpressions.Conversion
             if (parts.Any(string.IsNullOrWhiteSpace))
                 throw new JsonPathExpressionParsingException("Double commas found inside array index list element");
 
-            var indexes = parts
-                .Select(x => int.Parse(x.Trim()))
-                .ToList();
+            try
+            {
+                var indexes = parts
+                    .Select(x => int.Parse(x.Trim()))
+                    .ToList();
 
-            return new JsonPathArrayIndexListElement(indexes);
+                return new JsonPathArrayIndexListElement(indexes);
+            }
+            catch (Exception e)
+            {
+                throw new JsonPathExpressionParsingException("Failed to parse expression", e);
+            }
         }
 
         private static JsonPathElement ParseArraySliceToken(string token)
@@ -186,17 +202,24 @@ namespace JsonPathExpressions.Conversion
             if (parts.Length == 0 || parts.Length > 3)
                 throw new JsonPathExpressionParsingException($"Array slice contains insufficient number of arguments: {parts.Length}");
 
-            int? start = parts[0] == ""
-                ? default(int?)
-                : int.Parse(parts[0]);
-            int? end = parts.Length < 2 || parts[1] == ""
-                ? default(int?)
-                : int.Parse(parts[1]);
-            int step = parts.Length < 3 || parts[2] == ""
-                ? 1
-                : int.Parse(parts[2]);
+            try
+            {
+                int? start = parts[0] == ""
+                    ? default(int?)
+                    : int.Parse(parts[0]);
+                int? end = parts.Length < 2 || parts[1] == ""
+                    ? default(int?)
+                    : int.Parse(parts[1]);
+                int step = parts.Length < 3 || parts[2] == ""
+                    ? 1
+                    : int.Parse(parts[2]);
 
-            return new JsonPathArraySliceElement(start, end, step);
+                return new JsonPathArraySliceElement(start, end, step);
+            }
+            catch (Exception e)
+            {
+                throw new JsonPathExpressionParsingException("Failed to parse expression", e);
+            }
         }
 
         private static JsonPathElement ParsePropertyNamesToken(string token)
