@@ -29,6 +29,7 @@ namespace JsonPathExpressions.Utils
     internal static class EqualityComparerExtensions
     {
         public static bool CollectionsEqual<T>(this IEqualityComparer<T> equalityComparer, IReadOnlyCollection<T> first, IReadOnlyCollection<T> second)
+            where T : notnull
         {
             int firstCount = first.Count;
             int secondCount = second.Count;
