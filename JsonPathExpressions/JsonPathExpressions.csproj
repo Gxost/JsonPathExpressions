@@ -13,7 +13,8 @@
     <RepositoryUrl>https://github.com/Gxost/JsonPathExpressions</RepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Copyright>© 2020 Oleksandr Banakh</Copyright>
+    <Copyright>Â© 2020 Oleksandr Banakh</Copyright>
+    <CodeAnalysisRuleSet>..\.sonarlint\gxost_jsonpathexpressionscsharp.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -23,6 +24,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>JsonPathExpressions.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\.sonarlint\gxost_jsonpathexpressions\CSharp\SonarLint.xml" Link="SonarLint.xml" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\LICENSE.md">
