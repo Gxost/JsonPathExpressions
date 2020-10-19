@@ -66,21 +66,25 @@ namespace JsonPathExpressions.Matching
             if (Index == jsonPath.Elements.Count)
                 return !(_current is null);
 
+            bool? result = false;
             if (jsonPath.Elements[Index].Type != JsonPathElementType.RecursiveDescent)
             {
-                bool? matches = MatchesNonRecursiveDescent(jsonPath);
-                if (matches != false)
-                    return matches;
+                result = MatchesNonRecursiveDescent(jsonPath);
+                if (result == true)
+                    return true;
             }
 
             foreach (var item in _recursiveDescents)
             {
                 bool? matches = item.Matches(jsonPath);
                 if (matches != false)
-                    return matches;
+                    result = matches;
+
+                if (result == true)
+                    break;
             }
 
-            return false;
+            return result;
         }
 
         public bool Matches(TJsonPathExpression jsonPath, List<TJsonPathExpression> matchedBy)

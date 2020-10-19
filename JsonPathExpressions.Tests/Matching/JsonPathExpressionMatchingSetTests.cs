@@ -49,13 +49,29 @@ namespace JsonPathExpressions.Tests.Matching
         }
 
         [Fact]
+        public void Matches_PossiblyMatchesBySliceAndMatchesByRecursiveDescent_ReturnsTrue()
+        {
+            var matchingSet = new JsonPathExpressionMatchingSet<JsonPathExpression>
+            {
+                new JsonPathExpression("$.a[-1:].b[*]"),
+                new JsonPathExpression("$..b[*]")
+            };
+
+            bool? actual = matchingSet.Matches(new JsonPathExpression("$.a[7].b[42]"));
+
+            actual.Should().BeTrue();
+        }
+
+        [Fact]
         public void Matches_ReturnsMatched()
         {
-            var matchingSet = new JsonPathExpressionMatchingSet<JsonPathExpression>();
-            matchingSet.Add(new JsonPathExpression("$.a.*.c[*]"));
-            matchingSet.Add(new JsonPathExpression("$.*.b.c[:]"));
-            matchingSet.Add(new JsonPathExpression("$.*.b.c[7]"));
-            matchingSet.Add(new JsonPathExpression("$['c','d'].b.c[*]"));
+            var matchingSet = new JsonPathExpressionMatchingSet<JsonPathExpression>
+            {
+                new JsonPathExpression("$.a.*.c[*]"),
+                new JsonPathExpression("$.*.b.c[:]"),
+                new JsonPathExpression("$.*.b.c[7]"),
+                new JsonPathExpression("$['c','d'].b.c[*]")
+            };
             var expected = new List<JsonPathExpression>
             {
                 new JsonPathExpression("$.a.*.c[*]"),
