@@ -1,4 +1,8 @@
-# JSONPath expressions [![Nuget](https://img.shields.io/nuget/v/JsonPathExpressions)](https://www.nuget.org/packages/JsonPathExpressions)
+# JSONPath expressions
+
+[![Nuget](https://img.shields.io/nuget/v/JsonPathExpressions)](https://www.nuget.org/packages/JsonPathExpressions) [![License](https://img.shields.io/github/license/Gxost/JsonPathExpressions)](https://github.com/Gxost/JsonPathExpressions/blob/master/LICENSE.md) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Gxost_JsonPathExpressions&metric=alert_status)](https://sonarcloud.io/dashboard?id=Gxost_JsonPathExpressions) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Gxost_JsonPathExpressions&metric=coverage)](https://sonarcloud.io/dashboard?id=Gxost_JsonPathExpressions)
+
+----
 
 This package allows to create, parse, modify and analyze JSONPath expressions.
 
@@ -16,7 +20,7 @@ You can create JSONPath expressions from scratch or parse existing ones:
 
 ```csharp
 var expr1 = new JsonPathExpression("$.a.b.c");
-var expr2 = new JsonPathExpression(new JsonPathElement[]{
+var expr2 = new JsonPathExpression(new JsonPathElement[] {
     new JsonPatheRootElement(),
     new JsonPathPropertyElement("a"),
     new JsonPathPropertyElement("b"),
