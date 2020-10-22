@@ -141,6 +141,43 @@ namespace JsonPathExpressions.Tests
         }
 
         [Fact]
+        public void ExplicitOperator_Expression_ReturnsString()
+        {
+            var expression = JsonPathExpression.Builder.Root().Property("a").Build();
+            string expected = "$.a";
+
+            string actual = (string)expression;
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public void ExplicitOperator_NullExpression_ReturnsNull()
+        {
+            string actual = (string)(JsonPathExpression)null;
+
+            actual.Should().BeNull();
+        }
+
+        [Fact]
+        public void ExplicitOperator_String_ReturnsExpression()
+        {
+            var expected = JsonPathExpression.Builder.Root().Property("a").Build();
+
+            var actual = (JsonPathExpression)"$.a";
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public void ExplicitOperator_NullString_ReturnsNull()
+        {
+            var actual = (JsonPathExpression)(string)null;
+
+            actual.Should().BeNull();
+        }
+
+        [Fact]
         public void Create_ReturnsObjectOfTheSameType()
         {
             var path = new JsonPathExpression(new JsonPathElement[]
