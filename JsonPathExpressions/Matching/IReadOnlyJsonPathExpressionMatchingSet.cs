@@ -24,6 +24,7 @@
 
 namespace JsonPathExpressions.Matching
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -37,6 +38,7 @@ namespace JsonPathExpressions.Matching
         /// </summary>
         /// <param name="jsonPath">JsonPath expression to check for matching</param>
         /// <returns>True if a set of JSON tree elements represented by any JsonPath expression in the set contain JSON tree elements represented by <paramref name="jsonPath"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="jsonPath"/> is null</exception>
         /// <remarks>Returns null if it's not possible to check if a set of JSON tree elements represented by any JsonPath expression in the set contain JSON tree elements represented by another JsonPath expression</remarks>
         bool? Matches(TJsonPathExpression jsonPath);
 
@@ -46,6 +48,7 @@ namespace JsonPathExpressions.Matching
         /// <param name="jsonPath">JsonPath expression to check for matching</param>
         /// <param name="matchedBy">List containing JsonPath expressions that matched <paramref name="jsonPath"/></param>
         /// <returns>True if a set of JSON tree elements represented by any JsonPath expression in the set contain JSON tree elements represented by <paramref name="jsonPath"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="jsonPath"/> is null</exception>
         bool Matches(TJsonPathExpression jsonPath, out List<TJsonPathExpression> matchedBy);
     }
 }

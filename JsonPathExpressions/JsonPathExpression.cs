@@ -48,6 +48,8 @@ namespace JsonPathExpressions
         /// Create <see cref="JsonPathExpression"/> instance from string presentation
         /// </summary>
         /// <param name="jsonPath">JsonPath expression string</param>
+        /// <exception cref="ArgumentNullException"><paramref name="jsonPath"/> is null or empty</exception>
+        /// <exception cref="JsonPathExpressionParsingException">Unable to parse <paramref name="jsonPath"/></exception>
         public JsonPathExpression(string jsonPath)
             : this(JsonPathExpressionStringParser.Parse(jsonPath))
         {
@@ -57,6 +59,7 @@ namespace JsonPathExpressions
         /// Create <see cref="JsonPathExpression"/> instance with passed elements
         /// </summary>
         /// <param name="elements">Collection of JsonPath elements</param>
+        /// <exception cref="ArgumentNullException"><paramref name="elements"/> is null</exception>
         /// <exception cref="ArgumentException">Empty elements collection provided</exception>
         public JsonPathExpression(IReadOnlyCollection<JsonPathElement> elements)
             : this(elements, null)
@@ -68,6 +71,7 @@ namespace JsonPathExpressions
         /// </summary>
         /// <param name="elements">Collection of JsonPath elements</param>
         /// <param name="isAbsolutePath">Tells if the path must be absolute or relative</param>
+        /// <exception cref="ArgumentNullException"><paramref name="elements"/> is null</exception>
         /// <exception cref="ArgumentException">Empty elements collection provided</exception>
         protected JsonPathExpression(IReadOnlyCollection<JsonPathElement> elements, bool? isAbsolutePath)
         {

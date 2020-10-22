@@ -40,6 +40,8 @@ namespace JsonPathExpressions
         /// Create <see cref="RelativeJsonPathExpression"/> instance from string presentation
         /// </summary>
         /// <param name="jsonPath">JsonPath expression string</param>
+        /// <exception cref="ArgumentNullException"><paramref name="jsonPath"/> is null or empty</exception>
+        /// <exception cref="JsonPathExpressionParsingException">Unable to parse <paramref name="jsonPath"/></exception>
         public RelativeJsonPathExpression(string jsonPath)
             : this(JsonPathExpressionStringParser.Parse(jsonPath))
         {
@@ -49,6 +51,7 @@ namespace JsonPathExpressions
         /// Create <see cref="RelativeJsonPathExpression"/> instance with passed elements
         /// </summary>
         /// <param name="elements">Collection of JsonPath elements</param>
+        /// <exception cref="ArgumentNullException"><paramref name="elements"/> is null</exception>
         /// <exception cref="ArgumentException">Empty elements collection provided</exception>
         public RelativeJsonPathExpression(IReadOnlyCollection<JsonPathElement> elements)
             : base(elements, false)

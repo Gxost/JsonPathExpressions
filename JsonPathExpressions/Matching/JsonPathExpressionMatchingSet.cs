@@ -50,6 +50,7 @@ namespace JsonPathExpressions.Matching
         /// Create <see cref="JsonPathExpressionMatchingSet{TJsonPathExpression}"/> instance
         /// </summary>
         /// <param name="jsonPaths">Collection of JsonPath expression to add</param>
+        /// <exception cref="ArgumentNullException"><paramref name="jsonPaths"/> or its item is null</exception>
         public JsonPathExpressionMatchingSet(IEnumerable<TJsonPathExpression> jsonPaths)
             : this()
         {
@@ -118,7 +119,8 @@ namespace JsonPathExpressions.Matching
         /// </summary>
         /// <param name="jsonPath">JsonPath expression to add</param>
         /// <returns>True if <paramref name="jsonPath"/> is added to the set</returns>
-        public bool Add(TJsonPathExpression? jsonPath)
+        /// <exception cref="ArgumentNullException"><paramref name="jsonPath"/> is null</exception>
+        public bool Add(TJsonPathExpression jsonPath)
         {
             if (jsonPath is null)
                 throw new ArgumentNullException(nameof(jsonPath));

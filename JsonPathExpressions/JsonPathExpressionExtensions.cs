@@ -41,6 +41,7 @@ namespace JsonPathExpressions
         /// <param name="path">JsonPath expression</param>
         /// <param name="prefix">JsonPath expression that is supposed to be a prefix of <paramref name="path"/></param>
         /// <returns>True if <paramref name="path"/> starts with <paramref name="prefix"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="prefix"/> is null</exception>
         public static bool StartsWith(this JsonPathExpression path, JsonPathExpression prefix)
         {
             if (path is null)
@@ -66,6 +67,7 @@ namespace JsonPathExpressions
         /// <param name="path">JsonPath expression</param>
         /// <param name="other">JsonPath expression to check for matching</param>
         /// <returns>True if a set of JSON tree elements represented by current JsonPath expression contain JSON tree elements represented by <paramref name="other"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="other"/> is null</exception>
         /// <remarks>Returns null if it's not possible to check if a set of JSON tree elements represented by the JsonPath expression contain JSON tree elements represented by another JsonPath expression</remarks>
         public static bool? Matches(this JsonPathExpression path, JsonPathExpression other)
         {
@@ -82,6 +84,7 @@ namespace JsonPathExpressions
         /// </summary>
         /// <param name="path">JsonPath expression to convert</param>
         /// <returns><see cref="AbsoluteJsonPathExpression"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> is null</exception>
         /// <remarks>
         /// <para>If <paramref name="path"/> is <see cref="AbsoluteJsonPathExpression"/>, <paramref name="path"/> is returned</para>
         /// <para>If <paramref name="path"/> is an absolute path, an absolute JsonPath expression with its elements is returned</para>
@@ -108,6 +111,7 @@ namespace JsonPathExpressions
         /// <typeparam name="TJsonPathExpression">JsonPath expression type</typeparam>
         /// <param name="path">JsonPath expression</param>
         /// <returns>Normalized JsonPath expression</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> is null</exception>
         /// <remarks>
         /// If the passed JsonPath expression is normalized, returns it
         /// </remarks>
@@ -134,6 +138,7 @@ namespace JsonPathExpressions
         /// <param name="path">JsonPath expression</param>
         /// <param name="other">JsonPath expression to check</param>
         /// <returns>Parent JsonPath expression, or <paramref name="path"/>, or <paramref name="other"/>, or null</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="other"/> is null</exception>
         /// <remarks>
         /// <para>Parent JsonPath expression is an expression which is prefix for both <paramref name="path"/> and <paramref name="other"/></para>
         /// <para>If <paramref name="path"/> starts with <paramref name="other"/>, <paramref name="other"/> is returned</para>
@@ -173,6 +178,7 @@ namespace JsonPathExpressions
         /// <param name="path">JsonPath expression</param>
         /// <param name="childPath">Child JsonPath expression</param>
         /// <returns>Relative path from current JsonPath expression to child JsonPth expression, or null</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="childPath"/> is null</exception>
         /// <remarks>
         /// If <paramref name="childPath"/> does not start with <paramref name="path"/>, or is equal to <paramref name="path"/>, null is returned
         /// </remarks>
@@ -202,6 +208,7 @@ namespace JsonPathExpressions
         /// <param name="path">JsonPath expression</param>
         /// <param name="elements">Collection of JsonPath elements to append</param>
         /// <returns>JsonPath expression starting with <paramref name="path"/> and ending with <paramref name="elements"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="elements"/> is null</exception>
         /// <exception cref="ArgumentException">At least one JsonPath element is null</exception>
         /// <remarks>
         /// If <paramref name="elements"/> is empty, <paramref name="path"/> is returned
@@ -232,6 +239,7 @@ namespace JsonPathExpressions
         /// <param name="path">JsonPath expression</param>
         /// <param name="relativePath">Relative JsonPath expression to append</param>
         /// <returns>JsonPath expression starting with <paramref name="path"/> and ending with <paramref name="relativePath"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="relativePath"/> is null</exception>
         public static TJsonPathExpression Append<TJsonPathExpression>(this TJsonPathExpression path, RelativeJsonPathExpression relativePath)
             where TJsonPathExpression : JsonPathExpression
         {
@@ -253,6 +261,7 @@ namespace JsonPathExpressions
         /// <param name="path">JsonPath expression</param>
         /// <param name="element">New JsonPath element</param>
         /// <returns>JsonPath expression with replaced last JsonPath element</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="element"/> is null</exception>
         public static TJsonPathExpression ReplaceLastWith<TJsonPathExpression>(this TJsonPathExpression path, JsonPathElement element)
             where TJsonPathExpression : JsonPathExpression
         {
@@ -273,6 +282,7 @@ namespace JsonPathExpressions
         /// <param name="path">JsonPath expression</param>
         /// <param name="count">Number of JsonPath elements to remove</param>
         /// <returns>JsonPath expression with removed last <paramref name="count"/> JsonPath elements, or null</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> is null</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative</exception>
         /// <remarks>
         /// If <paramref name="count"/> is greater or equal to than <see cref="JsonPathExpression.Length"/>, null is returned
