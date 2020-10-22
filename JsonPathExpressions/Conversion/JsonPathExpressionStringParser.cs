@@ -66,17 +66,12 @@ namespace JsonPathExpressions.Conversion
                     isRecursiveDescentApplied = false;
                 }
 
-                switch (jsonPath[index])
+                nextIndex = jsonPath[index] switch
                 {
-                    case '.':
-                        nextIndex = HandleDot(jsonPath, index, ref isRecursiveDescentApplied);
-                        break;
-                    case '[':
-                        nextIndex = HandleSquareBracket(jsonPath, index, ref isRecursiveDescentApplied, elements);
-                        break;
-                    default:
-                        throw new InvalidOperationException($"This should not happen: unknown character found: {jsonPath[index]}");
-                }
+                    '.' => HandleDot(jsonPath, index, ref isRecursiveDescentApplied),
+                    '[' => HandleSquareBracket(jsonPath, index, ref isRecursiveDescentApplied, elements),
+                    _ => throw new InvalidOperationException($"This should not happen: unknown character found: {jsonPath[index]}")
+                };
             }
 
             if (isRecursiveDescentApplied)

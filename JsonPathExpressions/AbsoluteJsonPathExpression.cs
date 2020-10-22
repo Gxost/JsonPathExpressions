@@ -79,10 +79,9 @@ namespace JsonPathExpressions
         [return: NotNullIfNotNull("path")]
         public static explicit operator AbsoluteJsonPathExpression?(string? path)
         {
-            if (path is null)
-                return null;
-
-            return new AbsoluteJsonPathExpression(path);
+            return path is null
+                ? null
+                : new AbsoluteJsonPathExpression(path);
         }
 
         /// <inheritdoc />

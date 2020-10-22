@@ -208,10 +208,9 @@ namespace JsonPathExpressions
         [return: NotNullIfNotNull("path")]
         public static explicit operator JsonPathExpression?(string? path)
         {
-            if (path is null)
-                return null;
-
-            return new JsonPathExpression(path);
+            return path is null
+                ? null
+                : new JsonPathExpression(path);
         }
 
         /// <summary>
