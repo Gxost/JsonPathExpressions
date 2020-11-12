@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1;net461</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
-    <WarningsAsErrors>CS8600;CS8602;CS8603</WarningsAsErrors>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
     <Authors>Oleksandr Banakh</Authors>
     <Company></Company>
     <Description>Allows to create, parse, modify and analyze JSONPath expressions</Description>

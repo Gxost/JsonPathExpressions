@@ -25,6 +25,7 @@
 namespace JsonPathExpressions.Elements
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
     /// <summary>
@@ -135,6 +136,7 @@ namespace JsonPathExpressions.Elements
         /// <param name="element">JsonPath element</param>
         /// <returns>JsonPath element or element to which recursive descent is applied cast to derived type</returns>
         /// <exception cref="InvalidCastException">Invalid casting from JsonPathElement to <typeparamref name="TJsonPathElement"/></exception>
+        [return: NotNullIfNotNull("element")]
         public static TJsonPathElement? CastTo<TJsonPathElement>(this JsonPathElement? element)
             where TJsonPathElement : JsonPathElement
         {

@@ -125,6 +125,22 @@ namespace JsonPathExpressions.Tests
         }
 
         [Theory]
+        [InlineData("$.a.b", "$.a.c", "$.a")]
+        [InlineData("$.a.b", "$.c", "$")]
+        [InlineData("$.a.b", "$.a.b.c", "$.a.b")]
+        [InlineData("$.a.b.c", "$.a.b", "$.a.b")]
+        public void GetParentWith_AbsolutePath(string path, string other, string expected)
+        {
+            var pathExpr = new AbsoluteJsonPathExpression(path);
+            var otherExpr = new AbsoluteJsonPathExpression(other);
+            var expectedExpr = expected != null ? new JsonPathExpression(expected) : null;
+
+            var actual = pathExpr.GetParentWith(otherExpr);
+
+            actual.Should().BeEquivalentTo(expectedExpr);
+        }
+
+        [Theory]
         [InlineData("$.a", "$.a.b.c", "b.c")]
         [InlineData("$.a", "$.a", null)]
         [InlineData("$.a.b", "$.a", null)]

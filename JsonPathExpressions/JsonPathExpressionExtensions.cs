@@ -173,6 +173,24 @@ namespace JsonPathExpressions
         }
 
         /// <summary>
+        /// Get parent JsonPath expression for current JsonPath expression and passed one
+        /// </summary>
+        /// <param name="path">Absolute JsonPath expression</param>
+        /// <param name="other">Absolute JsonPath expression to check</param>
+        /// <returns>Parent JsonPath expression, or <paramref name="path"/>, or <paramref name="other"/>, or null</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="other"/> is null</exception>
+        /// <remarks>
+        /// <para>Parent JsonPath expression is an expression which is prefix for both <paramref name="path"/> and <paramref name="other"/></para>
+        /// <para>If <paramref name="path"/> starts with <paramref name="other"/>, <paramref name="other"/> is returned</para>
+        /// <para>If <paramref name="other"/> starts with <paramref name="path"/>, <paramref name="path"/> is returned</para>
+        /// <para>If there is no parent for both expressions, null is returned</para>
+        /// </remarks>
+        public static AbsoluteJsonPathExpression GetParentWith(this AbsoluteJsonPathExpression path, AbsoluteJsonPathExpression other)
+        {
+            return GetParentWith<AbsoluteJsonPathExpression>(path, other)!;
+        }
+
+        /// <summary>
         /// Get relative path from current JsonPath expression to child JsonPath expression
         /// </summary>
         /// <param name="path">JsonPath expression</param>
@@ -227,7 +245,7 @@ namespace JsonPathExpressions
                 return path;
 
             var resultElements = new List<JsonPathElement>(path.Elements);
-            resultElements.AddRange(elements!);
+            resultElements.AddRange(elements);
 
             return (TJsonPathExpression) path.Create(resultElements);
         }
