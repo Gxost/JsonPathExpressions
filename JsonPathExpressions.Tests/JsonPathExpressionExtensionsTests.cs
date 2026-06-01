@@ -112,7 +112,7 @@ public class JsonPathExpressionExtensionsTests
     [InlineData("$.a.b", "$.a.b.c", "$.a.b")]
     [InlineData("$.a.b.c", "$.a.b", "$.a.b")]
     [InlineData("a.b", "c", null)]
-    public void GetParentWith(string path, string other, string expected)
+    public void GetParentWith(string path, string other, string? expected)
     {
         var pathExpr = new JsonPathExpression(path);
         var otherExpr = new JsonPathExpression(other);
@@ -132,7 +132,7 @@ public class JsonPathExpressionExtensionsTests
     {
         var pathExpr = new AbsoluteJsonPathExpression(path);
         var otherExpr = new AbsoluteJsonPathExpression(other);
-        var expectedExpr = expected is not null ? new JsonPathExpression(expected) : null;
+        var expectedExpr = new JsonPathExpression(expected);
 
         var actual = pathExpr.GetParentWith(otherExpr);
 
@@ -143,7 +143,7 @@ public class JsonPathExpressionExtensionsTests
     [InlineData("$.a", "$.a.b.c", "b.c")]
     [InlineData("$.a", "$.a", null)]
     [InlineData("$.a.b", "$.a", null)]
-    public void GetRelativePathTo(string path, string child, string expected)
+    public void GetRelativePathTo(string path, string child, string? expected)
     {
         var pathExpr = new JsonPathExpression(path);
         var childExpr = new JsonPathExpression(child);
