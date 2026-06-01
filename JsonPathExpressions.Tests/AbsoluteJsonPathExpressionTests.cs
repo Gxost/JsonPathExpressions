@@ -94,10 +94,9 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void Create_ReturnsObjectOfTheSameType()
         {
-            var path = new AbsoluteJsonPathExpression(new JsonPathElement[]
-            {
+            var path = new AbsoluteJsonPathExpression([
                 new JsonPathRootElement()
-            });
+            ]);
             var elements = new JsonPathElement[]
             {
                 new JsonPathRootElement(),

@@ -42,13 +42,13 @@ namespace JsonPathExpressions.Tests.Helpers
                 case JsonPathElementType.AnyProperty:
                     return new JsonPathAnyPropertyElement();
                 case JsonPathElementType.PropertyList:
-                    return new JsonPathPropertyListElement(new []{"~~~0", "~~~1"});
+                    return new JsonPathPropertyListElement(["~~~0", "~~~1"]);
                 case JsonPathElementType.ArrayIndex:
                     return new JsonPathArrayIndexElement(int.MaxValue);
                 case JsonPathElementType.AnyArrayIndex:
                     return new JsonPathAnyArrayIndexElement();
                 case JsonPathElementType.ArrayIndexList:
-                    return new JsonPathArrayIndexListElement(new []{int.MaxValue - 1, int.MaxValue - 2});
+                    return new JsonPathArrayIndexListElement([int.MaxValue - 1, int.MaxValue - 2]);
                 case JsonPathElementType.ArraySlice:
                     return new JsonPathArraySliceElement(int.MaxValue - 10, int.MaxValue - 9);
                 case JsonPathElementType.Expression:

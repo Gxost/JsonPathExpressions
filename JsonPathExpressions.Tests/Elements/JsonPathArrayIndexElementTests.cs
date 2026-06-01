@@ -72,7 +72,7 @@ namespace JsonPathExpressions.Tests.Elements
         public void Matches_KnownArrayIndexList_ReturnsTrue()
         {
             var element = new JsonPathArrayIndexElement(7);
-            var other = new JsonPathArrayIndexListElement(new []{7});
+            var other = new JsonPathArrayIndexListElement([7]);
 
             bool? actual = element.Matches(other);
 
@@ -83,7 +83,7 @@ namespace JsonPathExpressions.Tests.Elements
         public void Matches_UnknownArrayIndexList_ReturnsFalse()
         {
             var element = new JsonPathArrayIndexElement(7);
-            var other = new JsonPathArrayIndexListElement(new[] { 0, 7 });
+            var other = new JsonPathArrayIndexListElement([0, 7]);
 
             bool? actual = element.Matches(other);
 

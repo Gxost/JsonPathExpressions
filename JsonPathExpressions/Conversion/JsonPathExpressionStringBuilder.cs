@@ -31,7 +31,7 @@ namespace JsonPathExpressions.Conversion
 
     internal static class JsonPathExpressionStringBuilder
     {
-        private static readonly char[] ForbiddenCharactersForSimplePropertyName = { '[', ']', '.', '*' };
+        private static readonly char[] ForbiddenCharactersForSimplePropertyName = ['[', ']', '.', '*'];
 
         public static string Build(IReadOnlyList<JsonPathElement> elements)
         {

@@ -34,18 +34,17 @@ namespace JsonPathExpressions.Tests.Builders
         [Fact]
         public void Build_Builds()
         {
-            var expected = new RelativeJsonPathExpression(new JsonPathElement[]
-            {
+            var expected = new RelativeJsonPathExpression([
                 new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("a")),
                 new JsonPathAnyPropertyElement(),
-                new JsonPathPropertyListElement(new [] {"b", "c"}),
+                new JsonPathPropertyListElement(["b", "c"]),
                 new JsonPathArrayIndexElement(42),
                 new JsonPathAnyArrayIndexElement(),
-                new JsonPathArrayIndexListElement(new [] {7, 42}),
+                new JsonPathArrayIndexListElement([7, 42]),
                 new JsonPathArraySliceElement(0, 42, 2),
                 new JsonPathExpressionElement("@.length-1"),
                 new JsonPathFilterExpressionElement("@.name = 'a'")
-            });
+            ]);
 
             var actual = RelativeJsonPathExpressionBuilder.Create()
                 .RecursiveDescentTo().Property("a")

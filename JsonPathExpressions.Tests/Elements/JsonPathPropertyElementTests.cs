@@ -72,7 +72,7 @@ namespace JsonPathExpressions.Tests.Elements
         public void Matches_KnownPropertyNameList_ReturnsTrue()
         {
             var element = new JsonPathPropertyElement("name");
-            var other = new JsonPathPropertyListElement(new[] { "name" });
+            var other = new JsonPathPropertyListElement(["name"]);
 
             bool? actual = element.Matches(other);
 
@@ -83,7 +83,7 @@ namespace JsonPathExpressions.Tests.Elements
         public void Matches_UnknownPropertyNameList_ReturnsFalse()
         {
             var element = new JsonPathPropertyElement("name");
-            var other = new JsonPathPropertyListElement(new[] { "name", "unknown" });
+            var other = new JsonPathPropertyListElement(["name", "unknown"]);
 
             bool? actual = element.Matches(other);
 

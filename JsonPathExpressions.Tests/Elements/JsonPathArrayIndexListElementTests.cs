@@ -56,7 +56,7 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void GetNormalized_SingleIndex_ReturnsArrayIndexElement()
         {
-            var element = new JsonPathArrayIndexListElement(new []{42});
+            var element = new JsonPathArrayIndexListElement([42]);
             var expected = new JsonPathArrayIndexElement(42);
 
             var actual = element.GetNormalized();
@@ -67,7 +67,7 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void GetNormalized_MultipleIndexes_ReturnsSelf()
         {
-            var element = new JsonPathArrayIndexListElement(new[] { 7, 42 });
+            var element = new JsonPathArrayIndexListElement([7, 42]);
 
             var actual = element.GetNormalized();
 
@@ -77,7 +77,7 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void GetNormalized_PeriodicIndexes_ReturnsArraySliceElement()
         {
-            var element = new JsonPathArrayIndexListElement(new[] { 1, 2, 3 });
+            var element = new JsonPathArrayIndexListElement([1, 2, 3]);
             var expected = new JsonPathArraySliceElement(1, 4, 1);
 
             var actual = element.GetNormalized();
@@ -88,7 +88,7 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void GetNormalized_PeriodicIndexesWithNegativeStep_ReturnsArraySliceElement()
         {
-            var element = new JsonPathArrayIndexListElement(new[] { 3, 2, 1 });
+            var element = new JsonPathArrayIndexListElement([3, 2, 1]);
             var expected = new JsonPathArraySliceElement(3, 0, -1);
 
             var actual = element.GetNormalized();
@@ -99,7 +99,7 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void GetNormalized_PeriodicIndexesStartingFromZero_ReturnsArraySliceElementWithNullStart()
         {
-            var element = new JsonPathArrayIndexListElement(new[] { 0, 1, 2, 3 });
+            var element = new JsonPathArrayIndexListElement([0, 1, 2, 3]);
             var expected = new JsonPathArraySliceElement(null, 4, 1);
 
             var actual = element.GetNormalized();
@@ -110,7 +110,7 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void GetNormalized_PeriodicIndexesEndingWithMaxValue_ReturnsArraySliceElementWithNullEnd()
         {
-            var element = new JsonPathArrayIndexListElement(new[] { int.MaxValue - 6, int.MaxValue - 4, int.MaxValue - 2, int.MaxValue });
+            var element = new JsonPathArrayIndexListElement([int.MaxValue - 6, int.MaxValue - 4, int.MaxValue - 2, int.MaxValue]);
             var expected = new JsonPathArraySliceElement(int.MaxValue - 6, null, 2);
 
             var actual = element.GetNormalized();
@@ -121,7 +121,7 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void Matches_KnownArrayIndex_ReturnsTrue()
         {
-            var element = new JsonPathArrayIndexListElement(new []{ 0, 1, 2, 3 });
+            var element = new JsonPathArrayIndexListElement([0, 1, 2, 3]);
             var other = new JsonPathArrayIndexElement(0);
 
             bool? actual = element.Matches(other);
@@ -132,8 +132,8 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void Matches_KnownArrayIndexesList_ReturnsTrue()
         {
-            var element = new JsonPathArrayIndexListElement(new [] { 0, 1, 2, 3 });
-            var other = new JsonPathArrayIndexListElement(new [] { 1, 2 });
+            var element = new JsonPathArrayIndexListElement([0, 1, 2, 3]);
+            var other = new JsonPathArrayIndexListElement([1, 2]);
 
             bool? actual = element.Matches(other);
 
@@ -143,8 +143,8 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void Matches_UnknownArrayIndexesList_ReturnsFalse()
         {
-            var element = new JsonPathArrayIndexListElement(new [] { 0, 1, 2, 3 });
-            var other = new JsonPathArrayIndexListElement(new [] { 0, 1, 2, 3, 4 });
+            var element = new JsonPathArrayIndexListElement([0, 1, 2, 3]);
+            var other = new JsonPathArrayIndexListElement([0, 1, 2, 3, 4]);
 
             bool? actual = element.Matches(other);
 
@@ -204,7 +204,7 @@ namespace JsonPathExpressions.Tests.Elements
         [InlineData(JsonPathElementType.FilterExpression)]
         public void Matches_Any_ReturnsFalse(JsonPathElementType type)
         {
-            var element = new JsonPathArrayIndexListElement(new []{0, 1});
+            var element = new JsonPathArrayIndexListElement([0, 1]);
             var other = ElementCreator.CreateAny(type);
 
             bool? actual = element.Matches(other);

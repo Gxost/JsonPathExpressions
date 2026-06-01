@@ -32,10 +32,10 @@ namespace JsonPathExpressions.Conversion
 
     internal static class JsonPathExpressionStringParser
     {
-        private static readonly char[] Comma = {','};
-        private static readonly char[] Colon = {':'};
-        private static readonly char[] DotAndSquareBracket = {'.', '['};
-        private static readonly char[] ForbiddenCharactersOutsideBrackets = {'[', ']'};
+        private static readonly char[] Comma = [','];
+        private static readonly char[] Colon = [':'];
+        private static readonly char[] DotAndSquareBracket = ['.', '['];
+        private static readonly char[] ForbiddenCharactersOutsideBrackets = ['[', ']'];
 
         public static List<JsonPathElement> Parse(string jsonPath)
         {

@@ -67,10 +67,9 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void ToAbsolute_AbsoluteJsonPathExpression_ReturnsPassedExpression()
         {
-            var path = new AbsoluteJsonPathExpression(new JsonPathElement[]
-            {
+            var path = new AbsoluteJsonPathExpression([
                 new JsonPathRootElement(), new JsonPathPropertyElement("a")
-            });
+            ]);
 
             var actual = path.ToAbsolute();
 
@@ -189,9 +188,9 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void ReplaceLastWith_Replaces()
         {
-            var path = new JsonPathExpression(new JsonPathElement[] {new JsonPathRootElement(), new JsonPathPropertyElement("a") });
+            var path = new JsonPathExpression([new JsonPathRootElement(), new JsonPathPropertyElement("a")]);
             var element = new JsonPathPropertyElement("b");
-            var expected = new JsonPathExpression(new JsonPathElement[] { new JsonPathRootElement(), element });
+            var expected = new JsonPathExpression([new JsonPathRootElement(), element]);
 
             var actual = path.ReplaceLastWith(element);
 
@@ -201,7 +200,7 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void ReplaceLastWith_RootElementInAbsolutePath_Throws()
         {
-            var path = new AbsoluteJsonPathExpression(new JsonPathElement[] { new JsonPathRootElement() });
+            var path = new AbsoluteJsonPathExpression([new JsonPathRootElement()]);
 
             Action action = () => path.ReplaceLastWith(new JsonPathPropertyElement("a"));
 
@@ -211,7 +210,7 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void ReplaceLastWith_WithRootElementInRelativePath_Throws()
         {
-            var path = new RelativeJsonPathExpression(new JsonPathElement[] { new JsonPathPropertyElement("a") });
+            var path = new RelativeJsonPathExpression([new JsonPathPropertyElement("a")]);
 
             Action action = () => path.ReplaceLastWith(new JsonPathRootElement());
 

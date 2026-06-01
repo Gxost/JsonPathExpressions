@@ -42,7 +42,7 @@ namespace JsonPathExpressions.Matching
         /// </summary>
         public JsonPathExpressionMatchingSet()
         {
-            _hashSet = new HashSet<TJsonPathExpression>();
+            _hashSet = [];
             _matchingNode = new JsonPathExpressionMatchingNode<TJsonPathExpression>(0);
         }
 
@@ -105,7 +105,7 @@ namespace JsonPathExpressions.Matching
             if (jsonPath is null)
                 throw new ArgumentNullException(nameof(jsonPath));
 
-            matchedBy = new List<TJsonPathExpression>();
+            matchedBy = [];
             return _matchingNode.Matches(jsonPath, matchedBy);
         }
 

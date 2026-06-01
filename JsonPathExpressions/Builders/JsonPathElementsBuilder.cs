@@ -37,7 +37,7 @@ namespace JsonPathExpressions.Builders
 
         public JsonPathElementsBuilder()
         {
-            _elements = new List<JsonPathElement>();
+            _elements = [];
             _isRecursiveDescent = false;
         }
 

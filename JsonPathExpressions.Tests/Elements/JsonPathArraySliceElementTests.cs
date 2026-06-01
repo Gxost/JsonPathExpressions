@@ -240,7 +240,7 @@ namespace JsonPathExpressions.Tests.Elements
         public void Matches_ArrayIndexList(int? start, int? end, int step, int index, bool? expected)
         {
             var element = new JsonPathArraySliceElement(start, end, step);
-            var other = new JsonPathArrayIndexListElement(new []{index });
+            var other = new JsonPathArrayIndexListElement([index]);
 
             bool? actual = element.Matches(other);
 

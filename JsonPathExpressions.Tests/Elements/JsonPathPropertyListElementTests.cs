@@ -55,7 +55,7 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void GetNormalized_SingleProperty_ReturnsPropertyElement()
         {
-            var element = new JsonPathPropertyListElement(new [] {"name"});
+            var element = new JsonPathPropertyListElement(["name"]);
             var expected = new JsonPathPropertyElement("name");
 
             var actual = element.GetNormalized();
@@ -66,7 +66,7 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void GetNormalized_MultipleProperties_ReturnsSelf()
         {
-            var element = new JsonPathPropertyListElement(new[] { "a", "b" });
+            var element = new JsonPathPropertyListElement(["a", "b"]);
 
             var actual = element.GetNormalized();
 
@@ -76,7 +76,7 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void Matches_KnownPropertyName_ReturnsTrue()
         {
-            var element = new JsonPathPropertyListElement(new[] { "name0", "name1", "name2" });
+            var element = new JsonPathPropertyListElement(["name0", "name1", "name2"]);
             var other = new JsonPathPropertyElement("name0");
 
             bool? actual = element.Matches(other);
@@ -87,8 +87,8 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void Matches_KnownPropertyNamesList_ReturnsTrue()
         {
-            var element = new JsonPathPropertyListElement(new[] { "name0", "name1", "name2" });
-            var other = new JsonPathPropertyListElement(new[] { "name0", "name1" });
+            var element = new JsonPathPropertyListElement(["name0", "name1", "name2"]);
+            var other = new JsonPathPropertyListElement(["name0", "name1"]);
 
             bool? actual = element.Matches(other);
 
@@ -98,8 +98,8 @@ namespace JsonPathExpressions.Tests.Elements
         [Fact]
         public void Matches_UnknownPropertyNamesList_ReturnsFalse()
         {
-            var element = new JsonPathPropertyListElement(new[] { "name0", "name1", "name2" });
-            var other = new JsonPathPropertyListElement(new[] { "name0", "name1", "name2", "name3" });
+            var element = new JsonPathPropertyListElement(["name0", "name1", "name2"]);
+            var other = new JsonPathPropertyListElement(["name0", "name1", "name2", "name3"]);
 
             bool? actual = element.Matches(other);
 
@@ -120,7 +120,7 @@ namespace JsonPathExpressions.Tests.Elements
         [InlineData(JsonPathElementType.FilterExpression)]
         public void Matches_Any_ReturnsFalse(JsonPathElementType type)
         {
-            var element = new JsonPathPropertyListElement(new[] { "name0", "name1" });
+            var element = new JsonPathPropertyListElement(["name0", "name1"]);
             var other = ElementCreator.CreateAny(type);
 
             bool? actual = element.Matches(other);

@@ -46,7 +46,7 @@ namespace JsonPathExpressions.Matching
             _strict = new Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>>();
             _properties = new Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>>();
             _indexes = new Dictionary<JsonPathElement, JsonPathExpressionMatchingNode<TJsonPathExpression>>();
-            _recursiveDescents = new HashSet<TJsonPathExpression>();
+            _recursiveDescents = [];
             _current = null;
         }
 

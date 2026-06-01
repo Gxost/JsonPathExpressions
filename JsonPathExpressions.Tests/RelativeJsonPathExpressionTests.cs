@@ -94,10 +94,9 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void Create_ReturnsObjectOfTheSameType()
         {
-            var path = new RelativeJsonPathExpression(new JsonPathElement[]
-            {
+            var path = new RelativeJsonPathExpression([
                 new JsonPathPropertyElement("a")
-            });
+            ]);
             var elements = new JsonPathElement[]
             {
                 new JsonPathPropertyElement("a"),

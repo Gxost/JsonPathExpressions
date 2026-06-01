@@ -29,8 +29,8 @@ namespace JsonPathExpressions.Utils
 
     internal static class StringExtensions
     {
-        private static readonly char[] CommaWithSingleQuote = {',', '\''};
-        private static readonly char[] ClosingSquareBracketWithSingleQuote = {']', '\''};
+        private static readonly char[] CommaWithSingleQuote = [',', '\''];
+        private static readonly char[] ClosingSquareBracketWithSingleQuote = [']', '\''];
 
         public static IReadOnlyCollection<string> SplitQuoted(this string str, char delimiter, char quote)
         {
@@ -107,7 +107,7 @@ namespace JsonPathExpressions.Utils
                 }
             }
 
-            return new[] { value, quote };
+            return [value, quote];
         }
     }
 }

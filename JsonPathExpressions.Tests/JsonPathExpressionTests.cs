@@ -34,12 +34,11 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void IsAbsolute_StartsWithRootElement_ReturnsTrue()
         {
-            var path = new JsonPathExpression(new JsonPathElement[]
-            {
+            var path = new JsonPathExpression([
                 new JsonPathRootElement(),
                 new JsonPathPropertyElement("a"),
                 new JsonPathArrayIndexElement(42)
-            });
+            ]);
 
             path.IsAbsolute.Should().BeTrue();
         }
@@ -47,11 +46,10 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void IsAbsolute_StartsWithNonRootElement_ReturnsFalse()
         {
-            var path = new JsonPathExpression(new JsonPathElement[]
-            {
+            var path = new JsonPathExpression([
                 new JsonPathPropertyElement("a"),
                 new JsonPathArrayIndexElement(42)
-            });
+            ]);
 
             path.IsAbsolute.Should().BeFalse();
         }
@@ -59,12 +57,11 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void IsStrict_StrictElements_ReturnsTrue()
         {
-            var path = new JsonPathExpression(new JsonPathElement[]
-            {
+            var path = new JsonPathExpression([
                 new JsonPathRootElement(),
                 new JsonPathPropertyElement("a"),
                 new JsonPathArrayIndexElement(42)
-            });
+            ]);
 
             path.IsStrict.Should().BeTrue();
         }
@@ -72,12 +69,11 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void IsNormalized_NormalizedElements_ReturnsTrue()
         {
-            var path = new JsonPathExpression(new JsonPathElement[]
-            {
+            var path = new JsonPathExpression([
                 new JsonPathRootElement(),
                 new JsonPathPropertyElement("a"),
                 new JsonPathArrayIndexElement(42)
-            });
+            ]);
 
             path.IsNormalized.Should().BeTrue();
         }
@@ -180,10 +176,9 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void Create_ReturnsObjectOfTheSameType()
         {
-            var path = new JsonPathExpression(new JsonPathElement[]
-            {
+            var path = new JsonPathExpression([
                 new JsonPathRootElement()
-            });
+            ]);
             var elements = new JsonPathElement[]
             {
                 new JsonPathRootElement(),
