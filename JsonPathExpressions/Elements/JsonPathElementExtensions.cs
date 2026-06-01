@@ -49,7 +49,7 @@ public static class JsonPathElementExtensions
             if (element.Type == type)
                 return true;
 
-            if (!(element is JsonPathRecursiveDescentElement recursiveDescentElement))
+            if (element is not JsonPathRecursiveDescentElement recursiveDescentElement)
                 return false;
 
             element = recursiveDescentElement.AppliedToElement;
@@ -76,7 +76,7 @@ public static class JsonPathElementExtensions
             if (types.Contains(element.Type))
                 return true;
 
-            if (!(element is JsonPathRecursiveDescentElement recursiveDescentElement))
+            if (element is not JsonPathRecursiveDescentElement recursiveDescentElement)
                 return false;
 
             element = recursiveDescentElement.AppliedToElement;
@@ -105,7 +105,7 @@ public static class JsonPathElementExtensions
             if (types.Contains(element.Type))
                 return true;
 
-            if (!(element is JsonPathRecursiveDescentElement recursiveDescentElement))
+            if (element is not JsonPathRecursiveDescentElement recursiveDescentElement)
                 return false;
 
             element = recursiveDescentElement.AppliedToElement;
@@ -132,7 +132,7 @@ public static class JsonPathElementExtensions
             if (element.Type >= firstType && element.Type <= lastType)
                 return true;
 
-            if (!(element is JsonPathRecursiveDescentElement recursiveDescentElement))
+            if (element is not JsonPathRecursiveDescentElement recursiveDescentElement)
                 return false;
 
             element = recursiveDescentElement.AppliedToElement;
