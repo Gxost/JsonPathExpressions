@@ -100,7 +100,7 @@ public static class JsonPathExpressionExtensions
 
         var elements = path.IsAbsolute
             ? path.Elements
-            : CollectionHelper.Concatenate(new JsonPathRootElement(), path.Elements);
+            : Collection.Concatenate(new JsonPathRootElement(), path.Elements);
 
         return new AbsoluteJsonPathExpression(elements);
     }
@@ -219,6 +219,34 @@ public static class JsonPathExpressionExtensions
         return new RelativeJsonPathExpression(elements);
     }
 
+#if NET9_0_OR_GREATER
+    /// <summary>
+    /// Append JsonPath elements to current JsonPath expression
+    /// </summary>
+    /// <typeparam name="TJsonPathExpression">JsonPath expression type</typeparam>
+    /// <param name="path">JsonPath expression</param>
+    /// <param name="elements">Collection of JsonPath elements to append</param>
+    /// <returns>JsonPath expression starting with <paramref name="path"/> and ending with <paramref name="elements"/></returns>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="elements"/> is null</exception>
+    /// <exception cref="ArgumentException">At least one JsonPath element is null</exception>
+    /// <remarks>
+    /// If <paramref name="elements"/> is empty, <paramref name="path"/> is returned
+    /// </remarks>
+    public static TJsonPathExpression Append<TJsonPathExpression>(this TJsonPathExpression path, params ReadOnlySpan<JsonPathElement> elements)
+        where TJsonPathExpression : JsonPathExpression
+    {
+        if (path is null)
+            throw new ArgumentNullException(nameof(path));
+        if (elements.Contains(null!))
+            throw new ArgumentException("At least one element is null", nameof(elements));
+
+        if (elements.Length == 0)
+            return path;
+
+        return (TJsonPathExpression) path.Create(Collection.Concatenate(path.Elements, elements));
+    }
+#endif
+
     /// <summary>
     /// Append JsonPath elements to current JsonPath expression
     /// </summary>
@@ -244,10 +272,7 @@ public static class JsonPathExpressionExtensions
         if (elements.Length == 0)
             return path;
 
-        var resultElements = new List<JsonPathElement>(path.Elements);
-        resultElements.AddRange(elements);
-
-        return (TJsonPathExpression) path.Create(resultElements);
+        return (TJsonPathExpression) path.Create(Collection.Concatenate(path.Elements, elements));
     }
 
     /// <summary>

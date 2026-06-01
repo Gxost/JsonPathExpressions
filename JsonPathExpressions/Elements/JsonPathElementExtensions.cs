@@ -56,6 +56,34 @@ public static class JsonPathElementExtensions
         }
     }
 
+#if NET9_0_OR_GREATER
+    /// <summary>
+    /// Check if JsonPath element has same type as passed or element is a recursive descent applied to JsonPath element with same type as passed
+    /// </summary>
+    /// <param name="element">JsonPath element</param>
+    /// <param name="types">Array of JsonPath element types to check</param>
+    /// <returns>True if JsonPath element has same type as passed or element is a recursive descent applied to JsonPath element with same type as passed</returns>
+    /// <exception cref="ArgumentException">No element types provided</exception>
+    public static bool IsOfType(this JsonPathElement? element, params ReadOnlySpan<JsonPathElementType> types)
+    {
+        if (element is null)
+            throw new ArgumentNullException(nameof(element));
+        if (types.Length == 0)
+            throw new ArgumentException("No element types provided", nameof(types));
+
+        while (true)
+        {
+            if (types.Contains(element.Type))
+                return true;
+
+            if (!(element is JsonPathRecursiveDescentElement recursiveDescentElement))
+                return false;
+
+            element = recursiveDescentElement.AppliedToElement;
+        }
+    }
+#endif
+
     /// <summary>
     /// Check if JsonPath element has same type as passed or element is a recursive descent applied to JsonPath element with same type as passed
     /// </summary>

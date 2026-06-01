@@ -24,6 +24,7 @@
 
 namespace JsonPathExpressions.Builders;
 
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -58,6 +59,16 @@ public interface IAbsolutePathElementSyntax
     /// <returns><see cref="INextAbsolutePathElementSyntax"/></returns>
     INextAbsolutePathElementSyntax AnyProperty();
 
+#if NET9_0_OR_GREATER
+    /// <summary>
+    /// Add one or multiple properties element
+    /// </summary>
+    /// <param name="firstName">First property name</param>
+    /// <param name="names">Collection of property names</param>
+    /// <returns><see cref="INextAbsolutePathElementSyntax"/></returns>
+    INextAbsolutePathElementSyntax Properties(string firstName, params ReadOnlySpan<string> names);
+#endif
+
     /// <summary>
     /// Add one or multiple properties element
     /// </summary>
@@ -85,6 +96,16 @@ public interface IAbsolutePathElementSyntax
     /// </summary>
     /// <returns><see cref="INextAbsolutePathElementSyntax"/></returns>
     INextAbsolutePathElementSyntax AnyArrayIndex();
+
+#if NET9_0_OR_GREATER
+    /// <summary>
+    /// Add one or multiple array indexes element
+    /// </summary>
+    /// <param name="firstIndex">First array index</param>
+    /// <param name="indexes">Collection of array indexes</param>
+    /// <returns><see cref="INextAbsolutePathElementSyntax"/></returns>
+    INextAbsolutePathElementSyntax ArrayIndexes(int firstIndex, params ReadOnlySpan<int> indexes);
+#endif
 
     /// <summary>
     /// Add one or multiple array indexes element

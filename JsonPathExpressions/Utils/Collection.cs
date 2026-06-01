@@ -24,16 +24,46 @@
 
 namespace JsonPathExpressions.Utils;
 
+using System;
 using System.Collections.Generic;
 
-internal static class CollectionHelper
+internal static class Collection
 {
+#if NET9_0_OR_GREATER
+    public static IReadOnlyCollection<T> Concatenate<T>(T head, ReadOnlySpan<T> tail)
+    {
+        var result = new List<T>(tail.Length + 1) { head };
+        result.AddRange(tail);
+
+        return result;
+    }
+#endif
+
     // could be replaced with LINQ Prepend but Prepend is missing in .NET 4.6.1
     public static IReadOnlyCollection<T> Concatenate<T>(T head, IReadOnlyCollection<T> tail)
-        where T: notnull
     {
         var result = new List<T>(tail.Count + 1) { head };
         result.AddRange(tail);
+
+        return result;
+    }
+
+#if NET9_0_OR_GREATER
+    public static IReadOnlyCollection<T> Concatenate<T>(IReadOnlyCollection<T> first, ReadOnlySpan<T> second)
+    {
+        var result = new List<T>(first.Count + second.Length);
+        result.AddRange(first);
+        result.AddRange(second);
+
+        return result;
+    }
+#endif
+
+    public static IReadOnlyCollection<T> Concatenate<T>(IReadOnlyCollection<T> first, IReadOnlyCollection<T> second)
+    {
+        var result = new List<T>(first.Count + second.Count);
+        result.AddRange(first);
+        result.AddRange(second);
 
         return result;
     }

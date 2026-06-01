@@ -70,6 +70,16 @@ internal class JsonPathElementsBuilder
         AddElement(new JsonPathAnyPropertyElement());
     }
 
+#if NET9_0_OR_GREATER
+    public void Properties(string firstName, params ReadOnlySpan<string> names)
+    {
+        if (firstName is null)
+            throw new ArgumentNullException(nameof(firstName));
+
+        Properties(Collection.Concatenate(firstName, names));
+    }
+#endif
+
     public void Properties(string firstName, params string[] names)
     {
         if (firstName is null)
@@ -77,7 +87,7 @@ internal class JsonPathElementsBuilder
         if (names is null)
             throw new ArgumentNullException(nameof(names));
 
-        Properties(CollectionHelper.Concatenate(firstName, names));
+        Properties(Collection.Concatenate(firstName, names));
     }
 
     public void Properties(IReadOnlyCollection<string> names)
@@ -103,12 +113,19 @@ internal class JsonPathElementsBuilder
         AddElement(new JsonPathAnyArrayIndexElement());
     }
 
+#if NET9_0_OR_GREATER
+    public void ArrayIndexes(int firstIndex, params ReadOnlySpan<int> indexes)
+    {
+        ArrayIndexes(Collection.Concatenate(firstIndex, indexes));
+    }
+#endif
+
     public void ArrayIndexes(int firstIndex, params int[] indexes)
     {
         if (indexes is null)
             throw new ArgumentNullException(nameof(indexes));
 
-        ArrayIndexes(CollectionHelper.Concatenate(firstIndex, indexes));
+        ArrayIndexes(Collection.Concatenate(firstIndex, indexes));
     }
 
     public void ArrayIndexes(IReadOnlyCollection<int> indexes)

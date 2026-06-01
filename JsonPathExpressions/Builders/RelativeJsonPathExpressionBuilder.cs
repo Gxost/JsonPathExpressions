@@ -24,6 +24,7 @@
 
 namespace JsonPathExpressions.Builders;
 
+using System;
 using System.Collections.Generic;
 
 internal class RelativeJsonPathExpressionBuilder : IFirstRelativePathElementSyntax, INextRelativePathElementSyntax
@@ -57,6 +58,14 @@ internal class RelativeJsonPathExpressionBuilder : IFirstRelativePathElementSynt
         return this;
     }
 
+#if NET9_0_OR_GREATER
+    public INextRelativePathElementSyntax Properties(string firstName, params ReadOnlySpan<string> names)
+    {
+        _elementsBuilder.Properties(firstName, names);
+        return this;
+    }
+#endif
+
     public INextRelativePathElementSyntax Properties(string firstName, params string[] names)
     {
         _elementsBuilder.Properties(firstName, names);
@@ -80,6 +89,14 @@ internal class RelativeJsonPathExpressionBuilder : IFirstRelativePathElementSynt
         _elementsBuilder.AnyArrayIndex();
         return this;
     }
+
+#if NET9_0_OR_GREATER
+    public INextRelativePathElementSyntax ArrayIndexes(int firstIndex, params ReadOnlySpan<int> indexes)
+    {
+        _elementsBuilder.ArrayIndexes(firstIndex, indexes);
+        return this;
+    }
+#endif
 
     public INextRelativePathElementSyntax ArrayIndexes(int firstIndex, params int[] indexes)
     {
