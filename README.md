@@ -4,13 +4,17 @@
 
 ----
 
-This package allows to create, parse, modify and analyze JSONPath expressions.
+This package allows creating, parsing, modifying and analyzing JSONPath expressions.
 
 ## What is JSONPath
 
-JSONPath expressions allow to specify JSON elements to manipulate. For details see [JSONPath - XPath for JSON](https://goessner.net/articles/JsonPath/).
+JSONPath expressions allow specifying JSON elements to manipulate. For details see [JSONPath - XPath for JSON](https://goessner.net/articles/JsonPath/).
 
-Since JSONPath behaviour is not standardized different implementations work in different ways. See [JSONPath Comparison](https://cburgmer.github.io/json-path-comparison/) for details. For any nuances current project refers to how [Json.NET](https://www.newtonsoft.com/json) works with JSONPath.
+Since JSONPath behavior was not standardized, different implementations work in different ways. See [JSONPath Comparison](https://cburgmer.github.io/json-path-comparison/) for details. For any nuances the current project refers to how [Json.NET](https://www.newtonsoft.com/json) works with JSONPath.
+
+### Future
+
+There is an [RFC 9535 draft for JSONPath](https://datatracker.ietf.org/doc/rfc9535/). The current project may be changed to comply with the draft in the future.
 
 ## Features
 
@@ -20,12 +24,12 @@ You can create JSONPath expressions from scratch or parse existing ones:
 
 ```csharp
 var expr1 = new JsonPathExpression("$.a.b.c");
-var expr2 = new JsonPathExpression(new JsonPathElement[] {
-    new JsonPatheRootElement(),
+var expr2 = new JsonPathExpression([
+    new JsonPathRootElement(),
     new JsonPathPropertyElement("a"),
     new JsonPathPropertyElement("b"),
     new JsonPathPropertyElement("c")
-    });
+    ]);
 // fluent syntax is safer because it restricts expression to valid form
 var expr3 = JsonPathExpression.Builder.Root().Property("a").Property("b").Property("c").Build();
 var expr4 = JsonPathExpression.Builder.Root()["a"]["b"]["c"].Build(); // alternative short variant
@@ -44,13 +48,13 @@ string child = expr.Append(new JsonPathArrayIndexElement(42)).ToString(); // ret
 
 ### Analyze expressions
 
-#### Check if path is absolute
+#### Check if the path is absolute
 
 ```csharp
 bool isAbsolute = new JsonPathExpression("$.a.b.c").IsAbsolute; // returns true because expression starts with root object
 ```
 
-#### Check if path is strict
+#### Check if the path is strict
 
 Strict JSONPath expression points at exactly one JSON element. This check does not count expressions and slice addressing last array element (`[-1:]`).
 
@@ -129,14 +133,14 @@ JSONPath expression consists of elements. Most of them are not restricted in usa
 For creation or modification of JSONPath expressions `JsonPathRecursiveDescentElement` is handy because it forces user to use another JSONPath element:
 
 ```csharp
-var expr = new JsonPathExpression(new JsonPathElement[]{
+var expr = new JsonPathExpression([
     new JsonPathRootElement(),
     new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("a")) // because recursive descent must be followed by another element it accepts that element as parameter
-    }); // string presentation: "$..a"
+    ]); // string presentation: "$..a"
 ```
 
 For JSONPath elements analysis `JsonPathRecursiveDescentElement` may cause problems because it's a special element that should be treated in a special way. To address this issue and simplify checks following `JsonPathElement` extension methods were added:
-- check if element has certain type or is a recursive descent applied to element with certain type:
+- check if an element has a certain type or is a recursive descent applied to an element with a certain type:
   - `IsOfType(JsonPathElementType type)`;
   - `IsOfType(params JsonPathElementType[] types)`;
   - `IsOfTypeInRange(JsonPathElementType firstType, JsonPathElementType lastType)`;
@@ -159,7 +163,7 @@ bool isAllowedExpression = expr.Elements.All(x => x.IsOfType(
     )); // returns true
 ```
 
-Check if expression contains elements related to arrays:
+Check if an expression contains elements related to arrays:
 
 ```csharp
 var expr = new JsonPathExpression("$.*..a[*]");
@@ -196,16 +200,16 @@ string expr1 = new JsonPathExpression("$.a[:].b[0:42]").GetNormalized().ToString
 During normalization array index list element and property list element are broken down to array index element and property element if needed. This may be helpful when an expression is constructed from scratch:
 
 ```csharp
-var expr1 = new JsonPathExpression(new JsonPathElement[]{
+var expr1 = new JsonPathExpression([
     new JsonPathRootElement(),
-    new JsonPathPropertyListElement(new []{ "a" }),
-    new JsonPathArrayIndexListElement(new [] { 42 })
-    }).GetNormalized();
-var expr2 = new JsonPathExpression(new JsonPathElement[]{
+    new JsonPathPropertyListElement(["a"]),
+    new JsonPathArrayIndexListElement([42])
+    ]).GetNormalized();
+var expr2 = new JsonPathExpression([
     new JsonPathRootElement(),
     new JsonPathPropertyElement("a"),
     new JsonPathArrayIndexElement(42)
-    });
+    ]);
 bool equals = expr1.Equals(expr2); // returns true
 ```
 
