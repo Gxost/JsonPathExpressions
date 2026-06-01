@@ -126,18 +126,12 @@ public sealed class JsonPathPropertyListElement : JsonPathElement, IEquatable<Js
         if (obj.GetType() != GetType())
             return false;
 
-        return Equals((JsonPathPropertyListElement)obj);
+        return Equals((JsonPathPropertyListElement?)obj);
     }
 
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        unchecked
-        {
-            int hashCode = StringComparer.Ordinal.GetCollectionHashCode(Names);
-            hashCode = (hashCode * 397) ^ GetType().GetHashCode();
-
-            return hashCode;
-        }
+        return HashCode.Combine(StringComparer.Ordinal.GetCollectionHashCode(Names), GetType());
     }
 }

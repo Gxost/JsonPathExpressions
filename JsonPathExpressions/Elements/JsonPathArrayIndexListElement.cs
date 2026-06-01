@@ -140,13 +140,7 @@ public sealed class JsonPathArrayIndexListElement : JsonPathElement, IEquatable<
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        unchecked
-        {
-            int hashCode = EqualityComparer<int>.Default.GetCollectionHashCode(Indexes);
-            hashCode = (hashCode * 397) ^ GetType().GetHashCode();
-
-            return hashCode;
-        }
+        return HashCode.Combine(EqualityComparer<int>.Default.GetCollectionHashCode(Indexes), GetType());
     }
 
     private bool ComputeIsNormalized()

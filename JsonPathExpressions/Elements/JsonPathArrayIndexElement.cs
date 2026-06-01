@@ -26,6 +26,7 @@ namespace JsonPathExpressions.Elements;
 
 using System;
 using System.Linq;
+using Utils;
 
 /// <summary>
 /// JsonPath element representing array index
@@ -117,12 +118,6 @@ public sealed class JsonPathArrayIndexElement : JsonPathElement, IEquatable<Json
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        unchecked
-        {
-            int hashCode = Index;
-            hashCode = (hashCode * 397) ^ GetType().GetHashCode();
-
-            return hashCode;
-        }
+        return HashCode.Combine(Index, GetType());
     }
 }

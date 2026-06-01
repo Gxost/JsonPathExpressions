@@ -26,6 +26,7 @@ namespace JsonPathExpressions.Elements;
 
 using System;
 using System.Collections.Generic;
+using Utils;
 
 /// <summary>
 /// JsonPath element representing recursive descent applied to another JsonPath element
@@ -118,13 +119,7 @@ public sealed class JsonPathRecursiveDescentElement : JsonPathElement, IEquatabl
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        unchecked
-        {
-            int hashCode = AppliedToElement.GetHashCode();
-            hashCode = (hashCode * 397) ^ GetType().GetHashCode();
-
-            return hashCode;
-        }
+        return HashCode.Combine(AppliedToElement, GetType());
     }
 
     internal override bool? Matches(IReadOnlyList<JsonPathElement> elements, int index, IReadOnlyList<JsonPathElement> otherElements, int otherIndex)

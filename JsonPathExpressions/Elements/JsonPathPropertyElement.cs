@@ -26,6 +26,7 @@ namespace JsonPathExpressions.Elements;
 
 using System;
 using System.Linq;
+using Utils;
 
 /// <summary>
 /// JsonPath element representing object property
@@ -116,12 +117,6 @@ public sealed class JsonPathPropertyElement : JsonPathElement, IEquatable<JsonPa
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        unchecked
-        {
-            int hashCode = Name.GetHashCode();
-            hashCode = (hashCode * 397) ^ GetType().GetHashCode();
-
-            return hashCode;
-        }
+        return HashCode.Combine(Name, GetType());
     }
 }

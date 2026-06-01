@@ -25,6 +25,7 @@
 namespace JsonPathExpressions.Elements;
 
 using System;
+using Utils;
 
 /// <summary>
 /// JsonPath element representing expression
@@ -124,12 +125,6 @@ public sealed class JsonPathExpressionElement : JsonPathElement, IEquatable<Json
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        unchecked
-        {
-            int hashCode = Expression.GetHashCode();
-            hashCode = (hashCode * 397) ^ GetType().GetHashCode();
-
-            return hashCode;
-        }
+        return HashCode.Combine(Expression, GetType());
     }
 }

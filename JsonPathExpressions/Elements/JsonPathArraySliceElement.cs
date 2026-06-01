@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Utils;
 
 // TODO: add negative start support
 /// <summary>
@@ -176,14 +177,7 @@ public sealed class JsonPathArraySliceElement : JsonPathElement, IEquatable<Json
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        unchecked
-        {
-            int hashCode = ((Start ?? 0) * 397) ^ (End ?? int.MinValue);
-            hashCode = (hashCode * 397) ^ Step;
-            hashCode = (hashCode * 397) ^ GetType().GetHashCode();
-
-            return hashCode;
-        }
+        return HashCode.Combine(Start, (End ?? int.MinValue), Step, GetType());
     }
 
     /// <summary>
