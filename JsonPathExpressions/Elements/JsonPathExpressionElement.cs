@@ -79,11 +79,11 @@ public sealed class JsonPathExpressionElement : JsonPathElement, IEquatable<Json
                 return null;
             case JsonPathArrayIndexListElement arrayIndexListElement:
                 return arrayIndexListElement.Indexes.Count == 1
-                    ? default(bool?)
+                    ? null
                     : false;
             case JsonPathArraySliceElement arraySliceElement:
                 return arraySliceElement.IndexCount == 1
-                    ? default(bool?)
+                    ? null
                     : false;
             case JsonPathExpressionElement expressionElement:
                 return Equals(expressionElement);

@@ -191,8 +191,8 @@ public sealed class JsonPathArrayIndexListElement : JsonPathElement, IEquatable<
             last = index;
         }
 
-        start = first == 0 ? default : first;
-        end = last == int.MaxValue ? default(int?) : last + Math.Sign(step);
+        start = first == 0 ? null : first;
+        end = last == int.MaxValue ? null : last + Math.Sign(step);
 
         return true;
     }

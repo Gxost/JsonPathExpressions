@@ -200,10 +200,10 @@ internal static class JsonPathExpressionStringParser
         try
         {
             int? start = parts[0] == ""
-                ? default(int?)
+                ? null
                 : int.Parse(parts[0]);
             int? end = parts.Length < 2 || parts[1] == ""
-                ? default(int?)
+                ? null
                 : int.Parse(parts[1]);
             int step = parts.Length < 3 || parts[2] == ""
                 ? 1
