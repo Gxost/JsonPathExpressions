@@ -22,106 +22,105 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Builders
+namespace JsonPathExpressions.Builders;
+
+using System.Collections.Generic;
+
+/// <summary>
+/// Fluent syntax allowing to add JsonPath elements
+/// </summary>
+public interface IRelativePathElementSyntax
 {
-    using System.Collections.Generic;
+    /// <summary>
+    /// Add property element
+    /// </summary>
+    /// <param name="propertyName">Property name</param>
+    /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
+    INextRelativePathElementSyntax this[string propertyName] { get; }
 
     /// <summary>
-    /// Fluent syntax allowing to add JsonPath elements
+    /// Add array index element
     /// </summary>
-    public interface IRelativePathElementSyntax
-    {
-        /// <summary>
-        /// Add property element
-        /// </summary>
-        /// <param name="propertyName">Property name</param>
-        /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax this[string propertyName] { get; }
+    /// <param name="index">Array index</param>
+    /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
+    INextRelativePathElementSyntax this[int index] { get; }
 
-        /// <summary>
-        /// Add array index element
-        /// </summary>
-        /// <param name="index">Array index</param>
-        /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax this[int index] { get; }
+    /// <summary>
+    /// Add property element
+    /// </summary>
+    /// <param name="name">Property name</param>
+    /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
+    INextRelativePathElementSyntax Property(string name);
 
-        /// <summary>
-        /// Add property element
-        /// </summary>
-        /// <param name="name">Property name</param>
-        /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax Property(string name);
+    /// <summary>
+    /// Add any property element
+    /// </summary>
+    /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
+    INextRelativePathElementSyntax AnyProperty();
 
-        /// <summary>
-        /// Add any property element
-        /// </summary>
-        /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax AnyProperty();
+    /// <summary>
+    /// Add one or multiple properties element
+    /// </summary>
+    /// <param name="firstName">First property name</param>
+    /// <param name="names">Collection of property names</param>
+    /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
+    INextRelativePathElementSyntax Properties(string firstName, params string[] names);
 
-        /// <summary>
-        /// Add one or multiple properties element
-        /// </summary>
-        /// <param name="firstName">First property name</param>
-        /// <param name="names">Collection of property names</param>
-        /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax Properties(string firstName, params string[] names);
+    /// <summary>
+    /// Add one or multiple properties element
+    /// </summary>
+    /// <param name="names">Collection of property names</param>
+    /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
+    INextRelativePathElementSyntax Properties(IReadOnlyCollection<string> names);
 
-        /// <summary>
-        /// Add one or multiple properties element
-        /// </summary>
-        /// <param name="names">Collection of property names</param>
-        /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax Properties(IReadOnlyCollection<string> names);
+    /// <summary>
+    /// Add array index element
+    /// </summary>
+    /// <param name="index">Array index</param>
+    /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
+    INextRelativePathElementSyntax ArrayIndex(int index);
 
-        /// <summary>
-        /// Add array index element
-        /// </summary>
-        /// <param name="index">Array index</param>
-        /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax ArrayIndex(int index);
+    /// <summary>
+    /// Add any array index element
+    /// </summary>
+    /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
+    INextRelativePathElementSyntax AnyArrayIndex();
 
-        /// <summary>
-        /// Add any array index element
-        /// </summary>
-        /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax AnyArrayIndex();
+    /// <summary>
+    /// Add one or multiple array indexes element
+    /// </summary>
+    /// <param name="firstIndex">First array index</param>
+    /// <param name="indexes">Collection of array indexes</param>
+    /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
+    INextRelativePathElementSyntax ArrayIndexes(int firstIndex, params int[] indexes);
 
-        /// <summary>
-        /// Add one or multiple array indexes element
-        /// </summary>
-        /// <param name="firstIndex">First array index</param>
-        /// <param name="indexes">Collection of array indexes</param>
-        /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax ArrayIndexes(int firstIndex, params int[] indexes);
+    /// <summary>
+    /// Add one or multiple array indexes element
+    /// </summary>
+    /// <param name="indexes">Collection of array indexes</param>
+    /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
+    INextRelativePathElementSyntax ArrayIndexes(IReadOnlyCollection<int> indexes);
 
-        /// <summary>
-        /// Add one or multiple array indexes element
-        /// </summary>
-        /// <param name="indexes">Collection of array indexes</param>
-        /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax ArrayIndexes(IReadOnlyCollection<int> indexes);
+    /// <summary>
+    /// Add array slice element
+    /// </summary>
+    /// <param name="start">Slice start</param>
+    /// <param name="end">Slice end</param>
+    /// <param name="step">Slice step</param>
+    /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
+    INextRelativePathElementSyntax ArraySlice(int? start, int? end, int step = 1);
 
-        /// <summary>
-        /// Add array slice element
-        /// </summary>
-        /// <param name="start">Slice start</param>
-        /// <param name="end">Slice end</param>
-        /// <param name="step">Slice step</param>
-        /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax ArraySlice(int? start, int? end, int step = 1);
+    /// <summary>
+    /// Add expression element
+    /// </summary>
+    /// <param name="expression">Expression</param>
+    /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
+    INextRelativePathElementSyntax Expression(string expression);
 
-        /// <summary>
-        /// Add expression element
-        /// </summary>
-        /// <param name="expression">Expression</param>
-        /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax Expression(string expression);
-
-        /// <summary>
-        /// Add filter expression element
-        /// </summary>
-        /// <param name="expression">Expression</param>
-        /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
-        INextRelativePathElementSyntax FilterExpression(string expression);
-    }
+    /// <summary>
+    /// Add filter expression element
+    /// </summary>
+    /// <param name="expression">Expression</param>
+    /// <returns><see cref="INextRelativePathElementSyntax"/></returns>
+    INextRelativePathElementSyntax FilterExpression(string expression);
 }

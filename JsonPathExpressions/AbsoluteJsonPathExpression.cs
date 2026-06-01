@@ -22,72 +22,71 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions
+namespace JsonPathExpressions;
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using Builders;
+using Conversion;
+using Elements;
+
+/// <summary>
+/// JsonPath expression starting with <see cref="JsonPathRootElement"/>
+/// </summary>
+public sealed class AbsoluteJsonPathExpression : JsonPathExpression, IEquatable<AbsoluteJsonPathExpression>
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using Builders;
-    using Conversion;
-    using Elements;
+    /// <summary>
+    /// Create <see cref="AbsoluteJsonPathExpression"/> instance from string presentation
+    /// </summary>
+    /// <param name="jsonPath">JsonPath expression string</param>
+    /// <exception cref="ArgumentNullException"><paramref name="jsonPath"/> is null or empty</exception>
+    /// <exception cref="JsonPathExpressionParsingException">Unable to parse <paramref name="jsonPath"/></exception>
+    public AbsoluteJsonPathExpression(string jsonPath)
+        : this(JsonPathExpressionStringParser.Parse(jsonPath))
+    {
+    }
 
     /// <summary>
-    /// JsonPath expression starting with <see cref="JsonPathRootElement"/>
+    /// Create <see cref="AbsoluteJsonPathExpression"/> instance with passed elements
     /// </summary>
-    public sealed class AbsoluteJsonPathExpression : JsonPathExpression, IEquatable<AbsoluteJsonPathExpression>
+    /// <param name="elements">Collection of JsonPath elements</param>
+    /// <exception cref="ArgumentNullException"><paramref name="elements"/> is null</exception>
+    /// <exception cref="ArgumentException">Empty elements collection provided</exception>
+    public AbsoluteJsonPathExpression(IReadOnlyCollection<JsonPathElement> elements)
+        : base(elements, true)
     {
-        /// <summary>
-        /// Create <see cref="AbsoluteJsonPathExpression"/> instance from string presentation
-        /// </summary>
-        /// <param name="jsonPath">JsonPath expression string</param>
-        /// <exception cref="ArgumentNullException"><paramref name="jsonPath"/> is null or empty</exception>
-        /// <exception cref="JsonPathExpressionParsingException">Unable to parse <paramref name="jsonPath"/></exception>
-        public AbsoluteJsonPathExpression(string jsonPath)
-            : this(JsonPathExpressionStringParser.Parse(jsonPath))
-        {
-        }
+    }
 
-        /// <summary>
-        /// Create <see cref="AbsoluteJsonPathExpression"/> instance with passed elements
-        /// </summary>
-        /// <param name="elements">Collection of JsonPath elements</param>
-        /// <exception cref="ArgumentNullException"><paramref name="elements"/> is null</exception>
-        /// <exception cref="ArgumentException">Empty elements collection provided</exception>
-        public AbsoluteJsonPathExpression(IReadOnlyCollection<JsonPathElement> elements)
-            : base(elements, true)
-        {
-        }
+    /// <summary>
+    /// Gets absolute JsonPath expression builder
+    /// </summary>
+    public static new IFirstAbsolutePathElementSyntax Builder => AbsoluteJsonPathExpressionBuilder.Create();
 
-        /// <summary>
-        /// Gets absolute JsonPath expression builder
-        /// </summary>
-        public static new IFirstAbsolutePathElementSyntax Builder => AbsoluteJsonPathExpressionBuilder.Create();
+    /// <inheritdoc cref="IEquatable{T}"/>
+    public bool Equals(AbsoluteJsonPathExpression? other)
+    {
+        return Equals((JsonPathExpression?)other);
+    }
 
-        /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(AbsoluteJsonPathExpression? other)
-        {
-            return Equals((JsonPathExpression?)other);
-        }
+    /// <summary>
+    /// Convert <see cref="string"/> to <see cref="AbsoluteJsonPathExpression"/>
+    /// </summary>
+    /// <param name="path">String representing JsonPath expression</param>
+    /// <remarks>
+    /// Null <see cref="string"/> is converted to null <see cref="AbsoluteJsonPathExpression"/>
+    /// </remarks>
+    [return: NotNullIfNotNull("path")]
+    public static explicit operator AbsoluteJsonPathExpression?(string? path)
+    {
+        return path is null
+            ? null
+            : new AbsoluteJsonPathExpression(path);
+    }
 
-        /// <summary>
-        /// Convert <see cref="string"/> to <see cref="AbsoluteJsonPathExpression"/>
-        /// </summary>
-        /// <param name="path">String representing JsonPath expression</param>
-        /// <remarks>
-        /// Null <see cref="string"/> is converted to null <see cref="AbsoluteJsonPathExpression"/>
-        /// </remarks>
-        [return: NotNullIfNotNull("path")]
-        public static explicit operator AbsoluteJsonPathExpression?(string? path)
-        {
-            return path is null
-                ? null
-                : new AbsoluteJsonPathExpression(path);
-        }
-
-        /// <inheritdoc />
-        public override JsonPathExpression Create(IReadOnlyCollection<JsonPathElement> elements)
-        {
-            return new AbsoluteJsonPathExpression(elements);
-        }
+    /// <inheritdoc />
+    public override JsonPathExpression Create(IReadOnlyCollection<JsonPathElement> elements)
+    {
+        return new AbsoluteJsonPathExpression(elements);
     }
 }

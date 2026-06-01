@@ -22,77 +22,76 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Elements
+namespace JsonPathExpressions.Elements;
+
+using System;
+
+/// <summary>
+/// JsonPath element representing any property
+/// </summary>
+public sealed class JsonPathAnyPropertyElement : JsonPathElement, IEquatable<JsonPathAnyPropertyElement>
 {
-    using System;
+    /// <inheritdoc />
+    public override JsonPathElementType Type => JsonPathElementType.AnyProperty;
 
-    /// <summary>
-    /// JsonPath element representing any property
-    /// </summary>
-    public sealed class JsonPathAnyPropertyElement : JsonPathElement, IEquatable<JsonPathAnyPropertyElement>
+    /// <inheritdoc />
+    public override bool IsStrict => false;
+
+    /// <inheritdoc />
+    public override bool IsNormalized => true;
+
+    /// <inheritdoc />
+    public override JsonPathElement GetNormalized()
     {
-        /// <inheritdoc />
-        public override JsonPathElementType Type => JsonPathElementType.AnyProperty;
+        return this;
+    }
 
-        /// <inheritdoc />
-        public override bool IsStrict => false;
+    /// <inheritdoc />
+    public override bool? Matches(JsonPathElement element)
+    {
+        if (element is null)
+            throw new ArgumentNullException(nameof(element));
 
-        /// <inheritdoc />
-        public override bool IsNormalized => true;
-
-        /// <inheritdoc />
-        public override JsonPathElement GetNormalized()
+        switch (element.Type)
         {
-            return this;
-        }
-
-        /// <inheritdoc />
-        public override bool? Matches(JsonPathElement element)
-        {
-            if (element is null)
-                throw new ArgumentNullException(nameof(element));
-
-            switch (element.Type)
-            {
-                case JsonPathElementType.Property:
-                case JsonPathElementType.AnyProperty:
-                case JsonPathElementType.PropertyList:
-                case JsonPathElementType.FilterExpression:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(JsonPathAnyPropertyElement? other)
-        {
-            return other is not null;
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(JsonPathElement? other)
-        {
-            return Equals((object?)other);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
+            case JsonPathElementType.Property:
+            case JsonPathElementType.AnyProperty:
+            case JsonPathElementType.PropertyList:
+            case JsonPathElementType.FilterExpression:
                 return true;
-            if (obj.GetType() != GetType())
+            default:
                 return false;
-
-            return Equals((JsonPathAnyPropertyElement) obj);
         }
+    }
 
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return GetType().GetHashCode();
-        }
+    /// <inheritdoc cref="IEquatable{T}"/>
+    public bool Equals(JsonPathAnyPropertyElement? other)
+    {
+        return other is not null;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(JsonPathElement? other)
+    {
+        return Equals((object?)other);
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != GetType())
+            return false;
+
+        return Equals((JsonPathAnyPropertyElement) obj);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return GetType().GetHashCode();
     }
 }

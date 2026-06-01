@@ -22,92 +22,91 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Utils
+namespace JsonPathExpressions.Utils;
+
+using System;
+using System.Collections.Generic;
+
+internal static class StringExtensions
 {
-    using System;
-    using System.Collections.Generic;
+    private static readonly char[] CommaWithSingleQuote = [',', '\''];
+    private static readonly char[] ClosingSquareBracketWithSingleQuote = [']', '\''];
 
-    internal static class StringExtensions
+    public static IReadOnlyCollection<string> SplitQuoted(this string str, char delimiter, char quote)
     {
-        private static readonly char[] CommaWithSingleQuote = [',', '\''];
-        private static readonly char[] ClosingSquareBracketWithSingleQuote = [']', '\''];
+        if (quote == delimiter)
+            throw new ArgumentException("Quote character is equal to delimiter", nameof(quote));
 
-        public static IReadOnlyCollection<string> SplitQuoted(this string str, char delimiter, char quote)
+        var parts = new List<string>();
+        var valueWithQuote = GetValueWithQuote(delimiter, quote);
+
+        for (int nextIndex = 0; nextIndex < str.Length;)
         {
-            if (quote == delimiter)
-                throw new ArgumentException("Quote character is equal to delimiter", nameof(quote));
-
-            var parts = new List<string>();
-            var valueWithQuote = GetValueWithQuote(delimiter, quote);
-
-            for (int nextIndex = 0; nextIndex < str.Length;)
+            int index = str.IndexOfOutsideQuotes(delimiter, quote, nextIndex, valueWithQuote);
+            if (index == -1)
             {
-                int index = str.IndexOfOutsideQuotes(delimiter, quote, nextIndex, valueWithQuote);
-                if (index == -1)
-                {
-                    parts.Add(str.Substring(nextIndex));
-                    break;
-                }
-
-                parts.Add(str.Substring(nextIndex, index - nextIndex));
-                nextIndex = index + 1;
+                parts.Add(str.Substring(nextIndex));
+                break;
             }
 
-            return parts;
+            parts.Add(str.Substring(nextIndex, index - nextIndex));
+            nextIndex = index + 1;
         }
 
-        public static int IndexOfOutsideQuotes(this string str, char value, char quote, int startIndex)
-        {
-            if (quote == value)
-                throw new ArgumentException("Quote character is equal to searched value", nameof(quote));
+        return parts;
+    }
 
-            return str.IndexOfOutsideQuotes(value, quote, startIndex, GetValueWithQuote(value, quote));
+    public static int IndexOfOutsideQuotes(this string str, char value, char quote, int startIndex)
+    {
+        if (quote == value)
+            throw new ArgumentException("Quote character is equal to searched value", nameof(quote));
+
+        return str.IndexOfOutsideQuotes(value, quote, startIndex, GetValueWithQuote(value, quote));
+    }
+
+    public static bool EndsWith(this string str, int position)
+    {
+        return position == str.Length - 1;
+    }
+
+    public static bool ContainsAt(this string str, char value, int atPosition)
+    {
+        return atPosition < str.Length && str[atPosition] == value;
+    }
+
+    private static int IndexOfOutsideQuotes(this string str, char value, char quote, int startIndex, char[] valueWithQuote)
+    {
+        while (startIndex < str.Length)
+        {
+            int index = str.IndexOfAny(valueWithQuote, startIndex);
+            if (index == -1 || str[index] == value)
+                return index;
+            if (str.EndsWith(index))
+                return -1;
+
+            index = str.IndexOf(quote, index + 1);
+            if (index == -1)
+                return -1;
+
+            startIndex = index + 1;
         }
 
-        public static bool EndsWith(this string str, int position)
-        {
-            return position == str.Length - 1;
-        }
+        return -1;
+    }
 
-        public static bool ContainsAt(this string str, char value, int atPosition)
+    private static char[] GetValueWithQuote(char value, char quote)
+    {
+        if (quote == '\'')
         {
-            return atPosition < str.Length && str[atPosition] == value;
-        }
-
-        private static int IndexOfOutsideQuotes(this string str, char value, char quote, int startIndex, char[] valueWithQuote)
-        {
-            while (startIndex < str.Length)
+            switch (value)
             {
-                int index = str.IndexOfAny(valueWithQuote, startIndex);
-                if (index == -1 || str[index] == value)
-                    return index;
-                if (str.EndsWith(index))
-                    return -1;
-
-                index = str.IndexOf(quote, index + 1);
-                if (index == -1)
-                    return -1;
-
-                startIndex = index + 1;
+                case ',':
+                    return CommaWithSingleQuote;
+                case ']':
+                    return ClosingSquareBracketWithSingleQuote;
             }
-
-            return -1;
         }
 
-        private static char[] GetValueWithQuote(char value, char quote)
-        {
-            if (quote == '\'')
-            {
-                switch (value)
-                {
-                    case ',':
-                        return CommaWithSingleQuote;
-                    case ']':
-                        return ClosingSquareBracketWithSingleQuote;
-                }
-            }
-
-            return [value, quote];
-        }
+        return [value, quote];
     }
 }

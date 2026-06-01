@@ -22,66 +22,65 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Tests.Matching
+namespace JsonPathExpressions.Tests.Matching;
+
+using System.Collections.Generic;
+using FluentAssertions;
+using JsonPathExpressions.Matching;
+using Xunit;
+
+public class JsonPathExpressionMatchingSetTests
 {
-    using System.Collections.Generic;
-    using FluentAssertions;
-    using JsonPathExpressions.Matching;
-    using Xunit;
-
-    public class JsonPathExpressionMatchingSetTests
+    [Theory]
+    [InlineData("$.a.*.c[*]", "$.a.b.c[42]", true)]
+    [InlineData("$.a.*.c[:42]", "$.a.b.c[42]", false)]
+    [InlineData("$.a..[42]", "$.a.b.c[42]", true)]
+    [InlineData("$.a..[:42]", "$.a.b.c[42]", false)]
+    [InlineData("$.a.*.c[(@.length-1)]", "$.a.b.c[42]", null)]
+    [InlineData("$.a..[(@.length-1)]", "$.a.b.c[42]", null)]
+    public void Matches(string pathInSet, string path, bool? expected)
     {
-        [Theory]
-        [InlineData("$.a.*.c[*]", "$.a.b.c[42]", true)]
-        [InlineData("$.a.*.c[:42]", "$.a.b.c[42]", false)]
-        [InlineData("$.a..[42]", "$.a.b.c[42]", true)]
-        [InlineData("$.a..[:42]", "$.a.b.c[42]", false)]
-        [InlineData("$.a.*.c[(@.length-1)]", "$.a.b.c[42]", null)]
-        [InlineData("$.a..[(@.length-1)]", "$.a.b.c[42]", null)]
-        public void Matches(string pathInSet, string path, bool? expected)
+        var matchingSet = new JsonPathExpressionMatchingSet<JsonPathExpression>();
+        matchingSet.Add(new JsonPathExpression(pathInSet));
+
+        bool? actual = matchingSet.Matches(new JsonPathExpression(path));
+
+        actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void Matches_PossiblyMatchesBySliceAndMatchesByRecursiveDescent_ReturnsTrue()
+    {
+        var matchingSet = new JsonPathExpressionMatchingSet<JsonPathExpression>
         {
-            var matchingSet = new JsonPathExpressionMatchingSet<JsonPathExpression>();
-            matchingSet.Add(new JsonPathExpression(pathInSet));
+            new JsonPathExpression("$.a[-1:].b[*]"),
+            new JsonPathExpression("$..b[*]")
+        };
 
-            bool? actual = matchingSet.Matches(new JsonPathExpression(path));
+        bool? actual = matchingSet.Matches(new JsonPathExpression("$.a[7].b[42]"));
 
-            actual.Should().Be(expected);
-        }
+        actual.Should().BeTrue();
+    }
 
-        [Fact]
-        public void Matches_PossiblyMatchesBySliceAndMatchesByRecursiveDescent_ReturnsTrue()
+    [Fact]
+    public void Matches_ReturnsMatched()
+    {
+        var matchingSet = new JsonPathExpressionMatchingSet<JsonPathExpression>
         {
-            var matchingSet = new JsonPathExpressionMatchingSet<JsonPathExpression>
-            {
-                new JsonPathExpression("$.a[-1:].b[*]"),
-                new JsonPathExpression("$..b[*]")
-            };
-
-            bool? actual = matchingSet.Matches(new JsonPathExpression("$.a[7].b[42]"));
-
-            actual.Should().BeTrue();
-        }
-
-        [Fact]
-        public void Matches_ReturnsMatched()
+            new JsonPathExpression("$.a.*.c[*]"),
+            new JsonPathExpression("$.*.b.c[:]"),
+            new JsonPathExpression("$.*.b.c[7]"),
+            new JsonPathExpression("$['c','d'].b.c[*]")
+        };
+        var expected = new List<JsonPathExpression>
         {
-            var matchingSet = new JsonPathExpressionMatchingSet<JsonPathExpression>
-            {
-                new JsonPathExpression("$.a.*.c[*]"),
-                new JsonPathExpression("$.*.b.c[:]"),
-                new JsonPathExpression("$.*.b.c[7]"),
-                new JsonPathExpression("$['c','d'].b.c[*]")
-            };
-            var expected = new List<JsonPathExpression>
-            {
-                new JsonPathExpression("$.a.*.c[*]"),
-                new JsonPathExpression("$.*.b.c[:]")
-            };
+            new JsonPathExpression("$.a.*.c[*]"),
+            new JsonPathExpression("$.*.b.c[:]")
+        };
 
-            bool matched = matchingSet.Matches(new JsonPathExpression("$.a.b.c[42]"), out var actual);
+        bool matched = matchingSet.Matches(new JsonPathExpression("$.a.b.c[42]"), out var actual);
 
-            matched.Should().BeTrue();
-            actual.Should().BeEquivalentTo(expected);
-        }
+        matched.Should().BeTrue();
+        actual.Should().BeEquivalentTo(expected);
     }
 }

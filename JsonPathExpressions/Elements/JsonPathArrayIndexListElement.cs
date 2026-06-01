@@ -22,185 +22,184 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Elements
+namespace JsonPathExpressions.Elements;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Utils;
+
+/// <summary>
+/// JsonPath element representing a list of array indexes
+/// </summary>
+public sealed class JsonPathArrayIndexListElement : JsonPathElement, IEquatable<JsonPathArrayIndexListElement>
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using Utils;
+    private readonly HashSet<int> _indexes;
+    private readonly Lazy<bool> _isNormalized;
 
     /// <summary>
-    /// JsonPath element representing a list of array indexes
+    /// Create <see cref="JsonPathArrayIndexListElement"/> instance
     /// </summary>
-    public sealed class JsonPathArrayIndexListElement : JsonPathElement, IEquatable<JsonPathArrayIndexListElement>
+    /// <param name="indexes">Collection of array indexes</param>
+    /// <exception cref="ArgumentException">Empty indexes collection provided</exception>
+    /// <exception cref="ArgumentOutOfRangeException">At least one index is negative</exception>
+    public JsonPathArrayIndexListElement(IReadOnlyCollection<int> indexes)
     {
-        private readonly HashSet<int> _indexes;
-        private readonly Lazy<bool> _isNormalized;
+        if (indexes is null)
+            throw new ArgumentNullException(nameof(indexes));
+        if (indexes.Count == 0)
+            throw new ArgumentException("No indexes provided", nameof(indexes));
+        if (indexes.Any(x => x < 0))
+            throw new ArgumentOutOfRangeException(nameof(indexes), indexes, "Array index must not be negative");
 
-        /// <summary>
-        /// Create <see cref="JsonPathArrayIndexListElement"/> instance
-        /// </summary>
-        /// <param name="indexes">Collection of array indexes</param>
-        /// <exception cref="ArgumentException">Empty indexes collection provided</exception>
-        /// <exception cref="ArgumentOutOfRangeException">At least one index is negative</exception>
-        public JsonPathArrayIndexListElement(IReadOnlyCollection<int> indexes)
+        _indexes = new HashSet<int>(indexes);
+        _isNormalized = new Lazy<bool>(ComputeIsNormalized, LazyThreadSafetyMode.PublicationOnly);
+    }
+
+    /// <inheritdoc />
+    public override JsonPathElementType Type => JsonPathElementType.ArrayIndexList;
+
+    /// <inheritdoc />
+    public override bool IsStrict => Indexes.Count == 1;
+
+    /// <inheritdoc />
+    public override bool IsNormalized => _isNormalized.Value;
+
+    /// <summary>
+    /// Gets collection of array indexes
+    /// </summary>
+    /// <remarks>
+    /// It is guaranteed that the collection is not empty
+    /// </remarks>
+    public IReadOnlyCollection<int> Indexes => _indexes;
+
+    /// <inheritdoc />
+    public override JsonPathElement GetNormalized()
+    {
+        if (Indexes.Count == 1)
+            return new JsonPathArrayIndexElement(Indexes.First());
+
+        return IsSlice(Indexes, out int? start, out int? end, out int step)
+            ? (JsonPathElement)new JsonPathArraySliceElement(start, end, step)
+            : this;
+    }
+
+    /// <inheritdoc />
+    public override bool? Matches(JsonPathElement element)
+    {
+        if (element is null)
+            throw new ArgumentNullException(nameof(element));
+
+        switch (element)
         {
-            if (indexes is null)
-                throw new ArgumentNullException(nameof(indexes));
-            if (indexes.Count == 0)
-                throw new ArgumentException("No indexes provided", nameof(indexes));
-            if (indexes.Any(x => x < 0))
-                throw new ArgumentOutOfRangeException(nameof(indexes), indexes, "Array index must not be negative");
+            case JsonPathArrayIndexElement arrayIndexElement:
+                return _indexes.Contains(arrayIndexElement.Index);
+            case JsonPathArrayIndexListElement arrayIndexListElement:
+                return arrayIndexListElement.Indexes.All(x => _indexes.Contains(x));
+            case JsonPathArraySliceElement arraySliceElement:
+                if (arraySliceElement.ContainsAllIndexes)
+                    return Indexes.Count == int.MaxValue;
 
-            _indexes = new HashSet<int>(indexes);
-            _isNormalized = new Lazy<bool>(ComputeIsNormalized, LazyThreadSafetyMode.PublicationOnly);
-        }
-
-        /// <inheritdoc />
-        public override JsonPathElementType Type => JsonPathElementType.ArrayIndexList;
-
-        /// <inheritdoc />
-        public override bool IsStrict => Indexes.Count == 1;
-
-        /// <inheritdoc />
-        public override bool IsNormalized => _isNormalized.Value;
-
-        /// <summary>
-        /// Gets collection of array indexes
-        /// </summary>
-        /// <remarks>
-        /// It is guaranteed that the collection is not empty
-        /// </remarks>
-        public IReadOnlyCollection<int> Indexes => _indexes;
-
-        /// <inheritdoc />
-        public override JsonPathElement GetNormalized()
-        {
-            if (Indexes.Count == 1)
-                return new JsonPathArrayIndexElement(Indexes.First());
-
-            return IsSlice(Indexes, out int? start, out int? end, out int step)
-                ? (JsonPathElement)new JsonPathArraySliceElement(start, end, step)
-                : this;
-        }
-
-        /// <inheritdoc />
-        public override bool? Matches(JsonPathElement element)
-        {
-            if (element is null)
-                throw new ArgumentNullException(nameof(element));
-
-            switch (element)
-            {
-                case JsonPathArrayIndexElement arrayIndexElement:
-                    return _indexes.Contains(arrayIndexElement.Index);
-                case JsonPathArrayIndexListElement arrayIndexListElement:
-                    return arrayIndexListElement.Indexes.All(x => _indexes.Contains(x));
-                case JsonPathArraySliceElement arraySliceElement:
-                    if (arraySliceElement.ContainsAllIndexes)
-                        return Indexes.Count == int.MaxValue;
-
-                    return arraySliceElement.GetIndexes()?.All(x => _indexes.Contains(x));
-                default:
-                    return false;
-            }
-        }
-
-        /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(JsonPathArrayIndexListElement? other)
-        {
-            if (ReferenceEquals(null, other))
+                return arraySliceElement.GetIndexes()?.All(x => _indexes.Contains(x));
+            default:
                 return false;
-            if (ReferenceEquals(this, other))
-                return true;
-
-            return EqualityComparer<int>.Default.CollectionsEqual(Indexes, other.Indexes);
         }
+    }
 
-        /// <inheritdoc />
-        public override bool Equals(JsonPathElement? other)
-        {
-            return Equals((object?)other);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            if (obj.GetType() != GetType())
-                return false;
-
-            return Equals((JsonPathArrayIndexListElement) obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode = EqualityComparer<int>.Default.GetCollectionHashCode(Indexes);
-                hashCode = (hashCode * 397) ^ GetType().GetHashCode();
-
-                return hashCode;
-            }
-        }
-
-        private bool ComputeIsNormalized()
-        {
-            return Indexes.Count > 1
-                   && !IsSlice(Indexes, out _, out _, out _);
-        }
-
-        private static bool IsSlice(IReadOnlyCollection<int> sortedIndexes, out int? start, out int? end, out int step)
-        {
-            if (sortedIndexes.Count < 3)
-            {
-                start = null;
-                end = 0;
-                step = 1;
-                return false;
-            }
-
-            int? first = null;
-            int? second = null;
-            int last = 0;
-            step = 0;
-
-            foreach (int index in sortedIndexes)
-            {
-                if (first is null)
-                {
-                    first = index;
-                    last = index;
-                    continue;
-                }
-
-                if (second is null)
-                {
-                    second = index;
-                    last = index;
-                    step = second.Value - first.Value;
-                    continue;
-                }
-
-                if (index - last != step)
-                {
-                    start = 0;
-                    end = 0;
-                    return false;
-                }
-
-                last = index;
-            }
-
-            start = first == 0 ? default : first;
-            end = last == int.MaxValue ? default(int?) : last + Math.Sign(step);
-
+    /// <inheritdoc cref="IEquatable{T}"/>
+    public bool Equals(JsonPathArrayIndexListElement? other)
+    {
+        if (ReferenceEquals(null, other))
+            return false;
+        if (ReferenceEquals(this, other))
             return true;
+
+        return EqualityComparer<int>.Default.CollectionsEqual(Indexes, other.Indexes);
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(JsonPathElement? other)
+    {
+        return Equals((object?)other);
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != GetType())
+            return false;
+
+        return Equals((JsonPathArrayIndexListElement) obj);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            int hashCode = EqualityComparer<int>.Default.GetCollectionHashCode(Indexes);
+            hashCode = (hashCode * 397) ^ GetType().GetHashCode();
+
+            return hashCode;
         }
+    }
+
+    private bool ComputeIsNormalized()
+    {
+        return Indexes.Count > 1
+               && !IsSlice(Indexes, out _, out _, out _);
+    }
+
+    private static bool IsSlice(IReadOnlyCollection<int> sortedIndexes, out int? start, out int? end, out int step)
+    {
+        if (sortedIndexes.Count < 3)
+        {
+            start = null;
+            end = 0;
+            step = 1;
+            return false;
+        }
+
+        int? first = null;
+        int? second = null;
+        int last = 0;
+        step = 0;
+
+        foreach (int index in sortedIndexes)
+        {
+            if (first is null)
+            {
+                first = index;
+                last = index;
+                continue;
+            }
+
+            if (second is null)
+            {
+                second = index;
+                last = index;
+                step = second.Value - first.Value;
+                continue;
+            }
+
+            if (index - last != step)
+            {
+                start = 0;
+                end = 0;
+                return false;
+            }
+
+            last = index;
+        }
+
+        start = first == 0 ? default : first;
+        end = last == int.MaxValue ? default(int?) : last + Math.Sign(step);
+
+        return true;
     }
 }

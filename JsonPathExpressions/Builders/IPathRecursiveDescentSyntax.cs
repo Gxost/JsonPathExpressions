@@ -22,17 +22,16 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Builders
+namespace JsonPathExpressions.Builders;
+
+/// <summary>
+/// Fluent syntax allowing to add recursive descent to next JsonPath element
+/// </summary>
+public interface IPathRecursiveDescentSyntax
 {
     /// <summary>
-    /// Fluent syntax allowing to add recursive descent to next JsonPath element
+    /// Add recursive descent to next JsonPath element
     /// </summary>
-    public interface IPathRecursiveDescentSyntax
-    {
-        /// <summary>
-        /// Add recursive descent to next JsonPath element
-        /// </summary>
-        /// <returns><see cref="IPathElementSyntax"/></returns>
-        IPathElementSyntax RecursiveDescentTo();
-    }
+    /// <returns><see cref="IPathElementSyntax"/></returns>
+    IPathElementSyntax RecursiveDescentTo();
 }

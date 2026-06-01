@@ -22,72 +22,71 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions
+namespace JsonPathExpressions;
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using Builders;
+using Conversion;
+using Elements;
+
+/// <summary>
+/// JsonPath expression not starting with <see cref="JsonPathRootElement"/>
+/// </summary>
+public sealed class RelativeJsonPathExpression : JsonPathExpression, IEquatable<RelativeJsonPathExpression>
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using Builders;
-    using Conversion;
-    using Elements;
+    /// <summary>
+    /// Create <see cref="RelativeJsonPathExpression"/> instance from string presentation
+    /// </summary>
+    /// <param name="jsonPath">JsonPath expression string</param>
+    /// <exception cref="ArgumentNullException"><paramref name="jsonPath"/> is null or empty</exception>
+    /// <exception cref="JsonPathExpressionParsingException">Unable to parse <paramref name="jsonPath"/></exception>
+    public RelativeJsonPathExpression(string jsonPath)
+        : this(JsonPathExpressionStringParser.Parse(jsonPath))
+    {
+    }
 
     /// <summary>
-    /// JsonPath expression not starting with <see cref="JsonPathRootElement"/>
+    /// Create <see cref="RelativeJsonPathExpression"/> instance with passed elements
     /// </summary>
-    public sealed class RelativeJsonPathExpression : JsonPathExpression, IEquatable<RelativeJsonPathExpression>
+    /// <param name="elements">Collection of JsonPath elements</param>
+    /// <exception cref="ArgumentNullException"><paramref name="elements"/> is null</exception>
+    /// <exception cref="ArgumentException">Empty elements collection provided</exception>
+    public RelativeJsonPathExpression(IReadOnlyCollection<JsonPathElement> elements)
+        : base(elements, false)
     {
-        /// <summary>
-        /// Create <see cref="RelativeJsonPathExpression"/> instance from string presentation
-        /// </summary>
-        /// <param name="jsonPath">JsonPath expression string</param>
-        /// <exception cref="ArgumentNullException"><paramref name="jsonPath"/> is null or empty</exception>
-        /// <exception cref="JsonPathExpressionParsingException">Unable to parse <paramref name="jsonPath"/></exception>
-        public RelativeJsonPathExpression(string jsonPath)
-            : this(JsonPathExpressionStringParser.Parse(jsonPath))
-        {
-        }
+    }
 
-        /// <summary>
-        /// Create <see cref="RelativeJsonPathExpression"/> instance with passed elements
-        /// </summary>
-        /// <param name="elements">Collection of JsonPath elements</param>
-        /// <exception cref="ArgumentNullException"><paramref name="elements"/> is null</exception>
-        /// <exception cref="ArgumentException">Empty elements collection provided</exception>
-        public RelativeJsonPathExpression(IReadOnlyCollection<JsonPathElement> elements)
-            : base(elements, false)
-        {
-        }
+    /// <inheritdoc cref="IEquatable{T}"/>
+    public bool Equals(RelativeJsonPathExpression? other)
+    {
+        return Equals((JsonPathExpression?) other);
+    }
 
-        /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(RelativeJsonPathExpression? other)
-        {
-            return Equals((JsonPathExpression?) other);
-        }
+    /// <summary>
+    /// Gets relative JsonPath expression builder
+    /// </summary>
+    public static new IFirstRelativePathElementSyntax Builder => RelativeJsonPathExpressionBuilder.Create();
 
-        /// <summary>
-        /// Gets relative JsonPath expression builder
-        /// </summary>
-        public static new IFirstRelativePathElementSyntax Builder => RelativeJsonPathExpressionBuilder.Create();
+    /// <summary>
+    /// Convert <see cref="string"/> to <see cref="RelativeJsonPathExpression"/>
+    /// </summary>
+    /// <param name="path">String representing JsonPath expression</param>
+    /// <remarks>
+    /// Null <see cref="string"/> is converted to null <see cref="RelativeJsonPathExpression"/>
+    /// </remarks>
+    [return: NotNullIfNotNull("path")]
+    public static explicit operator RelativeJsonPathExpression?(string? path)
+    {
+        return path is null
+            ? null
+            : new RelativeJsonPathExpression(path);
+    }
 
-        /// <summary>
-        /// Convert <see cref="string"/> to <see cref="RelativeJsonPathExpression"/>
-        /// </summary>
-        /// <param name="path">String representing JsonPath expression</param>
-        /// <remarks>
-        /// Null <see cref="string"/> is converted to null <see cref="RelativeJsonPathExpression"/>
-        /// </remarks>
-        [return: NotNullIfNotNull("path")]
-        public static explicit operator RelativeJsonPathExpression?(string? path)
-        {
-            return path is null
-                ? null
-                : new RelativeJsonPathExpression(path);
-        }
-
-        /// <inheritdoc />
-        public override JsonPathExpression Create(IReadOnlyCollection<JsonPathElement> elements)
-        {
-            return new RelativeJsonPathExpression(elements);
-        }
+    /// <inheritdoc />
+    public override JsonPathExpression Create(IReadOnlyCollection<JsonPathElement> elements)
+    {
+        return new RelativeJsonPathExpression(elements);
     }
 }

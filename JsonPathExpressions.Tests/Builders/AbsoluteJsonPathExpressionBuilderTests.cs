@@ -22,45 +22,44 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Tests.Builders
+namespace JsonPathExpressions.Tests.Builders;
+
+using FluentAssertions;
+using JsonPathExpressions.Builders;
+using JsonPathExpressions.Elements;
+using Xunit;
+
+public class AbsoluteJsonPathExpressionBuilderTests
 {
-    using FluentAssertions;
-    using JsonPathExpressions.Builders;
-    using JsonPathExpressions.Elements;
-    using Xunit;
-
-    public class AbsoluteJsonPathExpressionBuilderTests
+    [Fact]
+    public void Build_Builds()
     {
-        [Fact]
-        public void Build_Builds()
-        {
-            var expected = new AbsoluteJsonPathExpression([
-                new JsonPathRootElement(),
-                new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("a")),
-                new JsonPathAnyPropertyElement(),
-                new JsonPathPropertyListElement(["b", "c"]),
-                new JsonPathArrayIndexElement(42),
-                new JsonPathAnyArrayIndexElement(),
-                new JsonPathArrayIndexListElement([7, 42]),
-                new JsonPathArraySliceElement(0, 42, 2),
-                new JsonPathExpressionElement("@.length-1"),
-                new JsonPathFilterExpressionElement("@.name = 'a'")
-            ]);
+        var expected = new AbsoluteJsonPathExpression([
+            new JsonPathRootElement(),
+            new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("a")),
+            new JsonPathAnyPropertyElement(),
+            new JsonPathPropertyListElement(["b", "c"]),
+            new JsonPathArrayIndexElement(42),
+            new JsonPathAnyArrayIndexElement(),
+            new JsonPathArrayIndexListElement([7, 42]),
+            new JsonPathArraySliceElement(0, 42, 2),
+            new JsonPathExpressionElement("@.length-1"),
+            new JsonPathFilterExpressionElement("@.name = 'a'")
+        ]);
 
-            var actual = AbsoluteJsonPathExpressionBuilder.Create()
-                .Root()
-                .RecursiveDescentTo().Property("a")
-                .AnyProperty()
-                .Properties("b", "c")
-                .ArrayIndex(42)
-                .AnyArrayIndex()
-                .ArrayIndexes(7, 42)
-                .ArraySlice(0, 42, 2)
-                .Expression("@.length-1")
-                .FilterExpression("@.name = 'a'")
-                .Build();
+        var actual = AbsoluteJsonPathExpressionBuilder.Create()
+            .Root()
+            .RecursiveDescentTo().Property("a")
+            .AnyProperty()
+            .Properties("b", "c")
+            .ArrayIndex(42)
+            .AnyArrayIndex()
+            .ArrayIndexes(7, 42)
+            .ArraySlice(0, 42, 2)
+            .Expression("@.length-1")
+            .FilterExpression("@.name = 'a'")
+            .Build();
 
-            actual.Should().BeEquivalentTo(expected);
-        }
+        actual.Should().BeEquivalentTo(expected);
     }
 }

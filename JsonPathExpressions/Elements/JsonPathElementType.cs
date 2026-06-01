@@ -22,66 +22,65 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Elements
+namespace JsonPathExpressions.Elements;
+
+/// <summary>
+/// JsonPath element type
+/// </summary>
+public enum JsonPathElementType
 {
     /// <summary>
-    /// JsonPath element type
+    /// Root element
     /// </summary>
-    public enum JsonPathElementType
-    {
-        /// <summary>
-        /// Root element
-        /// </summary>
-        Root,
+    Root,
 
-        /// <summary>
-        /// Recursive descent element
-        /// </summary>
-        RecursiveDescent,
+    /// <summary>
+    /// Recursive descent element
+    /// </summary>
+    RecursiveDescent,
 
-        /// <summary>
-        /// Property element
-        /// </summary>
-        Property,
+    /// <summary>
+    /// Property element
+    /// </summary>
+    Property,
 
-        /// <summary>
-        /// Any property element
-        /// </summary>
-        AnyProperty,
+    /// <summary>
+    /// Any property element
+    /// </summary>
+    AnyProperty,
 
-        /// <summary>
-        /// Properties list element
-        /// </summary>
-        PropertyList,
+    /// <summary>
+    /// Properties list element
+    /// </summary>
+    PropertyList,
 
-        /// <summary>
-        /// Array index element
-        /// </summary>
-        ArrayIndex,
+    /// <summary>
+    /// Array index element
+    /// </summary>
+    ArrayIndex,
 
-        /// <summary>
-        /// Any array index element
-        /// </summary>
-        AnyArrayIndex,
+    /// <summary>
+    /// Any array index element
+    /// </summary>
+    AnyArrayIndex,
 
-        /// <summary>
-        /// Array indexes list element
-        /// </summary>
-        ArrayIndexList,
+    /// <summary>
+    /// Array indexes list element
+    /// </summary>
+    ArrayIndexList,
 
-        /// <summary>
-        /// Array slice element
-        /// </summary>
-        ArraySlice,
+    /// <summary>
+    /// Array slice element
+    /// </summary>
+    ArraySlice,
 
-        /// <summary>
-        /// Expression element
-        /// </summary>
-        Expression,
+    /// <summary>
+    /// Expression element
+    /// </summary>
+    Expression,
 
-        /// <summary>
-        /// Filter expression element
-        /// </summary>
-        FilterExpression
-    }
+    /// <summary>
+    /// Filter expression element
+    /// </summary>
+    FilterExpression
 }

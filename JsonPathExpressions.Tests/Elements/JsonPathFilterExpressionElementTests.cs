@@ -22,73 +22,72 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Tests.Elements
+namespace JsonPathExpressions.Tests.Elements;
+
+using FluentAssertions;
+using Helpers;
+using JsonPathExpressions.Elements;
+using Xunit;
+
+public class JsonPathFilterExpressionElementTests
 {
-    using FluentAssertions;
-    using Helpers;
-    using JsonPathExpressions.Elements;
-    using Xunit;
-
-    public class JsonPathFilterExpressionElementTests
+    [Fact]
+    public void IsStrict_ReturnsFalse()
     {
-        [Fact]
-        public void IsStrict_ReturnsFalse()
-        {
-            var element = new JsonPathFilterExpressionElement("@.name = 'a'");
+        var element = new JsonPathFilterExpressionElement("@.name = 'a'");
 
-            element.IsStrict.Should().BeFalse();
-        }
+        element.IsStrict.Should().BeFalse();
+    }
 
-        [Fact]
-        public void IsNormalized_ReturnsTrue()
-        {
-            var element = new JsonPathFilterExpressionElement("@.name = 'a'");
+    [Fact]
+    public void IsNormalized_ReturnsTrue()
+    {
+        var element = new JsonPathFilterExpressionElement("@.name = 'a'");
 
-            element.IsNormalized.Should().BeTrue();
-        }
+        element.IsNormalized.Should().BeTrue();
+    }
 
-        [Fact]
-        public void GetNormalized_ReturnsSelf()
-        {
-            var element = new JsonPathFilterExpressionElement("@.name = 'a'");
+    [Fact]
+    public void GetNormalized_ReturnsSelf()
+    {
+        var element = new JsonPathFilterExpressionElement("@.name = 'a'");
 
-            var actual = element.GetNormalized();
+        var actual = element.GetNormalized();
 
-            actual.Should().Be(element);
-        }
+        actual.Should().Be(element);
+    }
 
-        [Theory]
-        [InlineData("@.name", "@.name", true)]
-        [InlineData("@.name", "@.name = 'a'", null)]
-        public void Matches_Expression(string expression, string otherExpression, bool? expected)
-        {
-            var element = new JsonPathFilterExpressionElement(expression);
-            var other = new JsonPathFilterExpressionElement(otherExpression);
+    [Theory]
+    [InlineData("@.name", "@.name", true)]
+    [InlineData("@.name", "@.name = 'a'", null)]
+    public void Matches_Expression(string expression, string otherExpression, bool? expected)
+    {
+        var element = new JsonPathFilterExpressionElement(expression);
+        var other = new JsonPathFilterExpressionElement(otherExpression);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().Be(expected);
-        }
+        actual.Should().Be(expected);
+    }
 
-        [Theory]
-        [InlineData(JsonPathElementType.Root, false)]
-        [InlineData(JsonPathElementType.RecursiveDescent, false)]
-        [InlineData(JsonPathElementType.Property, false)]
-        [InlineData(JsonPathElementType.AnyProperty, false)]
-        [InlineData(JsonPathElementType.PropertyList, false)]
-        [InlineData(JsonPathElementType.ArrayIndex, null)]
-        [InlineData(JsonPathElementType.AnyArrayIndex, null)]
-        [InlineData(JsonPathElementType.ArrayIndexList, null)]
-        [InlineData(JsonPathElementType.ArraySlice, null)]
-        [InlineData(JsonPathElementType.Expression, null)]
-        public void Matches_Any(JsonPathElementType type, bool? expected)
-        {
-            var element = new JsonPathFilterExpressionElement("@.name");
-            var other = ElementCreator.CreateAny(type);
+    [Theory]
+    [InlineData(JsonPathElementType.Root, false)]
+    [InlineData(JsonPathElementType.RecursiveDescent, false)]
+    [InlineData(JsonPathElementType.Property, false)]
+    [InlineData(JsonPathElementType.AnyProperty, false)]
+    [InlineData(JsonPathElementType.PropertyList, false)]
+    [InlineData(JsonPathElementType.ArrayIndex, null)]
+    [InlineData(JsonPathElementType.AnyArrayIndex, null)]
+    [InlineData(JsonPathElementType.ArrayIndexList, null)]
+    [InlineData(JsonPathElementType.ArraySlice, null)]
+    [InlineData(JsonPathElementType.Expression, null)]
+    public void Matches_Any(JsonPathElementType type, bool? expected)
+    {
+        var element = new JsonPathFilterExpressionElement("@.name");
+        var other = ElementCreator.CreateAny(type);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().Be(expected);
-        }
+        actual.Should().Be(expected);
     }
 }

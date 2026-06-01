@@ -22,78 +22,77 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Elements
+namespace JsonPathExpressions.Elements;
+
+using System;
+
+/// <summary>
+/// JsonPath element representing any array index
+/// </summary>
+public sealed class JsonPathAnyArrayIndexElement : JsonPathElement, IEquatable<JsonPathAnyArrayIndexElement>
 {
-    using System;
+    /// <inheritdoc />
+    public override JsonPathElementType Type => JsonPathElementType.AnyArrayIndex;
 
-    /// <summary>
-    /// JsonPath element representing any array index
-    /// </summary>
-    public sealed class JsonPathAnyArrayIndexElement : JsonPathElement, IEquatable<JsonPathAnyArrayIndexElement>
+    /// <inheritdoc />
+    public override bool IsStrict => false;
+
+    /// <inheritdoc />
+    public override bool IsNormalized => true;
+
+    /// <inheritdoc />
+    public override JsonPathElement GetNormalized()
     {
-        /// <inheritdoc />
-        public override JsonPathElementType Type => JsonPathElementType.AnyArrayIndex;
+        return this;
+    }
 
-        /// <inheritdoc />
-        public override bool IsStrict => false;
+    /// <inheritdoc />
+    public override bool? Matches(JsonPathElement element)
+    {
+        if (element is null)
+            throw new ArgumentNullException(nameof(element));
 
-        /// <inheritdoc />
-        public override bool IsNormalized => true;
-
-        /// <inheritdoc />
-        public override JsonPathElement GetNormalized()
+        switch (element.Type)
         {
-            return this;
-        }
-
-        /// <inheritdoc />
-        public override bool? Matches(JsonPathElement element)
-        {
-            if (element is null)
-                throw new ArgumentNullException(nameof(element));
-
-            switch (element.Type)
-            {
-                case JsonPathElementType.AnyArrayIndex:
-                case JsonPathElementType.ArrayIndex:
-                case JsonPathElementType.ArrayIndexList:
-                case JsonPathElementType.ArraySlice:
-                case JsonPathElementType.Expression:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(JsonPathAnyArrayIndexElement? other)
-        {
-            return other is not null;
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(JsonPathElement? other)
-        {
-            return Equals((object?)other);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
+            case JsonPathElementType.AnyArrayIndex:
+            case JsonPathElementType.ArrayIndex:
+            case JsonPathElementType.ArrayIndexList:
+            case JsonPathElementType.ArraySlice:
+            case JsonPathElementType.Expression:
                 return true;
-            if (obj.GetType() != GetType())
+            default:
                 return false;
-
-            return Equals((JsonPathAnyArrayIndexElement) obj);
         }
+    }
 
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return GetType().GetHashCode();
-        }
+    /// <inheritdoc cref="IEquatable{T}"/>
+    public bool Equals(JsonPathAnyArrayIndexElement? other)
+    {
+        return other is not null;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(JsonPathElement? other)
+    {
+        return Equals((object?)other);
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != GetType())
+            return false;
+
+        return Equals((JsonPathAnyArrayIndexElement) obj);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return GetType().GetHashCode();
     }
 }

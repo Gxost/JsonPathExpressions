@@ -22,17 +22,16 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Builders
+namespace JsonPathExpressions.Builders;
+
+/// <summary>
+/// Fluent syntax allowing to add the first JsonPath element
+/// </summary>
+public interface IFirstPathElementSyntax : IPathElementSyntax, IPathRecursiveDescentSyntax
 {
     /// <summary>
-    /// Fluent syntax allowing to add the first JsonPath element
+    /// Add root element
     /// </summary>
-    public interface IFirstPathElementSyntax : IPathElementSyntax, IPathRecursiveDescentSyntax
-    {
-        /// <summary>
-        /// Add root element
-        /// </summary>
-        /// <returns><see cref="INextPathElementSyntax"/></returns>
-        INextPathElementSyntax Root();
-    }
+    /// <returns><see cref="INextPathElementSyntax"/></returns>
+    INextPathElementSyntax Root();
 }

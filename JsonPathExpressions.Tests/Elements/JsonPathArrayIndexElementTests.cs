@@ -22,117 +22,116 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Tests.Elements
+namespace JsonPathExpressions.Tests.Elements;
+
+using FluentAssertions;
+using Helpers;
+using JsonPathExpressions.Elements;
+using Xunit;
+
+public class JsonPathArrayIndexElementTests
 {
-    using FluentAssertions;
-    using Helpers;
-    using JsonPathExpressions.Elements;
-    using Xunit;
-
-    public class JsonPathArrayIndexElementTests
+    [Fact]
+    public void IsStrict_ReturnsTrue()
     {
-        [Fact]
-        public void IsStrict_ReturnsTrue()
-        {
-            var element = new JsonPathArrayIndexElement(7);
+        var element = new JsonPathArrayIndexElement(7);
 
-            element.IsStrict.Should().BeTrue();
-        }
+        element.IsStrict.Should().BeTrue();
+    }
 
-        [Fact]
-        public void IsNormalized_ReturnsTrue()
-        {
-            var element = new JsonPathArrayIndexElement(7);
+    [Fact]
+    public void IsNormalized_ReturnsTrue()
+    {
+        var element = new JsonPathArrayIndexElement(7);
 
-            element.IsNormalized.Should().BeTrue();
-        }
+        element.IsNormalized.Should().BeTrue();
+    }
 
-        [Fact]
-        public void GetNormalized_ReturnsSelf()
-        {
-            var element = new JsonPathArrayIndexElement(7);
+    [Fact]
+    public void GetNormalized_ReturnsSelf()
+    {
+        var element = new JsonPathArrayIndexElement(7);
 
-            var actual = element.GetNormalized();
+        var actual = element.GetNormalized();
 
-            actual.Should().Be(element);
-        }
+        actual.Should().Be(element);
+    }
 
-        [Fact]
-        public void Matches_KnownArrayIndex_ReturnsTrue()
-        {
-            var element = new JsonPathArrayIndexElement(7);
-            var other = new JsonPathArrayIndexElement(7);
+    [Fact]
+    public void Matches_KnownArrayIndex_ReturnsTrue()
+    {
+        var element = new JsonPathArrayIndexElement(7);
+        var other = new JsonPathArrayIndexElement(7);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().BeTrue();
-        }
+        actual.Should().BeTrue();
+    }
 
-        [Fact]
-        public void Matches_KnownArrayIndexList_ReturnsTrue()
-        {
-            var element = new JsonPathArrayIndexElement(7);
-            var other = new JsonPathArrayIndexListElement([7]);
+    [Fact]
+    public void Matches_KnownArrayIndexList_ReturnsTrue()
+    {
+        var element = new JsonPathArrayIndexElement(7);
+        var other = new JsonPathArrayIndexListElement([7]);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().BeTrue();
-        }
+        actual.Should().BeTrue();
+    }
 
-        [Fact]
-        public void Matches_UnknownArrayIndexList_ReturnsFalse()
-        {
-            var element = new JsonPathArrayIndexElement(7);
-            var other = new JsonPathArrayIndexListElement([0, 7]);
+    [Fact]
+    public void Matches_UnknownArrayIndexList_ReturnsFalse()
+    {
+        var element = new JsonPathArrayIndexElement(7);
+        var other = new JsonPathArrayIndexListElement([0, 7]);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().BeFalse();
-        }
+        actual.Should().BeFalse();
+    }
 
-        [Theory]
-        // single index
-        [InlineData(7, 7, 8, 1, true)]
-        [InlineData(7, 7, 9, 2, true)]
-        // multiple indexes
-        [InlineData(7, 7, 9, 1, false)]
-        [InlineData(7, 7, 10, 2, false)]
-        // single index
-        [InlineData(7, 7, 6, -1, true)]
-        [InlineData(7, 7, 6, -2, true)]
-        // multiple indexes
-        [InlineData(7, 7, 5, -1, false)]
-        [InlineData(7, 7, 4, -2, false)]
-        public void Matches_ArraySlice(int index, int? start, int? end, int step, bool? expected)
-        {
-            var element = new JsonPathArrayIndexElement(index);
-            var other = new JsonPathArraySliceElement(start, end, step);
+    [Theory]
+    // single index
+    [InlineData(7, 7, 8, 1, true)]
+    [InlineData(7, 7, 9, 2, true)]
+    // multiple indexes
+    [InlineData(7, 7, 9, 1, false)]
+    [InlineData(7, 7, 10, 2, false)]
+    // single index
+    [InlineData(7, 7, 6, -1, true)]
+    [InlineData(7, 7, 6, -2, true)]
+    // multiple indexes
+    [InlineData(7, 7, 5, -1, false)]
+    [InlineData(7, 7, 4, -2, false)]
+    public void Matches_ArraySlice(int index, int? start, int? end, int step, bool? expected)
+    {
+        var element = new JsonPathArrayIndexElement(index);
+        var other = new JsonPathArraySliceElement(start, end, step);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().Be(expected);
-        }
+        actual.Should().Be(expected);
+    }
 
-        [Theory]
-        [InlineData(JsonPathElementType.Root)]
-        [InlineData(JsonPathElementType.RecursiveDescent)]
-        [InlineData(JsonPathElementType.Property)]
-        [InlineData(JsonPathElementType.AnyProperty)]
-        [InlineData(JsonPathElementType.PropertyList)]
-        [InlineData(JsonPathElementType.ArrayIndex)]
-        [InlineData(JsonPathElementType.AnyArrayIndex)]
-        [InlineData(JsonPathElementType.ArrayIndexList)]
-        [InlineData(JsonPathElementType.ArraySlice)]
-        [InlineData(JsonPathElementType.Expression)]
-        [InlineData(JsonPathElementType.FilterExpression)]
-        public void Matches_Any_ReturnsFalse(JsonPathElementType type)
-        {
-            var element = new JsonPathArrayIndexElement(7);
-            var other = ElementCreator.CreateAny(type);
+    [Theory]
+    [InlineData(JsonPathElementType.Root)]
+    [InlineData(JsonPathElementType.RecursiveDescent)]
+    [InlineData(JsonPathElementType.Property)]
+    [InlineData(JsonPathElementType.AnyProperty)]
+    [InlineData(JsonPathElementType.PropertyList)]
+    [InlineData(JsonPathElementType.ArrayIndex)]
+    [InlineData(JsonPathElementType.AnyArrayIndex)]
+    [InlineData(JsonPathElementType.ArrayIndexList)]
+    [InlineData(JsonPathElementType.ArraySlice)]
+    [InlineData(JsonPathElementType.Expression)]
+    [InlineData(JsonPathElementType.FilterExpression)]
+    public void Matches_Any_ReturnsFalse(JsonPathElementType type)
+    {
+        var element = new JsonPathArrayIndexElement(7);
+        var other = ElementCreator.CreateAny(type);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().BeFalse();
-        }
+        actual.Should().BeFalse();
     }
 }

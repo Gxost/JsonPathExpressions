@@ -22,110 +22,109 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Tests.Elements
+namespace JsonPathExpressions.Tests.Elements;
+
+using System;
+using FluentAssertions;
+using Helpers;
+using JsonPathExpressions.Elements;
+using Xunit;
+
+public class JsonPathPropertyListElementTests
 {
-    using System;
-    using FluentAssertions;
-    using Helpers;
-    using JsonPathExpressions.Elements;
-    using Xunit;
-
-    public class JsonPathPropertyListElementTests
+    [Theory]
+    [InlineData(true, "a")]
+    [InlineData(false, "a", "b")]
+    public void IsStrict(bool expected, params string[] names)
     {
-        [Theory]
-        [InlineData(true, "a")]
-        [InlineData(false, "a", "b")]
-        public void IsStrict(bool expected, params string[] names)
-        {
-            var element = new JsonPathPropertyListElement(names);
+        var element = new JsonPathPropertyListElement(names);
 
-            element.IsStrict.Should().Be(expected);
-        }
+        element.IsStrict.Should().Be(expected);
+    }
 
-        [Theory]
-        [InlineData(false, "a")]
-        [InlineData(true, "a", "b")]
-        public void IsNormalized(bool expected, params string[] names)
-        {
-            var element = new JsonPathPropertyListElement(names);
+    [Theory]
+    [InlineData(false, "a")]
+    [InlineData(true, "a", "b")]
+    public void IsNormalized(bool expected, params string[] names)
+    {
+        var element = new JsonPathPropertyListElement(names);
 
-            element.IsNormalized.Should().Be(expected);
-        }
+        element.IsNormalized.Should().Be(expected);
+    }
 
-        [Fact]
-        public void GetNormalized_SingleProperty_ReturnsPropertyElement()
-        {
-            var element = new JsonPathPropertyListElement(["name"]);
-            var expected = new JsonPathPropertyElement("name");
+    [Fact]
+    public void GetNormalized_SingleProperty_ReturnsPropertyElement()
+    {
+        var element = new JsonPathPropertyListElement(["name"]);
+        var expected = new JsonPathPropertyElement("name");
 
-            var actual = element.GetNormalized();
+        var actual = element.GetNormalized();
 
-            actual.Should().BeEquivalentTo(expected);
-        }
+        actual.Should().BeEquivalentTo(expected);
+    }
 
-        [Fact]
-        public void GetNormalized_MultipleProperties_ReturnsSelf()
-        {
-            var element = new JsonPathPropertyListElement(["a", "b"]);
+    [Fact]
+    public void GetNormalized_MultipleProperties_ReturnsSelf()
+    {
+        var element = new JsonPathPropertyListElement(["a", "b"]);
 
-            var actual = element.GetNormalized();
+        var actual = element.GetNormalized();
 
-            actual.Should().Be(element);
-        }
+        actual.Should().Be(element);
+    }
 
-        [Fact]
-        public void Matches_KnownPropertyName_ReturnsTrue()
-        {
-            var element = new JsonPathPropertyListElement(["name0", "name1", "name2"]);
-            var other = new JsonPathPropertyElement("name0");
+    [Fact]
+    public void Matches_KnownPropertyName_ReturnsTrue()
+    {
+        var element = new JsonPathPropertyListElement(["name0", "name1", "name2"]);
+        var other = new JsonPathPropertyElement("name0");
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().BeTrue();
-        }
+        actual.Should().BeTrue();
+    }
 
-        [Fact]
-        public void Matches_KnownPropertyNamesList_ReturnsTrue()
-        {
-            var element = new JsonPathPropertyListElement(["name0", "name1", "name2"]);
-            var other = new JsonPathPropertyListElement(["name0", "name1"]);
+    [Fact]
+    public void Matches_KnownPropertyNamesList_ReturnsTrue()
+    {
+        var element = new JsonPathPropertyListElement(["name0", "name1", "name2"]);
+        var other = new JsonPathPropertyListElement(["name0", "name1"]);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().BeTrue();
-        }
+        actual.Should().BeTrue();
+    }
 
-        [Fact]
-        public void Matches_UnknownPropertyNamesList_ReturnsFalse()
-        {
-            var element = new JsonPathPropertyListElement(["name0", "name1", "name2"]);
-            var other = new JsonPathPropertyListElement(["name0", "name1", "name2", "name3"]);
+    [Fact]
+    public void Matches_UnknownPropertyNamesList_ReturnsFalse()
+    {
+        var element = new JsonPathPropertyListElement(["name0", "name1", "name2"]);
+        var other = new JsonPathPropertyListElement(["name0", "name1", "name2", "name3"]);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().BeFalse();
-        }
+        actual.Should().BeFalse();
+    }
 
-        [Theory]
-        [InlineData(JsonPathElementType.Root)]
-        [InlineData(JsonPathElementType.RecursiveDescent)]
-        [InlineData(JsonPathElementType.Property)]
-        [InlineData(JsonPathElementType.AnyProperty)]
-        [InlineData(JsonPathElementType.PropertyList)]
-        [InlineData(JsonPathElementType.ArrayIndex)]
-        [InlineData(JsonPathElementType.AnyArrayIndex)]
-        [InlineData(JsonPathElementType.ArrayIndexList)]
-        [InlineData(JsonPathElementType.ArraySlice)]
-        [InlineData(JsonPathElementType.Expression)]
-        [InlineData(JsonPathElementType.FilterExpression)]
-        public void Matches_Any_ReturnsFalse(JsonPathElementType type)
-        {
-            var element = new JsonPathPropertyListElement(["name0", "name1"]);
-            var other = ElementCreator.CreateAny(type);
+    [Theory]
+    [InlineData(JsonPathElementType.Root)]
+    [InlineData(JsonPathElementType.RecursiveDescent)]
+    [InlineData(JsonPathElementType.Property)]
+    [InlineData(JsonPathElementType.AnyProperty)]
+    [InlineData(JsonPathElementType.PropertyList)]
+    [InlineData(JsonPathElementType.ArrayIndex)]
+    [InlineData(JsonPathElementType.AnyArrayIndex)]
+    [InlineData(JsonPathElementType.ArrayIndexList)]
+    [InlineData(JsonPathElementType.ArraySlice)]
+    [InlineData(JsonPathElementType.Expression)]
+    [InlineData(JsonPathElementType.FilterExpression)]
+    public void Matches_Any_ReturnsFalse(JsonPathElementType type)
+    {
+        var element = new JsonPathPropertyListElement(["name0", "name1"]);
+        var other = ElementCreator.CreateAny(type);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().BeFalse();
-        }
+        actual.Should().BeFalse();
     }
 }

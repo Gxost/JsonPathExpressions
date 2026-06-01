@@ -22,12 +22,11 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Builders
+namespace JsonPathExpressions.Builders;
+
+/// <summary>
+/// Fluent syntax allowing to add next JsonPath element or build absolute JsonPath expression
+/// </summary>
+public interface INextAbsolutePathElementSyntax : IAbsolutePathElementSyntax, IAbsolutePathRecursiveDescentSyntax, IBuildAbsolutePathSyntax
 {
-    /// <summary>
-    /// Fluent syntax allowing to add next JsonPath element or build absolute JsonPath expression
-    /// </summary>
-    public interface INextAbsolutePathElementSyntax : IAbsolutePathElementSyntax, IAbsolutePathRecursiveDescentSyntax, IBuildAbsolutePathSyntax
-    {
-    }
 }

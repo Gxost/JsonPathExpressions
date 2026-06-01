@@ -22,12 +22,11 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Builders
+namespace JsonPathExpressions.Builders;
+
+/// <summary>
+/// Fluent syntax allowing to add the first relative JsonPath element
+/// </summary>
+public interface IFirstRelativePathElementSyntax : IRelativePathElementSyntax, IRelativePathRecursiveDescentSyntax
 {
-    /// <summary>
-    /// Fluent syntax allowing to add the first relative JsonPath element
-    /// </summary>
-    public interface IFirstRelativePathElementSyntax : IRelativePathElementSyntax, IRelativePathRecursiveDescentSyntax
-    {
-    }
 }

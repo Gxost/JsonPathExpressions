@@ -22,123 +22,122 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Elements
+namespace JsonPathExpressions.Elements;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Utils;
+
+/// <summary>
+/// JsonPath element representing list a of properties
+/// </summary>
+public sealed class JsonPathPropertyListElement : JsonPathElement, IEquatable<JsonPathPropertyListElement>
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Utils;
+    private readonly HashSet<string> _names;
 
     /// <summary>
-    /// JsonPath element representing list a of properties
+    /// Create <see cref="JsonPathPropertyListElement"/> instance
     /// </summary>
-    public sealed class JsonPathPropertyListElement : JsonPathElement, IEquatable<JsonPathPropertyListElement>
+    /// <param name="names">Collection of property names</param>
+    /// <exception cref="ArgumentException">Empty property names collection provided</exception>
+    /// <exception cref="ArgumentOutOfRangeException">At least one property name is null or contains single quote</exception>
+    public JsonPathPropertyListElement(IReadOnlyCollection<string> names)
     {
-        private readonly HashSet<string> _names;
+        if (names is null)
+            throw new ArgumentNullException(nameof(names));
+        if (names.Count == 0)
+            throw new ArgumentException("No names provided", nameof(names));
+        if (names.Contains(null!))
+            throw new ArgumentOutOfRangeException(nameof(names), names, "At least one name is null");
+        if (names.Any(x => x!.Contains('\'')))
+            throw new ArgumentException("Single quote in property name is not allowed", nameof(names));
 
-        /// <summary>
-        /// Create <see cref="JsonPathPropertyListElement"/> instance
-        /// </summary>
-        /// <param name="names">Collection of property names</param>
-        /// <exception cref="ArgumentException">Empty property names collection provided</exception>
-        /// <exception cref="ArgumentOutOfRangeException">At least one property name is null or contains single quote</exception>
-        public JsonPathPropertyListElement(IReadOnlyCollection<string> names)
+        _names = new HashSet<string>(names, StringComparer.Ordinal);
+    }
+
+    /// <inheritdoc />
+    public override JsonPathElementType Type => JsonPathElementType.PropertyList;
+
+    /// <inheritdoc />
+    public override bool IsStrict => Names.Count == 1;
+
+    /// <inheritdoc />
+    public override bool IsNormalized => Names.Count != 1;
+
+    /// <summary>
+    /// Collection of property names
+    /// </summary>
+    /// <remarks>
+    /// It is guaranteed that the collection is not empty
+    /// </remarks>
+    public IReadOnlyCollection<string> Names => _names;
+
+    /// <inheritdoc />
+    public override JsonPathElement GetNormalized()
+    {
+        if (Names.Count == 1)
+            return new JsonPathPropertyElement(Names.First());
+
+        return this;
+    }
+
+    /// <inheritdoc />
+    public override bool? Matches(JsonPathElement element)
+    {
+        if (element is null)
+            throw new ArgumentNullException(nameof(element));
+
+        switch (element)
         {
-            if (names is null)
-                throw new ArgumentNullException(nameof(names));
-            if (names.Count == 0)
-                throw new ArgumentException("No names provided", nameof(names));
-            if (names.Contains(null!))
-                throw new ArgumentOutOfRangeException(nameof(names), names, "At least one name is null");
-            if (names.Any(x => x!.Contains('\'')))
-                throw new ArgumentException("Single quote in property name is not allowed", nameof(names));
-
-            _names = new HashSet<string>(names, StringComparer.Ordinal);
-        }
-
-        /// <inheritdoc />
-        public override JsonPathElementType Type => JsonPathElementType.PropertyList;
-
-        /// <inheritdoc />
-        public override bool IsStrict => Names.Count == 1;
-
-        /// <inheritdoc />
-        public override bool IsNormalized => Names.Count != 1;
-
-        /// <summary>
-        /// Collection of property names
-        /// </summary>
-        /// <remarks>
-        /// It is guaranteed that the collection is not empty
-        /// </remarks>
-        public IReadOnlyCollection<string> Names => _names;
-
-        /// <inheritdoc />
-        public override JsonPathElement GetNormalized()
-        {
-            if (Names.Count == 1)
-                return new JsonPathPropertyElement(Names.First());
-
-            return this;
-        }
-
-        /// <inheritdoc />
-        public override bool? Matches(JsonPathElement element)
-        {
-            if (element is null)
-                throw new ArgumentNullException(nameof(element));
-
-            switch (element)
-            {
-                case JsonPathPropertyElement propertyElement:
-                    return _names.Contains(propertyElement.Name);
-                case JsonPathPropertyListElement propertyListElement:
-                    return propertyListElement.Names.All(x => _names.Contains(x));
-                default:
-                    return false;
-            }
-        }
-
-        /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(JsonPathPropertyListElement? other)
-        {
-            if (ReferenceEquals(null, other))
+            case JsonPathPropertyElement propertyElement:
+                return _names.Contains(propertyElement.Name);
+            case JsonPathPropertyListElement propertyListElement:
+                return propertyListElement.Names.All(x => _names.Contains(x));
+            default:
                 return false;
-            if (ReferenceEquals(this, other))
-                return true;
-
-            return StringComparer.Ordinal.CollectionsEqual(Names, other.Names);
         }
+    }
 
-        /// <inheritdoc />
-        public override bool Equals(JsonPathElement? other)
+    /// <inheritdoc cref="IEquatable{T}"/>
+    public bool Equals(JsonPathPropertyListElement? other)
+    {
+        if (ReferenceEquals(null, other))
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return StringComparer.Ordinal.CollectionsEqual(Names, other.Names);
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(JsonPathElement? other)
+    {
+        return Equals((object?)other);
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != GetType())
+            return false;
+
+        return Equals((JsonPathPropertyListElement)obj);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        unchecked
         {
-            return Equals((object?)other);
-        }
+            int hashCode = StringComparer.Ordinal.GetCollectionHashCode(Names);
+            hashCode = (hashCode * 397) ^ GetType().GetHashCode();
 
-        /// <inheritdoc />
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            if (obj.GetType() != GetType())
-                return false;
-
-            return Equals((JsonPathPropertyListElement)obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode = StringComparer.Ordinal.GetCollectionHashCode(Names);
-                hashCode = (hashCode * 397) ^ GetType().GetHashCode();
-
-                return hashCode;
-            }
+            return hashCode;
         }
     }
 }

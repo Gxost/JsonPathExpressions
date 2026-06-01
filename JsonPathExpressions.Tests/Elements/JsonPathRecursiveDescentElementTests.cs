@@ -22,93 +22,92 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Tests.Elements
+namespace JsonPathExpressions.Tests.Elements;
+
+using FluentAssertions;
+using Helpers;
+using JsonPathExpressions.Elements;
+using Xunit;
+
+public class JsonPathRecursiveDescentElementTests
 {
-    using FluentAssertions;
-    using Helpers;
-    using JsonPathExpressions.Elements;
-    using Xunit;
-
-    public class JsonPathRecursiveDescentElementTests
+    [Fact]
+    public void IsStrict_ReturnsFalse()
     {
-        [Fact]
-        public void IsStrict_ReturnsFalse()
-        {
-            var element = new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("name"));
+        var element = new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("name"));
 
-            element.IsStrict.Should().BeFalse();
-        }
+        element.IsStrict.Should().BeFalse();
+    }
 
-        [Fact]
-        public void IsNormalized_AppliedToNormalized_ReturnsTrue()
-        {
-            var element = new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("name"));
+    [Fact]
+    public void IsNormalized_AppliedToNormalized_ReturnsTrue()
+    {
+        var element = new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("name"));
 
-            element.IsNormalized.Should().BeTrue();
-        }
+        element.IsNormalized.Should().BeTrue();
+    }
 
-        [Fact]
-        public void IsNormalized_AppliedToNotNormalized_ReturnsFalse()
-        {
-            var element = new JsonPathRecursiveDescentElement(new JsonPathArraySliceElement(null, null));
+    [Fact]
+    public void IsNormalized_AppliedToNotNormalized_ReturnsFalse()
+    {
+        var element = new JsonPathRecursiveDescentElement(new JsonPathArraySliceElement(null, null));
 
-            element.IsNormalized.Should().BeFalse();
-        }
+        element.IsNormalized.Should().BeFalse();
+    }
 
-        [Fact]
-        public void GetNormalized_AppliedToNormalized_ReturnsSelf()
-        {
-            var element = new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("name"));
+    [Fact]
+    public void GetNormalized_AppliedToNormalized_ReturnsSelf()
+    {
+        var element = new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("name"));
 
-            var actual = element.GetNormalized();
+        var actual = element.GetNormalized();
 
-            actual.Should().Be(element);
-        }
+        actual.Should().Be(element);
+    }
 
-        [Fact]
-        public void GetNormalized_AppliedToNotNormalizedArraySlice_ReturnsAppliedToAnyArrayIndex()
-        {
-            var element = new JsonPathRecursiveDescentElement(new JsonPathArraySliceElement(null, null));
-            var expected = new JsonPathRecursiveDescentElement(new JsonPathAnyArrayIndexElement());
+    [Fact]
+    public void GetNormalized_AppliedToNotNormalizedArraySlice_ReturnsAppliedToAnyArrayIndex()
+    {
+        var element = new JsonPathRecursiveDescentElement(new JsonPathArraySliceElement(null, null));
+        var expected = new JsonPathRecursiveDescentElement(new JsonPathAnyArrayIndexElement());
 
-            var actual = element.GetNormalized();
+        var actual = element.GetNormalized();
 
-            actual.Should().BeEquivalentTo(expected);
-        }
+        actual.Should().BeEquivalentTo(expected);
+    }
 
-        [Theory]
-        [InlineData("name", "name", true)]
-        [InlineData("name", "other-name", false)]
-        public void Matches_RecursiveDescent(string propertyName, string otherPropertyName, bool expected)
-        {
-            var element = new JsonPathRecursiveDescentElement(new JsonPathPropertyElement(propertyName));
-            var other = new JsonPathRecursiveDescentElement(new JsonPathPropertyElement(otherPropertyName));
+    [Theory]
+    [InlineData("name", "name", true)]
+    [InlineData("name", "other-name", false)]
+    public void Matches_RecursiveDescent(string propertyName, string otherPropertyName, bool expected)
+    {
+        var element = new JsonPathRecursiveDescentElement(new JsonPathPropertyElement(propertyName));
+        var other = new JsonPathRecursiveDescentElement(new JsonPathPropertyElement(otherPropertyName));
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().Be(expected);
-        }
+        actual.Should().Be(expected);
+    }
 
-        [Theory]
-        [InlineData(JsonPathElementType.Root, null)]
-        [InlineData(JsonPathElementType.RecursiveDescent, false)]
-        [InlineData(JsonPathElementType.Property, null)]
-        [InlineData(JsonPathElementType.AnyProperty, null)]
-        [InlineData(JsonPathElementType.PropertyList, null)]
-        [InlineData(JsonPathElementType.ArrayIndex, null)]
-        [InlineData(JsonPathElementType.AnyArrayIndex, null)]
-        [InlineData(JsonPathElementType.ArrayIndexList, null)]
-        [InlineData(JsonPathElementType.ArraySlice, null)]
-        [InlineData(JsonPathElementType.Expression, null)]
-        [InlineData(JsonPathElementType.FilterExpression, null)]
-        public void Matches_Any(JsonPathElementType type, bool? expected)
-        {
-            var element = new JsonPathRecursiveDescentElement(new JsonPathArrayIndexElement(0));
-            var other = ElementCreator.CreateAny(type);
+    [Theory]
+    [InlineData(JsonPathElementType.Root, null)]
+    [InlineData(JsonPathElementType.RecursiveDescent, false)]
+    [InlineData(JsonPathElementType.Property, null)]
+    [InlineData(JsonPathElementType.AnyProperty, null)]
+    [InlineData(JsonPathElementType.PropertyList, null)]
+    [InlineData(JsonPathElementType.ArrayIndex, null)]
+    [InlineData(JsonPathElementType.AnyArrayIndex, null)]
+    [InlineData(JsonPathElementType.ArrayIndexList, null)]
+    [InlineData(JsonPathElementType.ArraySlice, null)]
+    [InlineData(JsonPathElementType.Expression, null)]
+    [InlineData(JsonPathElementType.FilterExpression, null)]
+    public void Matches_Any(JsonPathElementType type, bool? expected)
+    {
+        var element = new JsonPathRecursiveDescentElement(new JsonPathArrayIndexElement(0));
+        var other = ElementCreator.CreateAny(type);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().Be(expected);
-        }
+        actual.Should().Be(expected);
     }
 }

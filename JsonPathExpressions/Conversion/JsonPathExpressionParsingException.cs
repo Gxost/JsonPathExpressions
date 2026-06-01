@@ -22,40 +22,39 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Conversion
+namespace JsonPathExpressions.Conversion;
+
+using System;
+using System.Runtime.Serialization;
+
+/// <summary>
+/// JsonPath expression parsing error
+/// </summary>
+[Serializable]
+public class JsonPathExpressionParsingException : Exception
 {
-    using System;
-    using System.Runtime.Serialization;
+    /// <summary>
+    /// Create <see cref="JsonPathExpressionParsingException"/> instance
+    /// </summary>
+    /// <param name="message">The message that describes the error</param>
+    public JsonPathExpressionParsingException(string message)
+        : base(message)
+    {
+    }
 
     /// <summary>
-    /// JsonPath expression parsing error
+    /// Create <see cref="JsonPathExpressionParsingException"/> instance
     /// </summary>
-    [Serializable]
-    public class JsonPathExpressionParsingException : Exception
+    /// <param name="message">The message that describes the error</param>
+    /// <param name="innerException">Inner exception</param>
+    public JsonPathExpressionParsingException(string message, Exception innerException)
+        : base(message, innerException)
     {
-        /// <summary>
-        /// Create <see cref="JsonPathExpressionParsingException"/> instance
-        /// </summary>
-        /// <param name="message">The message that describes the error</param>
-        public JsonPathExpressionParsingException(string message)
-            : base(message)
-        {
-        }
+    }
 
-        /// <summary>
-        /// Create <see cref="JsonPathExpressionParsingException"/> instance
-        /// </summary>
-        /// <param name="message">The message that describes the error</param>
-        /// <param name="innerException">Inner exception</param>
-        public JsonPathExpressionParsingException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
-
-        /// <inheritdoc />
-        protected JsonPathExpressionParsingException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    /// <inheritdoc />
+    protected JsonPathExpressionParsingException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

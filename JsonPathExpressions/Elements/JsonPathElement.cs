@@ -22,90 +22,89 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Elements
+namespace JsonPathExpressions.Elements;
+
+using System;
+using System.Collections.Generic;
+using Conversion;
+
+/// <summary>
+/// JsonPath element of which consists JsonPath expression
+/// </summary>
+public abstract class JsonPathElement : IEquatable<JsonPathElement>
 {
-    using System;
-    using System.Collections.Generic;
-    using Conversion;
+    internal JsonPathElement()
+    {
+    }
 
     /// <summary>
-    /// JsonPath element of which consists JsonPath expression
+    /// Gets JsonPath element type
     /// </summary>
-    public abstract class JsonPathElement : IEquatable<JsonPathElement>
+    public abstract JsonPathElementType Type { get; }
+
+    /// <summary>
+    /// Tells if the element represents exactly one JSON tree element (object, property or array item)
+    /// </summary>
+    public abstract bool IsStrict { get; }
+
+    /// <summary>
+    /// Tells if the element is normalized
+    /// </summary>
+    public abstract bool IsNormalized { get; }
+
+    /// <summary>
+    /// Returns normalized JsonPath element
+    /// </summary>
+    /// <returns>Normalized JsonPath element</returns>
+    /// <remarks>
+    /// If current element is normalized, returns self
+    /// </remarks>
+    public abstract JsonPathElement GetNormalized();
+
+    /// <summary>
+    /// Tells if a set of JSON tree elements represented by the current JsonPath element contain JSON tree elements represented by the passed JsonPath element
+    /// </summary>
+    /// <param name="element">JsonPath element to check for matching</param>
+    /// <returns>True if a set of JSON tree elements represented by the current JsonPath element contain JSON tree elements represented by the passed JsonPath element, false if not</returns>
+    /// <remarks>Returns null if it's not possible to check if a set of JSON tree elements represented by the current JsonPath element contain JSON tree elements represented by the passed JsonPath element</remarks>
+    public abstract bool? Matches(JsonPathElement element);
+
+    /// <inheritdoc />
+    public override string ToString()
     {
-        internal JsonPathElement()
+        return JsonPathExpressionStringBuilder.Build(this);
+    }
+
+    /// <inheritdoc cref="IEquatable{T}"/>
+    public abstract bool Equals(JsonPathElement? other);
+
+    internal virtual bool? Matches(IReadOnlyList<JsonPathElement> elements, int index, IReadOnlyList<JsonPathElement> otherElements, int otherIndex)
+    {
+        if (index < 0 || index >= elements.Count)
+            throw new ArgumentOutOfRangeException(nameof(index), index, "Elements index is out of range");
+        if (otherIndex < 0)
+            throw new ArgumentOutOfRangeException(nameof(otherIndex), otherIndex, "Index must not be negative");
+        if (!ReferenceEquals(this, elements[index])
+            && !(elements[index] is JsonPathRecursiveDescentElement recursiveDescentElement && ReferenceEquals(this, recursiveDescentElement.AppliedToElement)))
         {
+            throw new ArgumentException("Elements index must point to current element", nameof(index));
         }
 
-        /// <summary>
-        /// Gets JsonPath element type
-        /// </summary>
-        public abstract JsonPathElementType Type { get; }
+        if (otherIndex >= otherElements.Count)
+            return false;
 
-        /// <summary>
-        /// Tells if the element represents exactly one JSON tree element (object, property or array item)
-        /// </summary>
-        public abstract bool IsStrict { get; }
+        var otherElement = otherElements[otherIndex];
+        bool? matches = Matches(otherElement);
+        if (matches == false)
+            return false;
 
-        /// <summary>
-        /// Tells if the element is normalized
-        /// </summary>
-        public abstract bool IsNormalized { get; }
-
-        /// <summary>
-        /// Returns normalized JsonPath element
-        /// </summary>
-        /// <returns>Normalized JsonPath element</returns>
-        /// <remarks>
-        /// If current element is normalized, returns self
-        /// </remarks>
-        public abstract JsonPathElement GetNormalized();
-
-        /// <summary>
-        /// Tells if a set of JSON tree elements represented by the current JsonPath element contain JSON tree elements represented by the passed JsonPath element
-        /// </summary>
-        /// <param name="element">JsonPath element to check for matching</param>
-        /// <returns>True if a set of JSON tree elements represented by the current JsonPath element contain JSON tree elements represented by the passed JsonPath element, false if not</returns>
-        /// <remarks>Returns null if it's not possible to check if a set of JSON tree elements represented by the current JsonPath element contain JSON tree elements represented by the passed JsonPath element</remarks>
-        public abstract bool? Matches(JsonPathElement element);
-
-        /// <inheritdoc />
-        public override string ToString()
+        if (index + 1 >= elements.Count)
         {
-            return JsonPathExpressionStringBuilder.Build(this);
+            return otherIndex + 1 >= otherElements.Count
+                ? matches
+                : false;
         }
 
-        /// <inheritdoc cref="IEquatable{T}"/>
-        public abstract bool Equals(JsonPathElement? other);
-
-        internal virtual bool? Matches(IReadOnlyList<JsonPathElement> elements, int index, IReadOnlyList<JsonPathElement> otherElements, int otherIndex)
-        {
-            if (index < 0 || index >= elements.Count)
-                throw new ArgumentOutOfRangeException(nameof(index), index, "Elements index is out of range");
-            if (otherIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(otherIndex), otherIndex, "Index must not be negative");
-            if (!ReferenceEquals(this, elements[index])
-                && !(elements[index] is JsonPathRecursiveDescentElement recursiveDescentElement && ReferenceEquals(this, recursiveDescentElement.AppliedToElement)))
-            {
-                throw new ArgumentException("Elements index must point to current element", nameof(index));
-            }
-
-            if (otherIndex >= otherElements.Count)
-                return false;
-
-            var otherElement = otherElements[otherIndex];
-            bool? matches = Matches(otherElement);
-            if (matches == false)
-                return false;
-
-            if (index + 1 >= elements.Count)
-            {
-                return otherIndex + 1 >= otherElements.Count
-                    ? matches
-                    : false;
-            }
-
-            return elements[index + 1].Matches(elements, index + 1, otherElements, otherIndex + 1);
-        }
+        return elements[index + 1].Matches(elements, index + 1, otherElements, otherIndex + 1);
     }
 }

@@ -22,92 +22,91 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Tests
+namespace JsonPathExpressions.Tests;
+
+using System;
+using FluentAssertions;
+using JsonPathExpressions.Elements;
+using Xunit;
+
+public class AbsoluteJsonPathExpressionTests
 {
-    using System;
-    using FluentAssertions;
-    using JsonPathExpressions.Elements;
-    using Xunit;
-
-    public class AbsoluteJsonPathExpressionTests
+    [Fact]
+    public void Constructor_AbsolutePath_Succeeds()
     {
-        [Fact]
-        public void Constructor_AbsolutePath_Succeeds()
+        var elements = new JsonPathElement[] {new JsonPathRootElement(), new JsonPathPropertyElement("a")};
+
+        var actual = new AbsoluteJsonPathExpression(elements);
+
+        actual.Elements.Should().BeEquivalentTo(elements);
+    }
+
+    [Fact]
+    public void Constructor_RelativePath_Throws()
+    {
+        var elements = new JsonPathElement[] { new JsonPathPropertyElement("a") };
+
+        Action action = () => new AbsoluteJsonPathExpression(elements);
+
+        action.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void Equals_EqualJsonPathExpression_ReturnsTrue()
+    {
+        var path = AbsoluteJsonPathExpression.Builder.Root().Property("a").Build();
+        var other = JsonPathExpression.Builder.Root().Property("a").Build();
+
+        bool actual = path.Equals(other);
+
+        actual.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Equals_RelativeJsonPathExpression_ReturnsFalse()
+    {
+        var path = AbsoluteJsonPathExpression.Builder.Root().Property("a").Build();
+        var other = RelativeJsonPathExpression.Builder.Property("a").Build();
+
+        bool actual = path.Equals(other);
+
+        actual.Should().BeFalse();
+    }
+
+    [Fact]
+    public void ExplicitOperator_String_ReturnsExpression()
+    {
+        var expected = AbsoluteJsonPathExpression.Builder.Root().Property("a").Build();
+
+        var actual = (AbsoluteJsonPathExpression)"$.a";
+
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void ExplicitOperator_Null_ReturnsNull()
+    {
+        var actual = (AbsoluteJsonPathExpression?)(string?)null;
+
+        actual.Should().BeNull();
+    }
+
+    [Fact]
+    public void Create_ReturnsObjectOfTheSameType()
+    {
+        var path = new AbsoluteJsonPathExpression([
+            new JsonPathRootElement()
+        ]);
+        var elements = new JsonPathElement[]
         {
-            var elements = new JsonPathElement[] {new JsonPathRootElement(), new JsonPathPropertyElement("a")};
+            new JsonPathRootElement(),
+            new JsonPathPropertyElement("a"),
+            new JsonPathArrayIndexElement(42)
+        };
 
-            var actual = new AbsoluteJsonPathExpression(elements);
+        var actual = path.Create(elements);
 
-            actual.Elements.Should().BeEquivalentTo(elements);
-        }
-
-        [Fact]
-        public void Constructor_RelativePath_Throws()
-        {
-            var elements = new JsonPathElement[] { new JsonPathPropertyElement("a") };
-
-            Action action = () => new AbsoluteJsonPathExpression(elements);
-
-            action.Should().Throw<ArgumentException>();
-        }
-
-        [Fact]
-        public void Equals_EqualJsonPathExpression_ReturnsTrue()
-        {
-            var path = AbsoluteJsonPathExpression.Builder.Root().Property("a").Build();
-            var other = JsonPathExpression.Builder.Root().Property("a").Build();
-
-            bool actual = path.Equals(other);
-
-            actual.Should().BeTrue();
-        }
-
-        [Fact]
-        public void Equals_RelativeJsonPathExpression_ReturnsFalse()
-        {
-            var path = AbsoluteJsonPathExpression.Builder.Root().Property("a").Build();
-            var other = RelativeJsonPathExpression.Builder.Property("a").Build();
-
-            bool actual = path.Equals(other);
-
-            actual.Should().BeFalse();
-        }
-
-        [Fact]
-        public void ExplicitOperator_String_ReturnsExpression()
-        {
-            var expected = AbsoluteJsonPathExpression.Builder.Root().Property("a").Build();
-
-            var actual = (AbsoluteJsonPathExpression)"$.a";
-
-            actual.Should().BeEquivalentTo(expected);
-        }
-
-        [Fact]
-        public void ExplicitOperator_Null_ReturnsNull()
-        {
-            var actual = (AbsoluteJsonPathExpression?)(string?)null;
-
-            actual.Should().BeNull();
-        }
-
-        [Fact]
-        public void Create_ReturnsObjectOfTheSameType()
-        {
-            var path = new AbsoluteJsonPathExpression([
-                new JsonPathRootElement()
-            ]);
-            var elements = new JsonPathElement[]
-            {
-                new JsonPathRootElement(),
-                new JsonPathPropertyElement("a"),
-                new JsonPathArrayIndexElement(42)
-            };
-
-            var actual = path.Create(elements);
-
-            actual.Elements.Should().BeEquivalentTo(elements);
-            actual.GetType().Should().Be<AbsoluteJsonPathExpression>();
-        }
+        actual.Elements.Should().BeEquivalentTo(elements);
+        actual.GetType().Should().Be<AbsoluteJsonPathExpression>();
     }
 }

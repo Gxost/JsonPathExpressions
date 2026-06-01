@@ -22,61 +22,60 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Tests.Elements
+namespace JsonPathExpressions.Tests.Elements;
+
+using FluentAssertions;
+using Helpers;
+using JsonPathExpressions.Elements;
+using Xunit;
+
+public class JsonPathAnyPropertyElementTests
 {
-    using FluentAssertions;
-    using Helpers;
-    using JsonPathExpressions.Elements;
-    using Xunit;
-
-    public class JsonPathAnyPropertyElementTests
+    [Fact]
+    public void IsStrict_ReturnsFalse()
     {
-        [Fact]
-        public void IsStrict_ReturnsFalse()
-        {
-            var element = new JsonPathAnyPropertyElement();
+        var element = new JsonPathAnyPropertyElement();
 
-            element.IsStrict.Should().BeFalse();
-        }
+        element.IsStrict.Should().BeFalse();
+    }
 
-        [Fact]
-        public void IsNormalized_ReturnsTrue()
-        {
-            var element = new JsonPathAnyPropertyElement();
+    [Fact]
+    public void IsNormalized_ReturnsTrue()
+    {
+        var element = new JsonPathAnyPropertyElement();
 
-            element.IsNormalized.Should().BeTrue();
-        }
+        element.IsNormalized.Should().BeTrue();
+    }
 
-        [Fact]
-        public void GetNormalized_ReturnsSelf()
-        {
-            var element = new JsonPathAnyPropertyElement();
+    [Fact]
+    public void GetNormalized_ReturnsSelf()
+    {
+        var element = new JsonPathAnyPropertyElement();
 
-            var actual = element.GetNormalized();
+        var actual = element.GetNormalized();
 
-            actual.Should().Be(element);
-        }
+        actual.Should().Be(element);
+    }
 
-        [Theory]
-        [InlineData(JsonPathElementType.Root, false)]
-        [InlineData(JsonPathElementType.RecursiveDescent, false)]
-        [InlineData(JsonPathElementType.Property, true)]
-        [InlineData(JsonPathElementType.AnyProperty, true)]
-        [InlineData(JsonPathElementType.PropertyList, true)]
-        [InlineData(JsonPathElementType.ArrayIndex, false)]
-        [InlineData(JsonPathElementType.AnyArrayIndex, false)]
-        [InlineData(JsonPathElementType.ArrayIndexList, false)]
-        [InlineData(JsonPathElementType.ArraySlice, false)]
-        [InlineData(JsonPathElementType.Expression, false)]
-        [InlineData(JsonPathElementType.FilterExpression, true)]
-        public void Matches(JsonPathElementType type, bool? expected)
-        {
-            var element = new JsonPathAnyPropertyElement();
-            var other = ElementCreator.CreateAny(type);
+    [Theory]
+    [InlineData(JsonPathElementType.Root, false)]
+    [InlineData(JsonPathElementType.RecursiveDescent, false)]
+    [InlineData(JsonPathElementType.Property, true)]
+    [InlineData(JsonPathElementType.AnyProperty, true)]
+    [InlineData(JsonPathElementType.PropertyList, true)]
+    [InlineData(JsonPathElementType.ArrayIndex, false)]
+    [InlineData(JsonPathElementType.AnyArrayIndex, false)]
+    [InlineData(JsonPathElementType.ArrayIndexList, false)]
+    [InlineData(JsonPathElementType.ArraySlice, false)]
+    [InlineData(JsonPathElementType.Expression, false)]
+    [InlineData(JsonPathElementType.FilterExpression, true)]
+    public void Matches(JsonPathElementType type, bool? expected)
+    {
+        var element = new JsonPathAnyPropertyElement();
+        var other = ElementCreator.CreateAny(type);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().Be(expected);
-        }
+        actual.Should().Be(expected);
     }
 }

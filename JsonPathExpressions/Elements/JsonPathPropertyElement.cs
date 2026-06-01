@@ -22,107 +22,106 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Elements
+namespace JsonPathExpressions.Elements;
+
+using System;
+using System.Linq;
+
+/// <summary>
+/// JsonPath element representing object property
+/// </summary>
+public sealed class JsonPathPropertyElement : JsonPathElement, IEquatable<JsonPathPropertyElement>
 {
-    using System;
-    using System.Linq;
+    /// <summary>
+    /// Create <see cref="JsonPathPropertyElement"/> instance
+    /// </summary>
+    /// <param name="name">Property name</param>
+    public JsonPathPropertyElement(string name)
+    {
+        if (name is null)
+            throw new ArgumentNullException(nameof(name));
+        if (name.Contains('\''))
+            throw new ArgumentException("Single quote in property name is not allowed", nameof(name));
+
+        Name = name;
+    }
+
+    /// <inheritdoc />
+    public override JsonPathElementType Type => JsonPathElementType.Property;
+
+    /// <inheritdoc />
+    public override bool IsStrict => true;
+
+    /// <inheritdoc />
+    public override bool IsNormalized => true;
 
     /// <summary>
-    /// JsonPath element representing object property
+    /// Property name
     /// </summary>
-    public sealed class JsonPathPropertyElement : JsonPathElement, IEquatable<JsonPathPropertyElement>
+    public string Name { get; }
+
+    /// <inheritdoc />
+    public override JsonPathElement GetNormalized()
     {
-        /// <summary>
-        /// Create <see cref="JsonPathPropertyElement"/> instance
-        /// </summary>
-        /// <param name="name">Property name</param>
-        public JsonPathPropertyElement(string name)
+        return this;
+    }
+
+    /// <inheritdoc />
+    public override bool? Matches(JsonPathElement element)
+    {
+        if (element is null)
+            throw new ArgumentNullException(nameof(element));
+
+        switch (element)
         {
-            if (name is null)
-                throw new ArgumentNullException(nameof(name));
-            if (name.Contains('\''))
-                throw new ArgumentException("Single quote in property name is not allowed", nameof(name));
-
-            Name = name;
-        }
-
-        /// <inheritdoc />
-        public override JsonPathElementType Type => JsonPathElementType.Property;
-
-        /// <inheritdoc />
-        public override bool IsStrict => true;
-
-        /// <inheritdoc />
-        public override bool IsNormalized => true;
-
-        /// <summary>
-        /// Property name
-        /// </summary>
-        public string Name { get; }
-
-        /// <inheritdoc />
-        public override JsonPathElement GetNormalized()
-        {
-            return this;
-        }
-
-        /// <inheritdoc />
-        public override bool? Matches(JsonPathElement element)
-        {
-            if (element is null)
-                throw new ArgumentNullException(nameof(element));
-
-            switch (element)
-            {
-                case JsonPathPropertyElement propertyElement:
-                    return Equals(propertyElement);
-                case JsonPathPropertyListElement propertyListElement:
-                    return propertyListElement.Names.Count == 1 && propertyListElement.Names.First() == Name;
-                default:
-                    return false;
-            }
-        }
-
-        /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(JsonPathPropertyElement? other)
-        {
-            if (ReferenceEquals(null, other))
+            case JsonPathPropertyElement propertyElement:
+                return Equals(propertyElement);
+            case JsonPathPropertyListElement propertyListElement:
+                return propertyListElement.Names.Count == 1 && propertyListElement.Names.First() == Name;
+            default:
                 return false;
-            if (ReferenceEquals(this, other))
-                return true;
-
-            return Name == other.Name;
         }
+    }
+
+    /// <inheritdoc cref="IEquatable{T}"/>
+    public bool Equals(JsonPathPropertyElement? other)
+    {
+        if (ReferenceEquals(null, other))
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return Name == other.Name;
+    }
         
-        /// <inheritdoc />
-        public override bool Equals(JsonPathElement? other)
+    /// <inheritdoc />
+    public override bool Equals(JsonPathElement? other)
+    {
+        return Equals((object?)other);
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != GetType())
+            return false;
+
+        return Equals((JsonPathPropertyElement) obj);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        unchecked
         {
-            return Equals((object?)other);
-        }
+            int hashCode = Name.GetHashCode();
+            hashCode = (hashCode * 397) ^ GetType().GetHashCode();
 
-        /// <inheritdoc />
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            if (obj.GetType() != GetType())
-                return false;
-
-            return Equals((JsonPathPropertyElement) obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode = Name.GetHashCode();
-                hashCode = (hashCode * 397) ^ GetType().GetHashCode();
-
-                return hashCode;
-            }
+            return hashCode;
         }
     }
 }

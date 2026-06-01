@@ -22,109 +22,108 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Builders
+namespace JsonPathExpressions.Builders;
+
+using System.Collections.Generic;
+
+internal class AbsoluteJsonPathExpressionBuilder : IFirstAbsolutePathElementSyntax, INextAbsolutePathElementSyntax
 {
-    using System.Collections.Generic;
+    private readonly JsonPathElementsBuilder _elementsBuilder;
 
-    internal class AbsoluteJsonPathExpressionBuilder : IFirstAbsolutePathElementSyntax, INextAbsolutePathElementSyntax
+    private AbsoluteJsonPathExpressionBuilder()
     {
-        private readonly JsonPathElementsBuilder _elementsBuilder;
+        _elementsBuilder = new JsonPathElementsBuilder();
+    }
 
-        private AbsoluteJsonPathExpressionBuilder()
-        {
-            _elementsBuilder = new JsonPathElementsBuilder();
-        }
+    public INextAbsolutePathElementSyntax this[string propertyName] => Property(propertyName);
 
-        public INextAbsolutePathElementSyntax this[string propertyName] => Property(propertyName);
+    public INextAbsolutePathElementSyntax this[int index] => ArrayIndex(index);
 
-        public INextAbsolutePathElementSyntax this[int index] => ArrayIndex(index);
+    public INextAbsolutePathElementSyntax Root()
+    {
+        _elementsBuilder.Root();
+        return this;
+    }
 
-        public INextAbsolutePathElementSyntax Root()
-        {
-            _elementsBuilder.Root();
-            return this;
-        }
+    public IAbsolutePathElementSyntax RecursiveDescentTo()
+    {
+        _elementsBuilder.RecursiveDescentTo();
+        return this;
+    }
 
-        public IAbsolutePathElementSyntax RecursiveDescentTo()
-        {
-            _elementsBuilder.RecursiveDescentTo();
-            return this;
-        }
+    public INextAbsolutePathElementSyntax Property(string name)
+    {
+        _elementsBuilder.Property(name);
+        return this;
+    }
 
-        public INextAbsolutePathElementSyntax Property(string name)
-        {
-            _elementsBuilder.Property(name);
-            return this;
-        }
+    public INextAbsolutePathElementSyntax AnyProperty()
+    {
+        _elementsBuilder.AnyProperty();
+        return this;
+    }
 
-        public INextAbsolutePathElementSyntax AnyProperty()
-        {
-            _elementsBuilder.AnyProperty();
-            return this;
-        }
+    public INextAbsolutePathElementSyntax Properties(string firstName, params string[] names)
+    {
+        _elementsBuilder.Properties(firstName, names);
+        return this;
+    }
 
-        public INextAbsolutePathElementSyntax Properties(string firstName, params string[] names)
-        {
-            _elementsBuilder.Properties(firstName, names);
-            return this;
-        }
+    public INextAbsolutePathElementSyntax Properties(IReadOnlyCollection<string> names)
+    {
+        _elementsBuilder.Properties(names);
+        return this;
+    }
 
-        public INextAbsolutePathElementSyntax Properties(IReadOnlyCollection<string> names)
-        {
-            _elementsBuilder.Properties(names);
-            return this;
-        }
+    public INextAbsolutePathElementSyntax ArrayIndex(int index)
+    {
+        _elementsBuilder.ArrayIndex(index);
+        return this;
+    }
 
-        public INextAbsolutePathElementSyntax ArrayIndex(int index)
-        {
-            _elementsBuilder.ArrayIndex(index);
-            return this;
-        }
+    public INextAbsolutePathElementSyntax AnyArrayIndex()
+    {
+        _elementsBuilder.AnyArrayIndex();
+        return this;
+    }
 
-        public INextAbsolutePathElementSyntax AnyArrayIndex()
-        {
-            _elementsBuilder.AnyArrayIndex();
-            return this;
-        }
+    public INextAbsolutePathElementSyntax ArrayIndexes(int firstIndex, params int[] indexes)
+    {
+        _elementsBuilder.ArrayIndexes(firstIndex, indexes);
+        return this;
+    }
 
-        public INextAbsolutePathElementSyntax ArrayIndexes(int firstIndex, params int[] indexes)
-        {
-            _elementsBuilder.ArrayIndexes(firstIndex, indexes);
-            return this;
-        }
+    public INextAbsolutePathElementSyntax ArrayIndexes(IReadOnlyCollection<int> indexes)
+    {
+        _elementsBuilder.ArrayIndexes(indexes);
+        return this;
+    }
 
-        public INextAbsolutePathElementSyntax ArrayIndexes(IReadOnlyCollection<int> indexes)
-        {
-            _elementsBuilder.ArrayIndexes(indexes);
-            return this;
-        }
+    public INextAbsolutePathElementSyntax ArraySlice(int? start, int? end, int step = 1)
+    {
+        _elementsBuilder.ArraySlice(start, end, step);
+        return this;
+    }
 
-        public INextAbsolutePathElementSyntax ArraySlice(int? start, int? end, int step = 1)
-        {
-            _elementsBuilder.ArraySlice(start, end, step);
-            return this;
-        }
+    public INextAbsolutePathElementSyntax Expression(string expression)
+    {
+        _elementsBuilder.Expression(expression);
+        return this;
+    }
 
-        public INextAbsolutePathElementSyntax Expression(string expression)
-        {
-            _elementsBuilder.Expression(expression);
-            return this;
-        }
+    public INextAbsolutePathElementSyntax FilterExpression(string expression)
+    {
+        _elementsBuilder.FilterExpression(expression);
+        return this;
+    }
 
-        public INextAbsolutePathElementSyntax FilterExpression(string expression)
-        {
-            _elementsBuilder.FilterExpression(expression);
-            return this;
-        }
+    public AbsoluteJsonPathExpression Build()
+    {
+        return new AbsoluteJsonPathExpression(_elementsBuilder.Build());
+    }
 
-        public AbsoluteJsonPathExpression Build()
-        {
-            return new AbsoluteJsonPathExpression(_elementsBuilder.Build());
-        }
-
-        public static IFirstAbsolutePathElementSyntax Create()
-        {
-            return new AbsoluteJsonPathExpressionBuilder();
-        }
+    public static IFirstAbsolutePathElementSyntax Create()
+    {
+        return new AbsoluteJsonPathExpressionBuilder();
     }
 }

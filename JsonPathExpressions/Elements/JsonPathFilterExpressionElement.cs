@@ -22,113 +22,112 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Elements
+namespace JsonPathExpressions.Elements;
+
+using System;
+
+/// <summary>
+/// JsonPath element representing filter expression
+/// </summary>
+/// <remarks>
+/// Filer expressions are used to filter array items by their properties
+/// </remarks>
+public sealed class JsonPathFilterExpressionElement : JsonPathElement, IEquatable<JsonPathFilterExpressionElement>
 {
-    using System;
+    /// <summary>
+    /// Create <see cref="JsonPathFilterExpressionElement"/> instance
+    /// </summary>
+    /// <param name="expression">Filter expression</param>
+    public JsonPathFilterExpressionElement(string expression)
+    {
+        if (string.IsNullOrEmpty(expression))
+            throw new ArgumentNullException(nameof(expression));
+
+        Expression = expression;
+    }
+
+    /// <inheritdoc />
+    public override JsonPathElementType Type => JsonPathElementType.FilterExpression;
+
+    /// <inheritdoc />
+    public override bool IsStrict => false;
+
+    /// <inheritdoc />
+    public override bool IsNormalized => true;
 
     /// <summary>
-    /// JsonPath element representing filter expression
+    /// Gets filter expression
     /// </summary>
-    /// <remarks>
-    /// Filer expressions are used to filter array items by their properties
-    /// </remarks>
-    public sealed class JsonPathFilterExpressionElement : JsonPathElement, IEquatable<JsonPathFilterExpressionElement>
+    public string Expression { get; }
+
+    /// <inheritdoc />
+    public override JsonPathElement GetNormalized()
     {
-        /// <summary>
-        /// Create <see cref="JsonPathFilterExpressionElement"/> instance
-        /// </summary>
-        /// <param name="expression">Filter expression</param>
-        public JsonPathFilterExpressionElement(string expression)
+        return this;
+    }
+
+    /// <inheritdoc />
+    public override bool? Matches(JsonPathElement element)
+    {
+        if (element is null)
+            throw new ArgumentNullException(nameof(element));
+
+        switch (element)
         {
-            if (string.IsNullOrEmpty(expression))
-                throw new ArgumentNullException(nameof(expression));
-
-            Expression = expression;
-        }
-
-        /// <inheritdoc />
-        public override JsonPathElementType Type => JsonPathElementType.FilterExpression;
-
-        /// <inheritdoc />
-        public override bool IsStrict => false;
-
-        /// <inheritdoc />
-        public override bool IsNormalized => true;
-
-        /// <summary>
-        /// Gets filter expression
-        /// </summary>
-        public string Expression { get; }
-
-        /// <inheritdoc />
-        public override JsonPathElement GetNormalized()
-        {
-            return this;
-        }
-
-        /// <inheritdoc />
-        public override bool? Matches(JsonPathElement element)
-        {
-            if (element is null)
-                throw new ArgumentNullException(nameof(element));
-
-            switch (element)
-            {
-                case JsonPathArrayIndexElement arrayIndexElement:
-                case JsonPathAnyArrayIndexElement anyArrayIndexElement:
-                case JsonPathArrayIndexListElement arrayIndexListElement:
-                case JsonPathArraySliceElement arraySliceElement:
-                case JsonPathExpressionElement expressionElement:
-                    return null;
-                case JsonPathFilterExpressionElement filterExpressionElement:
-                    if (Equals(filterExpressionElement))
-                        return true;
-                    return null;
-                default:
-                    return false;
-            }
-        }
-
-        /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(JsonPathFilterExpressionElement? other)
-        {
-            if (ReferenceEquals(null, other))
+            case JsonPathArrayIndexElement arrayIndexElement:
+            case JsonPathAnyArrayIndexElement anyArrayIndexElement:
+            case JsonPathArrayIndexListElement arrayIndexListElement:
+            case JsonPathArraySliceElement arraySliceElement:
+            case JsonPathExpressionElement expressionElement:
+                return null;
+            case JsonPathFilterExpressionElement filterExpressionElement:
+                if (Equals(filterExpressionElement))
+                    return true;
+                return null;
+            default:
                 return false;
-            if (ReferenceEquals(this, other))
-                return true;
-
-            return Expression == other.Expression;
         }
+    }
 
-        /// <inheritdoc />
-        public override bool Equals(JsonPathElement? other)
+    /// <inheritdoc cref="IEquatable{T}"/>
+    public bool Equals(JsonPathFilterExpressionElement? other)
+    {
+        if (ReferenceEquals(null, other))
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
+
+        return Expression == other.Expression;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(JsonPathElement? other)
+    {
+        return Equals((object?)other);
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != GetType())
+            return false;
+
+        return Equals((JsonPathFilterExpressionElement)obj);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        unchecked
         {
-            return Equals((object?)other);
-        }
+            int hashCode = Expression.GetHashCode();
+            hashCode = (hashCode * 397) ^ GetType().GetHashCode();
 
-        /// <inheritdoc />
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            if (obj.GetType() != GetType())
-                return false;
-
-            return Equals((JsonPathFilterExpressionElement)obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode = Expression.GetHashCode();
-                hashCode = (hashCode * 397) ^ GetType().GetHashCode();
-
-                return hashCode;
-            }
+            return hashCode;
         }
     }
 }

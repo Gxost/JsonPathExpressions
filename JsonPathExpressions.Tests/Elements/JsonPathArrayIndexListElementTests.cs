@@ -22,194 +22,193 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Tests.Elements
+namespace JsonPathExpressions.Tests.Elements;
+
+using FluentAssertions;
+using Helpers;
+using JsonPathExpressions.Elements;
+using Xunit;
+
+public class JsonPathArrayIndexListElementTests
 {
-    using FluentAssertions;
-    using Helpers;
-    using JsonPathExpressions.Elements;
-    using Xunit;
-
-    public class JsonPathArrayIndexListElementTests
+    [Theory]
+    [InlineData(true, 42)]
+    [InlineData(false, 7, 42)]
+    public void IsStrict(bool expected, params int[] indexes)
     {
-        [Theory]
-        [InlineData(true, 42)]
-        [InlineData(false, 7, 42)]
-        public void IsStrict(bool expected, params int[] indexes)
-        {
-            var element = new JsonPathArrayIndexListElement(indexes);
+        var element = new JsonPathArrayIndexListElement(indexes);
 
-            element.IsStrict.Should().Be(expected);
-        }
+        element.IsStrict.Should().Be(expected);
+    }
 
-        [Theory]
-        [InlineData(false, 42)]
-        [InlineData(true, 7, 42)]
-        [InlineData(false, 1, 2, 3)]
-        [InlineData(false, 0, 2, 4)]
-        public void IsNormalized(bool expected, params int[] indexes)
-        {
-            var element = new JsonPathArrayIndexListElement(indexes);
+    [Theory]
+    [InlineData(false, 42)]
+    [InlineData(true, 7, 42)]
+    [InlineData(false, 1, 2, 3)]
+    [InlineData(false, 0, 2, 4)]
+    public void IsNormalized(bool expected, params int[] indexes)
+    {
+        var element = new JsonPathArrayIndexListElement(indexes);
 
-            element.IsNormalized.Should().Be(expected);
-        }
+        element.IsNormalized.Should().Be(expected);
+    }
 
-        [Fact]
-        public void GetNormalized_SingleIndex_ReturnsArrayIndexElement()
-        {
-            var element = new JsonPathArrayIndexListElement([42]);
-            var expected = new JsonPathArrayIndexElement(42);
+    [Fact]
+    public void GetNormalized_SingleIndex_ReturnsArrayIndexElement()
+    {
+        var element = new JsonPathArrayIndexListElement([42]);
+        var expected = new JsonPathArrayIndexElement(42);
 
-            var actual = element.GetNormalized();
+        var actual = element.GetNormalized();
 
-            actual.Should().BeEquivalentTo(expected);
-        }
+        actual.Should().BeEquivalentTo(expected);
+    }
 
-        [Fact]
-        public void GetNormalized_MultipleIndexes_ReturnsSelf()
-        {
-            var element = new JsonPathArrayIndexListElement([7, 42]);
+    [Fact]
+    public void GetNormalized_MultipleIndexes_ReturnsSelf()
+    {
+        var element = new JsonPathArrayIndexListElement([7, 42]);
 
-            var actual = element.GetNormalized();
+        var actual = element.GetNormalized();
 
-            actual.Should().Be(element);
-        }
+        actual.Should().Be(element);
+    }
 
-        [Fact]
-        public void GetNormalized_PeriodicIndexes_ReturnsArraySliceElement()
-        {
-            var element = new JsonPathArrayIndexListElement([1, 2, 3]);
-            var expected = new JsonPathArraySliceElement(1, 4, 1);
+    [Fact]
+    public void GetNormalized_PeriodicIndexes_ReturnsArraySliceElement()
+    {
+        var element = new JsonPathArrayIndexListElement([1, 2, 3]);
+        var expected = new JsonPathArraySliceElement(1, 4, 1);
 
-            var actual = element.GetNormalized();
+        var actual = element.GetNormalized();
 
-            actual.Should().BeEquivalentTo(expected);
-        }
+        actual.Should().BeEquivalentTo(expected);
+    }
 
-        [Fact]
-        public void GetNormalized_PeriodicIndexesWithNegativeStep_ReturnsArraySliceElement()
-        {
-            var element = new JsonPathArrayIndexListElement([3, 2, 1]);
-            var expected = new JsonPathArraySliceElement(3, 0, -1);
+    [Fact]
+    public void GetNormalized_PeriodicIndexesWithNegativeStep_ReturnsArraySliceElement()
+    {
+        var element = new JsonPathArrayIndexListElement([3, 2, 1]);
+        var expected = new JsonPathArraySliceElement(3, 0, -1);
 
-            var actual = element.GetNormalized();
+        var actual = element.GetNormalized();
 
-            actual.Should().BeEquivalentTo(expected);
-        }
+        actual.Should().BeEquivalentTo(expected);
+    }
 
-        [Fact]
-        public void GetNormalized_PeriodicIndexesStartingFromZero_ReturnsArraySliceElementWithNullStart()
-        {
-            var element = new JsonPathArrayIndexListElement([0, 1, 2, 3]);
-            var expected = new JsonPathArraySliceElement(null, 4, 1);
+    [Fact]
+    public void GetNormalized_PeriodicIndexesStartingFromZero_ReturnsArraySliceElementWithNullStart()
+    {
+        var element = new JsonPathArrayIndexListElement([0, 1, 2, 3]);
+        var expected = new JsonPathArraySliceElement(null, 4, 1);
 
-            var actual = element.GetNormalized();
+        var actual = element.GetNormalized();
 
-            actual.Should().BeEquivalentTo(expected);
-        }
+        actual.Should().BeEquivalentTo(expected);
+    }
 
-        [Fact]
-        public void GetNormalized_PeriodicIndexesEndingWithMaxValue_ReturnsArraySliceElementWithNullEnd()
-        {
-            var element = new JsonPathArrayIndexListElement([int.MaxValue - 6, int.MaxValue - 4, int.MaxValue - 2, int.MaxValue]);
-            var expected = new JsonPathArraySliceElement(int.MaxValue - 6, null, 2);
+    [Fact]
+    public void GetNormalized_PeriodicIndexesEndingWithMaxValue_ReturnsArraySliceElementWithNullEnd()
+    {
+        var element = new JsonPathArrayIndexListElement([int.MaxValue - 6, int.MaxValue - 4, int.MaxValue - 2, int.MaxValue]);
+        var expected = new JsonPathArraySliceElement(int.MaxValue - 6, null, 2);
 
-            var actual = element.GetNormalized();
+        var actual = element.GetNormalized();
 
-            actual.Should().BeEquivalentTo(expected);
-        }
+        actual.Should().BeEquivalentTo(expected);
+    }
 
-        [Fact]
-        public void Matches_KnownArrayIndex_ReturnsTrue()
-        {
-            var element = new JsonPathArrayIndexListElement([0, 1, 2, 3]);
-            var other = new JsonPathArrayIndexElement(0);
+    [Fact]
+    public void Matches_KnownArrayIndex_ReturnsTrue()
+    {
+        var element = new JsonPathArrayIndexListElement([0, 1, 2, 3]);
+        var other = new JsonPathArrayIndexElement(0);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().BeTrue();
-        }
+        actual.Should().BeTrue();
+    }
 
-        [Fact]
-        public void Matches_KnownArrayIndexesList_ReturnsTrue()
-        {
-            var element = new JsonPathArrayIndexListElement([0, 1, 2, 3]);
-            var other = new JsonPathArrayIndexListElement([1, 2]);
+    [Fact]
+    public void Matches_KnownArrayIndexesList_ReturnsTrue()
+    {
+        var element = new JsonPathArrayIndexListElement([0, 1, 2, 3]);
+        var other = new JsonPathArrayIndexListElement([1, 2]);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().BeTrue();
-        }
+        actual.Should().BeTrue();
+    }
 
-        [Fact]
-        public void Matches_UnknownArrayIndexesList_ReturnsFalse()
-        {
-            var element = new JsonPathArrayIndexListElement([0, 1, 2, 3]);
-            var other = new JsonPathArrayIndexListElement([0, 1, 2, 3, 4]);
+    [Fact]
+    public void Matches_UnknownArrayIndexesList_ReturnsFalse()
+    {
+        var element = new JsonPathArrayIndexListElement([0, 1, 2, 3]);
+        var other = new JsonPathArrayIndexListElement([0, 1, 2, 3, 4]);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().BeFalse();
-        }
+        actual.Should().BeFalse();
+    }
 
-        [Theory]
-        // slice inside of index list
-        [InlineData(0, 2, 1, true, 0, 1)]
-        [InlineData(null, 2, 1, true, 0, 1)]
-        [InlineData(0, 2, 1, true, 0, 1, 2)]
-        [InlineData(null, 2, 1, true, 0, 1, 2)]
-        // slice outside of index list
-        [InlineData(0, 3, 1, false, 0, 1)]
-        [InlineData(null, 3, 1, false, 0, 1)]
-        // slice inside of index list
-        [InlineData(0, 3, 2, true, 0, 2)]
-        [InlineData(null, 3, 2, true, 0, 2)]
-        [InlineData(0, 3, 2, true, 0, 1, 2)]
-        [InlineData(null, 3, 2, true, 0, 1, 2)]
-        // slice outside of index list
-        [InlineData(0, 4, 2, false, 0, 1)]
-        [InlineData(null, 4, 2, false, 0, 1)]
-        // slice inside of index list
-        [InlineData(2, 0, -1, true, 0, 1, 2)]
-        [InlineData(2, null, -1, true, 0, 1, 2)]
-        // slice outside of index list
-        [InlineData(3, 0, -1, false, 0, 1, 2)]
-        [InlineData(0, null, 2, false, 0, 1, 2)]
-        // slice covers all indexes
-        [InlineData(0, null, 1, false, 0)]
-        [InlineData(null, null, 1, false, 0)]
-        // impossible to check if slice result is in the index list
-        [InlineData(-1, 1, 1, null, 0, 1)]
-        [InlineData(0, -1, 2, null, 0, 1)]
-        public void Matches_ArraySlice(int? start, int? end, int step, bool? expected, params int[] indexes)
-        {
-            var element = new JsonPathArrayIndexListElement(indexes);
-            var other = new JsonPathArraySliceElement(start, end, step);
+    [Theory]
+    // slice inside of index list
+    [InlineData(0, 2, 1, true, 0, 1)]
+    [InlineData(null, 2, 1, true, 0, 1)]
+    [InlineData(0, 2, 1, true, 0, 1, 2)]
+    [InlineData(null, 2, 1, true, 0, 1, 2)]
+    // slice outside of index list
+    [InlineData(0, 3, 1, false, 0, 1)]
+    [InlineData(null, 3, 1, false, 0, 1)]
+    // slice inside of index list
+    [InlineData(0, 3, 2, true, 0, 2)]
+    [InlineData(null, 3, 2, true, 0, 2)]
+    [InlineData(0, 3, 2, true, 0, 1, 2)]
+    [InlineData(null, 3, 2, true, 0, 1, 2)]
+    // slice outside of index list
+    [InlineData(0, 4, 2, false, 0, 1)]
+    [InlineData(null, 4, 2, false, 0, 1)]
+    // slice inside of index list
+    [InlineData(2, 0, -1, true, 0, 1, 2)]
+    [InlineData(2, null, -1, true, 0, 1, 2)]
+    // slice outside of index list
+    [InlineData(3, 0, -1, false, 0, 1, 2)]
+    [InlineData(0, null, 2, false, 0, 1, 2)]
+    // slice covers all indexes
+    [InlineData(0, null, 1, false, 0)]
+    [InlineData(null, null, 1, false, 0)]
+    // impossible to check if slice result is in the index list
+    [InlineData(-1, 1, 1, null, 0, 1)]
+    [InlineData(0, -1, 2, null, 0, 1)]
+    public void Matches_ArraySlice(int? start, int? end, int step, bool? expected, params int[] indexes)
+    {
+        var element = new JsonPathArrayIndexListElement(indexes);
+        var other = new JsonPathArraySliceElement(start, end, step);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().Be(expected);
-        }
+        actual.Should().Be(expected);
+    }
 
-        [Theory]
-        [InlineData(JsonPathElementType.Root)]
-        [InlineData(JsonPathElementType.RecursiveDescent)]
-        [InlineData(JsonPathElementType.Property)]
-        [InlineData(JsonPathElementType.AnyProperty)]
-        [InlineData(JsonPathElementType.PropertyList)]
-        [InlineData(JsonPathElementType.ArrayIndex)]
-        [InlineData(JsonPathElementType.AnyArrayIndex)]
-        [InlineData(JsonPathElementType.ArrayIndexList)]
-        [InlineData(JsonPathElementType.ArraySlice)]
-        [InlineData(JsonPathElementType.Expression)]
-        [InlineData(JsonPathElementType.FilterExpression)]
-        public void Matches_Any_ReturnsFalse(JsonPathElementType type)
-        {
-            var element = new JsonPathArrayIndexListElement([0, 1]);
-            var other = ElementCreator.CreateAny(type);
+    [Theory]
+    [InlineData(JsonPathElementType.Root)]
+    [InlineData(JsonPathElementType.RecursiveDescent)]
+    [InlineData(JsonPathElementType.Property)]
+    [InlineData(JsonPathElementType.AnyProperty)]
+    [InlineData(JsonPathElementType.PropertyList)]
+    [InlineData(JsonPathElementType.ArrayIndex)]
+    [InlineData(JsonPathElementType.AnyArrayIndex)]
+    [InlineData(JsonPathElementType.ArrayIndexList)]
+    [InlineData(JsonPathElementType.ArraySlice)]
+    [InlineData(JsonPathElementType.Expression)]
+    [InlineData(JsonPathElementType.FilterExpression)]
+    public void Matches_Any_ReturnsFalse(JsonPathElementType type)
+    {
+        var element = new JsonPathArrayIndexListElement([0, 1]);
+        var other = ElementCreator.CreateAny(type);
 
-            bool? actual = element.Matches(other);
+        bool? actual = element.Matches(other);
 
-            actual.Should().BeFalse();
-        }
+        actual.Should().BeFalse();
     }
 }

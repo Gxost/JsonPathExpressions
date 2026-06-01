@@ -22,109 +22,108 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Builders
+namespace JsonPathExpressions.Builders;
+
+using System.Collections.Generic;
+
+internal class JsonPathExpressionBuilder : IFirstPathElementSyntax, INextPathElementSyntax
 {
-    using System.Collections.Generic;
+    private readonly JsonPathElementsBuilder _elementsBuilder;
 
-    internal class JsonPathExpressionBuilder : IFirstPathElementSyntax, INextPathElementSyntax
+    private JsonPathExpressionBuilder()
     {
-        private readonly JsonPathElementsBuilder _elementsBuilder;
+        _elementsBuilder = new JsonPathElementsBuilder();
+    }
 
-        private JsonPathExpressionBuilder()
-        {
-            _elementsBuilder = new JsonPathElementsBuilder();
-        }
+    public INextPathElementSyntax this[string propertyName] => Property(propertyName);
 
-        public INextPathElementSyntax this[string propertyName] => Property(propertyName);
+    public INextPathElementSyntax this[int index] => ArrayIndex(index);
 
-        public INextPathElementSyntax this[int index] => ArrayIndex(index);
+    public INextPathElementSyntax Root()
+    {
+        _elementsBuilder.Root();
+        return this;
+    }
 
-        public INextPathElementSyntax Root()
-        {
-            _elementsBuilder.Root();
-            return this;
-        }
+    public IPathElementSyntax RecursiveDescentTo()
+    {
+        _elementsBuilder.RecursiveDescentTo();
+        return this;
+    }
 
-        public IPathElementSyntax RecursiveDescentTo()
-        {
-            _elementsBuilder.RecursiveDescentTo();
-            return this;
-        }
+    public INextPathElementSyntax Property(string name)
+    {
+        _elementsBuilder.Property(name);
+        return this;
+    }
 
-        public INextPathElementSyntax Property(string name)
-        {
-            _elementsBuilder.Property(name);
-            return this;
-        }
+    public INextPathElementSyntax AnyProperty()
+    {
+        _elementsBuilder.AnyProperty();
+        return this;
+    }
 
-        public INextPathElementSyntax AnyProperty()
-        {
-            _elementsBuilder.AnyProperty();
-            return this;
-        }
+    public INextPathElementSyntax Properties(string firstName, params string[] names)
+    {
+        _elementsBuilder.Properties(firstName, names);
+        return this;
+    }
 
-        public INextPathElementSyntax Properties(string firstName, params string[] names)
-        {
-            _elementsBuilder.Properties(firstName, names);
-            return this;
-        }
+    public INextPathElementSyntax Properties(IReadOnlyCollection<string> names)
+    {
+        _elementsBuilder.Properties(names);
+        return this;
+    }
 
-        public INextPathElementSyntax Properties(IReadOnlyCollection<string> names)
-        {
-            _elementsBuilder.Properties(names);
-            return this;
-        }
+    public INextPathElementSyntax ArrayIndex(int index)
+    {
+        _elementsBuilder.ArrayIndex(index);
+        return this;
+    }
 
-        public INextPathElementSyntax ArrayIndex(int index)
-        {
-            _elementsBuilder.ArrayIndex(index);
-            return this;
-        }
+    public INextPathElementSyntax AnyArrayIndex()
+    {
+        _elementsBuilder.AnyArrayIndex();
+        return this;
+    }
 
-        public INextPathElementSyntax AnyArrayIndex()
-        {
-            _elementsBuilder.AnyArrayIndex();
-            return this;
-        }
+    public INextPathElementSyntax ArrayIndexes(int firstIndex, params int[] indexes)
+    {
+        _elementsBuilder.ArrayIndexes(firstIndex, indexes);
+        return this;
+    }
 
-        public INextPathElementSyntax ArrayIndexes(int firstIndex, params int[] indexes)
-        {
-            _elementsBuilder.ArrayIndexes(firstIndex, indexes);
-            return this;
-        }
+    public INextPathElementSyntax ArrayIndexes(IReadOnlyCollection<int> indexes)
+    {
+        _elementsBuilder.ArrayIndexes(indexes);
+        return this;
+    }
 
-        public INextPathElementSyntax ArrayIndexes(IReadOnlyCollection<int> indexes)
-        {
-            _elementsBuilder.ArrayIndexes(indexes);
-            return this;
-        }
+    public INextPathElementSyntax ArraySlice(int? start, int? end, int step = 1)
+    {
+        _elementsBuilder.ArraySlice(start, end, step);
+        return this;
+    }
 
-        public INextPathElementSyntax ArraySlice(int? start, int? end, int step = 1)
-        {
-            _elementsBuilder.ArraySlice(start, end, step);
-            return this;
-        }
+    public INextPathElementSyntax Expression(string expression)
+    {
+        _elementsBuilder.Expression(expression);
+        return this;
+    }
 
-        public INextPathElementSyntax Expression(string expression)
-        {
-            _elementsBuilder.Expression(expression);
-            return this;
-        }
+    public INextPathElementSyntax FilterExpression(string expression)
+    {
+        _elementsBuilder.FilterExpression(expression);
+        return this;
+    }
 
-        public INextPathElementSyntax FilterExpression(string expression)
-        {
-            _elementsBuilder.FilterExpression(expression);
-            return this;
-        }
+    public JsonPathExpression Build()
+    {
+        return new JsonPathExpression(_elementsBuilder.Build());
+    }
 
-        public JsonPathExpression Build()
-        {
-            return new JsonPathExpression(_elementsBuilder.Build());
-        }
-
-        public static IFirstPathElementSyntax Create()
-        {
-            return new JsonPathExpressionBuilder();
-        }
+    public static IFirstPathElementSyntax Create()
+    {
+        return new JsonPathExpressionBuilder();
     }
 }

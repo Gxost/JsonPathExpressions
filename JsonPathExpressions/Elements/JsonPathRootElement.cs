@@ -22,71 +22,70 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Elements
+namespace JsonPathExpressions.Elements;
+
+using System;
+
+/// <summary>
+/// JsonPath element representing root object
+/// </summary>
+/// <remarks>
+/// Root element can be met only at the start JsonPath expression
+/// </remarks>
+public sealed class JsonPathRootElement : JsonPathElement, IEquatable<JsonPathRootElement>
 {
-    using System;
+    /// <inheritdoc />
+    public override JsonPathElementType Type => JsonPathElementType.Root;
 
-    /// <summary>
-    /// JsonPath element representing root object
-    /// </summary>
-    /// <remarks>
-    /// Root element can be met only at the start JsonPath expression
-    /// </remarks>
-    public sealed class JsonPathRootElement : JsonPathElement, IEquatable<JsonPathRootElement>
+    /// <inheritdoc />
+    public override bool IsStrict => true;
+
+    /// <inheritdoc />
+    public override bool IsNormalized => true;
+
+    /// <inheritdoc />
+    public override JsonPathElement GetNormalized()
     {
-        /// <inheritdoc />
-        public override JsonPathElementType Type => JsonPathElementType.Root;
+        return this;
+    }
 
-        /// <inheritdoc />
-        public override bool IsStrict => true;
+    /// <inheritdoc />
+    public override bool? Matches(JsonPathElement element)
+    {
+        if (element is null)
+            throw new ArgumentNullException(nameof(element));
 
-        /// <inheritdoc />
-        public override bool IsNormalized => true;
+        return Equals(element);
+    }
 
-        /// <inheritdoc />
-        public override JsonPathElement GetNormalized()
-        {
-            return this;
-        }
+    /// <inheritdoc cref="IEquatable{T}"/>
+    public bool Equals(JsonPathRootElement? other)
+    {
+        return other is not null;
+    }
 
-        /// <inheritdoc />
-        public override bool? Matches(JsonPathElement element)
-        {
-            if (element is null)
-                throw new ArgumentNullException(nameof(element));
+    /// <inheritdoc />
+    public override bool Equals(JsonPathElement? other)
+    {
+        return Equals((object?)other);
+    }
 
-            return Equals(element);
-        }
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != GetType())
+            return false;
 
-        /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(JsonPathRootElement? other)
-        {
-            return other is not null;
-        }
+        return Equals((JsonPathRootElement)obj);
+    }
 
-        /// <inheritdoc />
-        public override bool Equals(JsonPathElement? other)
-        {
-            return Equals((object?)other);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            if (obj.GetType() != GetType())
-                return false;
-
-            return Equals((JsonPathRootElement)obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return GetType().GetHashCode();
-        }
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return GetType().GetHashCode();
     }
 }

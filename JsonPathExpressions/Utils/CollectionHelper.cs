@@ -22,20 +22,19 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Utils
+namespace JsonPathExpressions.Utils;
+
+using System.Collections.Generic;
+
+internal static class CollectionHelper
 {
-    using System.Collections.Generic;
-
-    internal static class CollectionHelper
+    // could be replaced with LINQ Prepend but Prepend is missing in .NET 4.6.1
+    public static IReadOnlyCollection<T> Concatenate<T>(T head, IReadOnlyCollection<T> tail)
+        where T: notnull
     {
-        // could be replaced with LINQ Prepend but Prepend is missing in .NET 4.6.1
-        public static IReadOnlyCollection<T> Concatenate<T>(T head, IReadOnlyCollection<T> tail)
-            where T: notnull
-        {
-            var result = new List<T>(tail.Count + 1) { head };
-            result.AddRange(tail);
+        var result = new List<T>(tail.Count + 1) { head };
+        result.AddRange(tail);
 
-            return result;
-        }
+        return result;
     }
 }

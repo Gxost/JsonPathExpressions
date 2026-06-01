@@ -22,211 +22,210 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Tests.Conversion
+namespace JsonPathExpressions.Tests.Conversion;
+
+using System;
+using System.Collections.Generic;
+using FluentAssertions;
+using JsonPathExpressions.Conversion;
+using JsonPathExpressions.Elements;
+using Xunit;
+
+public class JsonPathExpressionStringParserTests
 {
-    using System;
-    using System.Collections.Generic;
-    using FluentAssertions;
-    using JsonPathExpressions.Conversion;
-    using JsonPathExpressions.Elements;
-    using Xunit;
-
-    public class JsonPathExpressionStringParserTests
+    [Fact]
+    public void Parse_Root_Parses()
     {
-        [Fact]
-        public void Parse_Root_Parses()
+        Parse_Worker("$", false, new JsonPathRootElement());
+    }
+
+    [Theory]
+    [InlineData("..$", true, "$")]
+    [InlineData("name", false, "name")]
+    [InlineData("..name", true, "name")]
+    [InlineData(" name ", false, " name ")]
+    [InlineData(".. name ", true, " name ")]
+    [InlineData("['']", false, "")]
+    [InlineData("..['']", true, "")]
+    [InlineData("['[']", false, "[")]
+    [InlineData("..['[']", true, "[")]
+    [InlineData("[']']", false, "]")]
+    [InlineData("..[']']", true, "]")]
+    [InlineData("['name']", false, "name")]
+    [InlineData("..['name']", true, "name")]
+    [InlineData("[' name ']", false, " name ")]
+    [InlineData("..[' name ']", true, " name ")]
+    [InlineData("['name.with.dots']", false, "name.with.dots")]
+    [InlineData("..['name.with.dots']", true, "name.with.dots")]
+    [InlineData("['name,with,commas']", false, "name,with,commas")]
+    [InlineData("..['name,with,commas']", true, "name,with,commas")]
+    public void Parse_Property_Parses(string expression, bool expectedRecursiveDescent, string expectedName)
+    {
+        Parse_Worker(expression, expectedRecursiveDescent, new JsonPathPropertyElement(expectedName));
+    }
+
+    [Theory]
+    [InlineData("*", false)]
+    [InlineData("..*", true)]
+    public void Parse_AnyProperty_Parses(string expression, bool expectedRecursiveDescent)
+    {
+        Parse_Worker(expression, expectedRecursiveDescent, new JsonPathAnyPropertyElement());
+    }
+
+    [Theory]
+    [InlineData("['', 'name']", false, "", "name")]
+    [InlineData("..['', 'name']", true, "", "name")]
+    [InlineData("['name1', 'name2']", false, "name1", "name2")]
+    [InlineData("..['name1', 'name2']", true, "name1", "name2")]
+    [InlineData("[' name1 ', ' name2 ']", false, " name1 ", " name2 ")]
+    [InlineData("..[' name1 ', ' name2 ']", true, " name1 ", " name2 ")]
+    [InlineData("['name.with.dots1', 'name.with.dots2']", false, "name.with.dots1", "name.with.dots2")]
+    [InlineData("..['name.with.dots1', 'name.with.dots2']", true, "name.with.dots1", "name.with.dots2")]
+    [InlineData("['name,with,commas1', 'name,with,commas2']", false, "name,with,commas1", "name,with,commas2")]
+    [InlineData("..['name,with,commas1', 'name,with,commas2']", true, "name,with,commas1", "name,with,commas2")]
+    public void Parse_PropertyList_Parses(string expression, bool expectedRecursiveDescent, params string[] expectedNames)
+    {
+        Parse_Worker(expression, expectedRecursiveDescent, new JsonPathPropertyListElement(expectedNames));
+    }
+
+    [Theory]
+    [InlineData("[42]", false, 42)]
+    [InlineData("..[42]", true, 42)]
+    public void Parse_ArrayIndex_Parses(string expression, bool expectedRecursiveDescent, int expectedIndex)
+    {
+        Parse_Worker(expression, expectedRecursiveDescent, new JsonPathArrayIndexElement(expectedIndex));
+    }
+
+    [Theory]
+    [InlineData("[*]", false)]
+    [InlineData("..[*]", true)]
+    public void Parse_AnyArrayIndex_Parses(string expression, bool expectedRecursiveDescent)
+    {
+        Parse_Worker(expression, expectedRecursiveDescent, new JsonPathAnyArrayIndexElement());
+    }
+
+    [Theory]
+    [InlineData("[42, 777]", false, 42, 777)]
+    [InlineData("..[42, 777]", true, 42, 777)]
+    public void Parse_ArrayIndexList_Parses(string expression, bool expectedRecursiveDescent, params int[] expectedIndexes)
+    {
+        Parse_Worker(expression, expectedRecursiveDescent, new JsonPathArrayIndexListElement(expectedIndexes));
+    }
+
+    [Theory]
+    [InlineData("[:]", false, null, null, 1)]
+    [InlineData("..[:]", true, null, null, 1)]
+    [InlineData("[-1:]", false, -1, null, 1)]
+    [InlineData("..[-1:]", true, -1, null, 1)]
+    [InlineData("[:2]", false, null, 2, 1)]
+    [InlineData("..[:2]", true, null, 2, 1)]
+    [InlineData("[::5]", false, null, null, 5)]
+    [InlineData("..[::5]", true, null, null, 5)]
+    [InlineData("[0:10]", false, 0, 10, 1)]
+    [InlineData("..[0:10]", true, 0, 10, 1)]
+    [InlineData("[0:10:5]", false, 0, 10, 5)]
+    [InlineData("..[0:10:5]", true, 0, 10, 5)]
+    [InlineData("[10:0:-5]", false, 10, 0, -5)]
+    [InlineData("..[10:0:-5]", true, 10, 0, -5)]
+    public void Parse_ArraySlice_Parses(string expression, bool expectedRecursiveDescent, int? expectedStart, int? expectedEnd, int expectedStep)
+    {
+        Parse_Worker(expression, expectedRecursiveDescent, new JsonPathArraySliceElement(expectedStart, expectedEnd, expectedStep));
+    }
+
+    [Theory]
+    [InlineData("[(expr)]", false, "expr")]
+    [InlineData("..[(expr)]", true, "expr")]
+    public void Parse_Expression_Parses(string expression, bool expectedRecursiveDescent, string expectedExpression)
+    {
+        Parse_Worker(expression, expectedRecursiveDescent, new JsonPathExpressionElement(expectedExpression));
+    }
+
+    [Theory]
+    [InlineData("[?(expr)]", false, "expr")]
+    [InlineData("..[?(expr)]", true, "expr")]
+    public void Parse_FilterExpression_Parses(string expression, bool expectedRecursiveDescent, string expectedExpression)
+    {
+        Parse_Worker(expression, expectedRecursiveDescent, new JsonPathFilterExpressionElement(expectedExpression));
+    }
+
+    [Fact]
+    public void Parse_Properties_Parses()
+    {
+        string expression = "$.first.second..third['fourth'].['fifth'].$.*";
+        var expected = new List<JsonPathElement>
         {
-            Parse_Worker("$", false, new JsonPathRootElement());
-        }
+            new JsonPathRootElement(),
+            new JsonPathPropertyElement("first"),
+            new JsonPathPropertyElement("second"),
+            new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("third")),
+            new JsonPathPropertyElement("fourth"),
+            new JsonPathPropertyElement("fifth"),
+            new JsonPathPropertyElement("$"),
+            new JsonPathAnyPropertyElement()
+        };
 
-        [Theory]
-        [InlineData("..$", true, "$")]
-        [InlineData("name", false, "name")]
-        [InlineData("..name", true, "name")]
-        [InlineData(" name ", false, " name ")]
-        [InlineData(".. name ", true, " name ")]
-        [InlineData("['']", false, "")]
-        [InlineData("..['']", true, "")]
-        [InlineData("['[']", false, "[")]
-        [InlineData("..['[']", true, "[")]
-        [InlineData("[']']", false, "]")]
-        [InlineData("..[']']", true, "]")]
-        [InlineData("['name']", false, "name")]
-        [InlineData("..['name']", true, "name")]
-        [InlineData("[' name ']", false, " name ")]
-        [InlineData("..[' name ']", true, " name ")]
-        [InlineData("['name.with.dots']", false, "name.with.dots")]
-        [InlineData("..['name.with.dots']", true, "name.with.dots")]
-        [InlineData("['name,with,commas']", false, "name,with,commas")]
-        [InlineData("..['name,with,commas']", true, "name,with,commas")]
-        public void Parse_Property_Parses(string expression, bool expectedRecursiveDescent, string expectedName)
+        var actual = JsonPathExpressionStringParser.Parse(expression);
+
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void Parse_Indexes_Parses()
+    {
+        string expression = "$[0][1]..[2].[3][*]";
+        var expected = new List<JsonPathElement>
         {
-            Parse_Worker(expression, expectedRecursiveDescent, new JsonPathPropertyElement(expectedName));
-        }
+            new JsonPathRootElement(),
+            new JsonPathArrayIndexElement(0),
+            new JsonPathArrayIndexElement(1),
+            new JsonPathRecursiveDescentElement(new JsonPathArrayIndexElement(2)),
+            new JsonPathArrayIndexElement(3),
+            new JsonPathAnyArrayIndexElement()
+        };
 
-        [Theory]
-        [InlineData("*", false)]
-        [InlineData("..*", true)]
-        public void Parse_AnyProperty_Parses(string expression, bool expectedRecursiveDescent)
-        {
-            Parse_Worker(expression, expectedRecursiveDescent, new JsonPathAnyPropertyElement());
-        }
+        var actual = JsonPathExpressionStringParser.Parse(expression);
 
-        [Theory]
-        [InlineData("['', 'name']", false, "", "name")]
-        [InlineData("..['', 'name']", true, "", "name")]
-        [InlineData("['name1', 'name2']", false, "name1", "name2")]
-        [InlineData("..['name1', 'name2']", true, "name1", "name2")]
-        [InlineData("[' name1 ', ' name2 ']", false, " name1 ", " name2 ")]
-        [InlineData("..[' name1 ', ' name2 ']", true, " name1 ", " name2 ")]
-        [InlineData("['name.with.dots1', 'name.with.dots2']", false, "name.with.dots1", "name.with.dots2")]
-        [InlineData("..['name.with.dots1', 'name.with.dots2']", true, "name.with.dots1", "name.with.dots2")]
-        [InlineData("['name,with,commas1', 'name,with,commas2']", false, "name,with,commas1", "name,with,commas2")]
-        [InlineData("..['name,with,commas1', 'name,with,commas2']", true, "name,with,commas1", "name,with,commas2")]
-        public void Parse_PropertyList_Parses(string expression, bool expectedRecursiveDescent, params string[] expectedNames)
-        {
-            Parse_Worker(expression, expectedRecursiveDescent, new JsonPathPropertyListElement(expectedNames));
-        }
+        actual.Should().BeEquivalentTo(expected);
+    }
 
-        [Theory]
-        [InlineData("[42]", false, 42)]
-        [InlineData("..[42]", true, 42)]
-        public void Parse_ArrayIndex_Parses(string expression, bool expectedRecursiveDescent, int expectedIndex)
-        {
-            Parse_Worker(expression, expectedRecursiveDescent, new JsonPathArrayIndexElement(expectedIndex));
-        }
+    [Theory]
+    [InlineData(".")]
+    [InlineData("[")]
+    [InlineData("]")]
+    [InlineData("a.")]
+    [InlineData("a..")]
+    [InlineData("a[")]
+    [InlineData("a[7")]
+    [InlineData("...name")]
+    [InlineData("[]")]
+    [InlineData("[,]")]
+    [InlineData("[']")]
+    [InlineData("['',']")]
+    [InlineData("['abc',def]")]
+    [InlineData("['abc'a,b'def']")]
+    [InlineData("['',,'']")]
+    [InlineData("[1,,2]")]
+    [InlineData("[:::]")]
+    [InlineData("[a:]")]
+    [InlineData("[:b]")]
+    [InlineData("[::c]")]
+    [InlineData("[abc]")]
+    [InlineData("[abc,def]")]
+    public void Parse_Throws(string expression)
+    {
+        Action action = () => JsonPathExpressionStringParser.Parse(expression);
 
-        [Theory]
-        [InlineData("[*]", false)]
-        [InlineData("..[*]", true)]
-        public void Parse_AnyArrayIndex_Parses(string expression, bool expectedRecursiveDescent)
-        {
-            Parse_Worker(expression, expectedRecursiveDescent, new JsonPathAnyArrayIndexElement());
-        }
+        action.Should().Throw<JsonPathExpressionParsingException>();
+    }
 
-        [Theory]
-        [InlineData("[42, 777]", false, 42, 777)]
-        [InlineData("..[42, 777]", true, 42, 777)]
-        public void Parse_ArrayIndexList_Parses(string expression, bool expectedRecursiveDescent, params int[] expectedIndexes)
-        {
-            Parse_Worker(expression, expectedRecursiveDescent, new JsonPathArrayIndexListElement(expectedIndexes));
-        }
+    private void Parse_Worker(string expression, bool expectedRecursiveDescent, JsonPathElement expectedElement)
+    {
+        var expected = expectedRecursiveDescent
+            ? new JsonPathRecursiveDescentElement(expectedElement)
+            : expectedElement;
 
-        [Theory]
-        [InlineData("[:]", false, null, null, 1)]
-        [InlineData("..[:]", true, null, null, 1)]
-        [InlineData("[-1:]", false, -1, null, 1)]
-        [InlineData("..[-1:]", true, -1, null, 1)]
-        [InlineData("[:2]", false, null, 2, 1)]
-        [InlineData("..[:2]", true, null, 2, 1)]
-        [InlineData("[::5]", false, null, null, 5)]
-        [InlineData("..[::5]", true, null, null, 5)]
-        [InlineData("[0:10]", false, 0, 10, 1)]
-        [InlineData("..[0:10]", true, 0, 10, 1)]
-        [InlineData("[0:10:5]", false, 0, 10, 5)]
-        [InlineData("..[0:10:5]", true, 0, 10, 5)]
-        [InlineData("[10:0:-5]", false, 10, 0, -5)]
-        [InlineData("..[10:0:-5]", true, 10, 0, -5)]
-        public void Parse_ArraySlice_Parses(string expression, bool expectedRecursiveDescent, int? expectedStart, int? expectedEnd, int expectedStep)
-        {
-            Parse_Worker(expression, expectedRecursiveDescent, new JsonPathArraySliceElement(expectedStart, expectedEnd, expectedStep));
-        }
+        var actual = JsonPathExpressionStringParser.Parse(expression);
 
-        [Theory]
-        [InlineData("[(expr)]", false, "expr")]
-        [InlineData("..[(expr)]", true, "expr")]
-        public void Parse_Expression_Parses(string expression, bool expectedRecursiveDescent, string expectedExpression)
-        {
-            Parse_Worker(expression, expectedRecursiveDescent, new JsonPathExpressionElement(expectedExpression));
-        }
-
-        [Theory]
-        [InlineData("[?(expr)]", false, "expr")]
-        [InlineData("..[?(expr)]", true, "expr")]
-        public void Parse_FilterExpression_Parses(string expression, bool expectedRecursiveDescent, string expectedExpression)
-        {
-            Parse_Worker(expression, expectedRecursiveDescent, new JsonPathFilterExpressionElement(expectedExpression));
-        }
-
-        [Fact]
-        public void Parse_Properties_Parses()
-        {
-            string expression = "$.first.second..third['fourth'].['fifth'].$.*";
-            var expected = new List<JsonPathElement>
-            {
-                new JsonPathRootElement(),
-                new JsonPathPropertyElement("first"),
-                new JsonPathPropertyElement("second"),
-                new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("third")),
-                new JsonPathPropertyElement("fourth"),
-                new JsonPathPropertyElement("fifth"),
-                new JsonPathPropertyElement("$"),
-                new JsonPathAnyPropertyElement()
-            };
-
-            var actual = JsonPathExpressionStringParser.Parse(expression);
-
-            actual.Should().BeEquivalentTo(expected);
-        }
-
-        [Fact]
-        public void Parse_Indexes_Parses()
-        {
-            string expression = "$[0][1]..[2].[3][*]";
-            var expected = new List<JsonPathElement>
-            {
-                new JsonPathRootElement(),
-                new JsonPathArrayIndexElement(0),
-                new JsonPathArrayIndexElement(1),
-                new JsonPathRecursiveDescentElement(new JsonPathArrayIndexElement(2)),
-                new JsonPathArrayIndexElement(3),
-                new JsonPathAnyArrayIndexElement()
-            };
-
-            var actual = JsonPathExpressionStringParser.Parse(expression);
-
-            actual.Should().BeEquivalentTo(expected);
-        }
-
-        [Theory]
-        [InlineData(".")]
-        [InlineData("[")]
-        [InlineData("]")]
-        [InlineData("a.")]
-        [InlineData("a..")]
-        [InlineData("a[")]
-        [InlineData("a[7")]
-        [InlineData("...name")]
-        [InlineData("[]")]
-        [InlineData("[,]")]
-        [InlineData("[']")]
-        [InlineData("['',']")]
-        [InlineData("['abc',def]")]
-        [InlineData("['abc'a,b'def']")]
-        [InlineData("['',,'']")]
-        [InlineData("[1,,2]")]
-        [InlineData("[:::]")]
-        [InlineData("[a:]")]
-        [InlineData("[:b]")]
-        [InlineData("[::c]")]
-        [InlineData("[abc]")]
-        [InlineData("[abc,def]")]
-        public void Parse_Throws(string expression)
-        {
-            Action action = () => JsonPathExpressionStringParser.Parse(expression);
-
-            action.Should().Throw<JsonPathExpressionParsingException>();
-        }
-
-        private void Parse_Worker(string expression, bool expectedRecursiveDescent, JsonPathElement expectedElement)
-        {
-            var expected = expectedRecursiveDescent
-                ? new JsonPathRecursiveDescentElement(expectedElement)
-                : expectedElement;
-
-            var actual = JsonPathExpressionStringParser.Parse(expression);
-
-            actual.Should().BeEquivalentTo(expected);
-        }
+        actual.Should().BeEquivalentTo(expected);
     }
 }

@@ -22,17 +22,16 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Builders
+namespace JsonPathExpressions.Builders;
+
+/// <summary>
+/// Fluent syntax allowing to build absolute JsonPath expression
+/// </summary>
+public interface IBuildAbsolutePathSyntax
 {
     /// <summary>
-    /// Fluent syntax allowing to build absolute JsonPath expression
+    /// Build absolute JsonPath expression
     /// </summary>
-    public interface IBuildAbsolutePathSyntax
-    {
-        /// <summary>
-        /// Build absolute JsonPath expression
-        /// </summary>
-        /// <returns><see cref="AbsoluteJsonPathExpression"/></returns>
-        AbsoluteJsonPathExpression Build();
-    }
+    /// <returns><see cref="AbsoluteJsonPathExpression"/></returns>
+    AbsoluteJsonPathExpression Build();
 }

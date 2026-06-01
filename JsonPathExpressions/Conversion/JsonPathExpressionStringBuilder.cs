@@ -22,196 +22,195 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Conversion
+namespace JsonPathExpressions.Conversion;
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Elements;
+
+internal static class JsonPathExpressionStringBuilder
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using Elements;
+    private static readonly char[] ForbiddenCharactersForSimplePropertyName = ['[', ']', '.', '*'];
 
-    internal static class JsonPathExpressionStringBuilder
+    public static string Build(IReadOnlyList<JsonPathElement> elements)
     {
-        private static readonly char[] ForbiddenCharactersForSimplePropertyName = ['[', ']', '.', '*'];
+        var builder = new StringBuilder(elements.Count * 5);
+        for (int i = 0; i < elements.Count; ++i)
+            builder.AppendElement(elements[i], i != 0);
 
-        public static string Build(IReadOnlyList<JsonPathElement> elements)
+        return builder.ToString();
+    }
+
+    public static string Build(JsonPathElement element)
+    {
+        var builder = new StringBuilder();
+        builder.AppendElement(element, false);
+        return builder.ToString();
+    }
+
+    private static void AppendElement(this StringBuilder builder, JsonPathElement element, bool useDot)
+    {
+        switch (element)
         {
-            var builder = new StringBuilder(elements.Count * 5);
-            for (int i = 0; i < elements.Count; ++i)
-                builder.AppendElement(elements[i], i != 0);
-
-            return builder.ToString();
+            case JsonPathRootElement rootElement:
+                builder.AppendRoot();
+                break;
+            case JsonPathRecursiveDescentElement recursiveDescentElement:
+                builder.AppendRecursiveDescent(recursiveDescentElement);
+                break;
+            case JsonPathPropertyElement propertyElement:
+                builder.AppendProperty(propertyElement, useDot);
+                break;
+            case JsonPathAnyPropertyElement anyPropertyElement:
+                builder.AppendAnyProperty(useDot);
+                break;
+            case JsonPathPropertyListElement propertyListElement:
+                builder.AppendPropertyList(propertyListElement);
+                break;
+            case JsonPathArrayIndexElement arrayIndexElement:
+                builder.AppendArrayIndex(arrayIndexElement);
+                break;
+            case JsonPathAnyArrayIndexElement anyArrayIndexElement:
+                builder.AppendAnyArrayIndex();
+                break;
+            case JsonPathArrayIndexListElement arrayIndexListElement:
+                builder.AppendArrayIndexList(arrayIndexListElement);
+                break;
+            case JsonPathArraySliceElement arraySliceElement:
+                builder.AppendArraySlice(arraySliceElement);
+                break;
+            case JsonPathExpressionElement expressionElement:
+                builder.AppendExpression(expressionElement);
+                break;
+            case JsonPathFilterExpressionElement filterExpressionElement:
+                builder.AppendFilterExpression(filterExpressionElement);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(element), element, $"Unknown element type: {element.GetType()}");
         }
+    }
 
-        public static string Build(JsonPathElement element)
-        {
-            var builder = new StringBuilder();
-            builder.AppendElement(element, false);
-            return builder.ToString();
-        }
+    private static void AppendRoot(this StringBuilder builder)
+    {
+        builder.Append('$');
+    }
 
-        private static void AppendElement(this StringBuilder builder, JsonPathElement element, bool useDot)
-        {
-            switch (element)
-            {
-                case JsonPathRootElement rootElement:
-                    builder.AppendRoot();
-                    break;
-                case JsonPathRecursiveDescentElement recursiveDescentElement:
-                    builder.AppendRecursiveDescent(recursiveDescentElement);
-                    break;
-                case JsonPathPropertyElement propertyElement:
-                    builder.AppendProperty(propertyElement, useDot);
-                    break;
-                case JsonPathAnyPropertyElement anyPropertyElement:
-                    builder.AppendAnyProperty(useDot);
-                    break;
-                case JsonPathPropertyListElement propertyListElement:
-                    builder.AppendPropertyList(propertyListElement);
-                    break;
-                case JsonPathArrayIndexElement arrayIndexElement:
-                    builder.AppendArrayIndex(arrayIndexElement);
-                    break;
-                case JsonPathAnyArrayIndexElement anyArrayIndexElement:
-                    builder.AppendAnyArrayIndex();
-                    break;
-                case JsonPathArrayIndexListElement arrayIndexListElement:
-                    builder.AppendArrayIndexList(arrayIndexListElement);
-                    break;
-                case JsonPathArraySliceElement arraySliceElement:
-                    builder.AppendArraySlice(arraySliceElement);
-                    break;
-                case JsonPathExpressionElement expressionElement:
-                    builder.AppendExpression(expressionElement);
-                    break;
-                case JsonPathFilterExpressionElement filterExpressionElement:
-                    builder.AppendFilterExpression(filterExpressionElement);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(element), element, $"Unknown element type: {element.GetType()}");
-            }
-        }
+    private static void AppendRecursiveDescent(this StringBuilder builder, JsonPathRecursiveDescentElement element)
+    {
+        builder.Append("..");
+        builder.AppendElement(element.AppliedToElement, false);
+    }
 
-        private static void AppendRoot(this StringBuilder builder)
-        {
-            builder.Append('$');
-        }
-
-        private static void AppendRecursiveDescent(this StringBuilder builder, JsonPathRecursiveDescentElement element)
-        {
-            builder.Append("..");
-            builder.AppendElement(element.AppliedToElement, false);
-        }
-
-        private static void AppendProperty(this StringBuilder builder, JsonPathPropertyElement element, bool useDot)
-        {
-            bool isSimple = element.Name.Length != 0 && element.Name.IndexOfAny(ForbiddenCharactersForSimplePropertyName) == -1;
-            if (isSimple)
-            {
-                if (useDot)
-                    builder.Append('.');
-
-                builder.Append(element.Name);
-            }
-            else
-            {
-                builder.Append("['");
-                builder.Append(element.Name);
-                builder.Append("']");
-            }
-        }
-
-        private static void AppendAnyProperty(this StringBuilder builder, bool useDot)
+    private static void AppendProperty(this StringBuilder builder, JsonPathPropertyElement element, bool useDot)
+    {
+        bool isSimple = element.Name.Length != 0 && element.Name.IndexOfAny(ForbiddenCharactersForSimplePropertyName) == -1;
+        if (isSimple)
         {
             if (useDot)
-                builder.Append(".*");
+                builder.Append('.');
+
+            builder.Append(element.Name);
+        }
+        else
+        {
+            builder.Append("['");
+            builder.Append(element.Name);
+            builder.Append("']");
+        }
+    }
+
+    private static void AppendAnyProperty(this StringBuilder builder, bool useDot)
+    {
+        if (useDot)
+            builder.Append(".*");
+        else
+            builder.Append('*');
+    }
+
+    private static void AppendPropertyList(this StringBuilder builder, JsonPathPropertyListElement element)
+    {
+        builder.Append('[');
+
+        bool isFirst = true;
+        foreach (string name in element.Names)
+        {
+            if (isFirst)
+                isFirst = false;
             else
-                builder.Append('*');
+                builder.Append(',');
+
+            builder.Append('\'');
+            builder.Append(name);
+            builder.Append('\'');
         }
 
-        private static void AppendPropertyList(this StringBuilder builder, JsonPathPropertyListElement element)
+        builder.Append(']');
+    }
+
+    private static void AppendArrayIndex(this StringBuilder builder, JsonPathArrayIndexElement element)
+    {
+        builder.Append('[');
+        builder.Append(element.Index);
+        builder.Append(']');
+    }
+
+    private static void AppendAnyArrayIndex(this StringBuilder builder)
+    {
+        builder.Append("[*]");
+    }
+
+    private static void AppendArrayIndexList(this StringBuilder builder, JsonPathArrayIndexListElement element)
+    {
+        builder.Append('[');
+
+        bool isFirst = true;
+        foreach (int index in element.Indexes)
         {
-            builder.Append('[');
+            if (isFirst)
+                isFirst = false;
+            else
+                builder.Append(',');
 
-            bool isFirst = true;
-            foreach (string name in element.Names)
-            {
-                if (isFirst)
-                    isFirst = false;
-                else
-                    builder.Append(',');
-
-                builder.Append('\'');
-                builder.Append(name);
-                builder.Append('\'');
-            }
-
-            builder.Append(']');
+            builder.Append(index);
         }
 
-        private static void AppendArrayIndex(this StringBuilder builder, JsonPathArrayIndexElement element)
+        builder.Append(']');
+    }
+
+    private static void AppendArraySlice(this StringBuilder builder, JsonPathArraySliceElement element)
+    {
+        builder.Append('[');
+
+        builder.AppendNullable(element.Start);
+        builder.Append(':');
+        builder.AppendNullable(element.End);
+        if (element.Step != 1)
         {
-            builder.Append('[');
-            builder.Append(element.Index);
-            builder.Append(']');
-        }
-
-        private static void AppendAnyArrayIndex(this StringBuilder builder)
-        {
-            builder.Append("[*]");
-        }
-
-        private static void AppendArrayIndexList(this StringBuilder builder, JsonPathArrayIndexListElement element)
-        {
-            builder.Append('[');
-
-            bool isFirst = true;
-            foreach (int index in element.Indexes)
-            {
-                if (isFirst)
-                    isFirst = false;
-                else
-                    builder.Append(',');
-
-                builder.Append(index);
-            }
-
-            builder.Append(']');
-        }
-
-        private static void AppendArraySlice(this StringBuilder builder, JsonPathArraySliceElement element)
-        {
-            builder.Append('[');
-
-            builder.AppendNullable(element.Start);
             builder.Append(':');
-            builder.AppendNullable(element.End);
-            if (element.Step != 1)
-            {
-                builder.Append(':');
-                builder.Append(element.Step);
-            }
-
-            builder.Append(']');
+            builder.Append(element.Step);
         }
 
-        private static void AppendExpression(this StringBuilder builder, JsonPathExpressionElement element)
-        {
-            builder.Append("[(");
-            builder.Append(element.Expression);
-            builder.Append(")]");
-        }
+        builder.Append(']');
+    }
 
-        private static void AppendFilterExpression(this StringBuilder builder, JsonPathFilterExpressionElement element)
-        {
-            builder.Append("[?(");
-            builder.Append(element.Expression);
-            builder.Append(")]");
-        }
+    private static void AppendExpression(this StringBuilder builder, JsonPathExpressionElement element)
+    {
+        builder.Append("[(");
+        builder.Append(element.Expression);
+        builder.Append(")]");
+    }
 
-        private static void AppendNullable(this StringBuilder builder, int? value)
-        {
-            if (value.HasValue)
-                builder.Append(value.Value);
-        }
+    private static void AppendFilterExpression(this StringBuilder builder, JsonPathFilterExpressionElement element)
+    {
+        builder.Append("[?(");
+        builder.Append(element.Expression);
+        builder.Append(")]");
+    }
+
+    private static void AppendNullable(this StringBuilder builder, int? value)
+    {
+        if (value.HasValue)
+            builder.Append(value.Value);
     }
 }

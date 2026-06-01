@@ -22,17 +22,16 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Builders
+namespace JsonPathExpressions.Builders;
+
+/// <summary>
+/// Fluent syntax allowing to build relative JsonPath expression
+/// </summary>
+public interface IBuildRelativePathSyntax
 {
     /// <summary>
-    /// Fluent syntax allowing to build relative JsonPath expression
+    /// Build relative JsonPath expression
     /// </summary>
-    public interface IBuildRelativePathSyntax
-    {
-        /// <summary>
-        /// Build relative JsonPath expression
-        /// </summary>
-        /// <returns><see cref="RelativeJsonPathExpression"/></returns>
-        RelativeJsonPathExpression Build();
-    }
+    /// <returns><see cref="RelativeJsonPathExpression"/></returns>
+    RelativeJsonPathExpression Build();
 }

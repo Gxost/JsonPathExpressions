@@ -22,124 +22,123 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Elements
+namespace JsonPathExpressions.Elements;
+
+using System;
+using System.Collections.Generic;
+
+internal class IndexRange
 {
-    using System;
-    using System.Collections.Generic;
-
-    internal class IndexRange
+    public IndexRange(int? start, int? end, int step)
     {
-        public IndexRange(int? start, int? end, int step)
+        if (start < 0)
+            throw new ArgumentOutOfRangeException(nameof(start), start, "Start is negative");
+        if (end < 0)
+            throw new ArgumentOutOfRangeException(nameof(end), end, "End is negative");
+        if (step == 0)
+            throw new ArgumentOutOfRangeException(nameof(step), step, "Step is zero");
+
+        if (step > 0)
         {
-            if (start < 0)
-                throw new ArgumentOutOfRangeException(nameof(start), start, "Start is negative");
-            if (end < 0)
-                throw new ArgumentOutOfRangeException(nameof(end), end, "End is negative");
-            if (step == 0)
-                throw new ArgumentOutOfRangeException(nameof(step), step, "Step is zero");
-
-            if (step > 0)
-            {
-                Left = start ?? 0;
-                Right = end - 1 ?? int.MaxValue;
-            }
-            else
-            {
-                Left = end + 1 ?? 0;
-                Right = start ?? 0;
-            }
-
-            Step = step;
+            Left = start ?? 0;
+            Right = end - 1 ?? int.MaxValue;
+        }
+        else
+        {
+            Left = end + 1 ?? 0;
+            Right = start ?? 0;
         }
 
-        public int Left { get; }
-        public int Right { get; }
-        public int Step { get; }
+        Step = step;
+    }
 
-        public int Start => Step > 0 ? Left : Right;
-        public bool ContainsAllIndexes => Left == 0 && Right == int.MaxValue && Step == 1;
-        public int IndexCount => Right >= Left
-            ? (Right - Left) / Math.Abs(Step) + 1
-            : 0;
+    public int Left { get; }
+    public int Right { get; }
+    public int Step { get; }
 
-        public bool Contains(int index)
+    public int Start => Step > 0 ? Left : Right;
+    public bool ContainsAllIndexes => Left == 0 && Right == int.MaxValue && Step == 1;
+    public int IndexCount => Right >= Left
+        ? (Right - Left) / Math.Abs(Step) + 1
+        : 0;
+
+    public bool Contains(int index)
+    {
+        if (index < 0)
+            throw new ArgumentOutOfRangeException(nameof(index), index, "Index must not be negative");
+
+        return index >= Left
+               && index <= Right
+               && (index - Start) % Step == 0;
+    }
+
+    public bool Contains(IndexRange other)
+    {
+        return IsStepCompatible(other.Step)
+               && IsInsideLeftBoundary(other)
+               && IsInsideRightBoundary(other)
+               && (other.Start - Start) % Step == 0;
+    }
+
+    public IEnumerable<int> GetIndexes()
+    {
+        if (Step > 0)
         {
-            if (index < 0)
-                throw new ArgumentOutOfRangeException(nameof(index), index, "Index must not be negative");
-
-            return index >= Left
-                   && index <= Right
-                   && (index - Start) % Step == 0;
+            for (int i = Left; i <= Right; i += Step)
+                yield return i;
         }
-
-        public bool Contains(IndexRange other)
+        else
         {
-            return IsStepCompatible(other.Step)
-                   && IsInsideLeftBoundary(other)
-                   && IsInsideRightBoundary(other)
-                   && (other.Start - Start) % Step == 0;
+            for (int i = Right; i >= Left; i += Step)
+                yield return i;
         }
+    }
 
-        public IEnumerable<int> GetIndexes()
-        {
-            if (Step > 0)
-            {
-                for (int i = Left; i <= Right; i += Step)
-                    yield return i;
-            }
-            else
-            {
-                for (int i = Right; i >= Left; i += Step)
-                    yield return i;
-            }
-        }
-
-        private bool IsStepCompatible(int otherStep)
-        {
-            if (Math.Abs(Step) == Math.Abs(otherStep))
-                return true;
-
-            return Math.Abs(Step) > Math.Abs(otherStep)
-                ? (Step % otherStep == 0)
-                : (otherStep % Step == 0);
-        }
-
-        private bool IsInsideLeftBoundary(IndexRange other)
-        {
-            if (other.Left >= Left)
-                return true;
-
-            if (other.Step > 0)
-                return false;
-            if (other.Left - Left <= other.Step)
-                return false;
-
-            for (int i = other.Left; i < Left; ++i)
-            {
-                if ((other.Right - i) % other.Step == 0)
-                    return false;
-            }
-
+    private bool IsStepCompatible(int otherStep)
+    {
+        if (Math.Abs(Step) == Math.Abs(otherStep))
             return true;
-        }
 
-        private bool IsInsideRightBoundary(IndexRange other)
-        {
-            if (other.Right <= Right)
-                return true;
+        return Math.Abs(Step) > Math.Abs(otherStep)
+            ? (Step % otherStep == 0)
+            : (otherStep % Step == 0);
+    }
 
-            if (other.Step < 0)
-                return false;
-            if (other.Right - Right >= other.Step)
-                return false;
-
-            for (int i = other.Right; i > Right; --i)
-            {
-                if ((i - other.Left) % other.Step == 0)
-                    return false;
-            }
-
+    private bool IsInsideLeftBoundary(IndexRange other)
+    {
+        if (other.Left >= Left)
             return true;
+
+        if (other.Step > 0)
+            return false;
+        if (other.Left - Left <= other.Step)
+            return false;
+
+        for (int i = other.Left; i < Left; ++i)
+        {
+            if ((other.Right - i) % other.Step == 0)
+                return false;
         }
+
+        return true;
+    }
+
+    private bool IsInsideRightBoundary(IndexRange other)
+    {
+        if (other.Right <= Right)
+            return true;
+
+        if (other.Step < 0)
+            return false;
+        if (other.Right - Right >= other.Step)
+            return false;
+
+        for (int i = other.Right; i > Right; --i)
+        {
+            if ((i - other.Left) % other.Step == 0)
+                return false;
+        }
+
+        return true;
     }
 }

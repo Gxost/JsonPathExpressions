@@ -22,42 +22,41 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Tests.Helpers
-{
-    using System;
-    using JsonPathExpressions.Elements;
+namespace JsonPathExpressions.Tests.Helpers;
 
-    public static class ElementCreator
+using System;
+using JsonPathExpressions.Elements;
+
+public static class ElementCreator
+{
+    public static JsonPathElement CreateAny(JsonPathElementType type)
     {
-        public static JsonPathElement CreateAny(JsonPathElementType type)
+        switch (type)
         {
-            switch (type)
-            {
-                case JsonPathElementType.Root:
-                    return new JsonPathRootElement();
-                case JsonPathElementType.RecursiveDescent:
-                    return new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("recursive~~~"));
-                case JsonPathElementType.Property:
-                    return new JsonPathPropertyElement("~~~");
-                case JsonPathElementType.AnyProperty:
-                    return new JsonPathAnyPropertyElement();
-                case JsonPathElementType.PropertyList:
-                    return new JsonPathPropertyListElement(["~~~0", "~~~1"]);
-                case JsonPathElementType.ArrayIndex:
-                    return new JsonPathArrayIndexElement(int.MaxValue);
-                case JsonPathElementType.AnyArrayIndex:
-                    return new JsonPathAnyArrayIndexElement();
-                case JsonPathElementType.ArrayIndexList:
-                    return new JsonPathArrayIndexListElement([int.MaxValue - 1, int.MaxValue - 2]);
-                case JsonPathElementType.ArraySlice:
-                    return new JsonPathArraySliceElement(int.MaxValue - 10, int.MaxValue - 9);
-                case JsonPathElementType.Expression:
-                    return new JsonPathExpressionElement("~~~expr~~~");
-                case JsonPathElementType.FilterExpression:
-                    return new JsonPathFilterExpressionElement("~~~filter-expr~~~");
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
+            case JsonPathElementType.Root:
+                return new JsonPathRootElement();
+            case JsonPathElementType.RecursiveDescent:
+                return new JsonPathRecursiveDescentElement(new JsonPathPropertyElement("recursive~~~"));
+            case JsonPathElementType.Property:
+                return new JsonPathPropertyElement("~~~");
+            case JsonPathElementType.AnyProperty:
+                return new JsonPathAnyPropertyElement();
+            case JsonPathElementType.PropertyList:
+                return new JsonPathPropertyListElement(["~~~0", "~~~1"]);
+            case JsonPathElementType.ArrayIndex:
+                return new JsonPathArrayIndexElement(int.MaxValue);
+            case JsonPathElementType.AnyArrayIndex:
+                return new JsonPathAnyArrayIndexElement();
+            case JsonPathElementType.ArrayIndexList:
+                return new JsonPathArrayIndexListElement([int.MaxValue - 1, int.MaxValue - 2]);
+            case JsonPathElementType.ArraySlice:
+                return new JsonPathArraySliceElement(int.MaxValue - 10, int.MaxValue - 9);
+            case JsonPathElementType.Expression:
+                return new JsonPathExpressionElement("~~~expr~~~");
+            case JsonPathElementType.FilterExpression:
+                return new JsonPathFilterExpressionElement("~~~filter-expr~~~");
+            default:
+                throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
     }
 }

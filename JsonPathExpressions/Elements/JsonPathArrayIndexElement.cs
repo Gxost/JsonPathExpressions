@@ -22,108 +22,107 @@
 // SOFTWARE.
 #endregion
 
-namespace JsonPathExpressions.Elements
+namespace JsonPathExpressions.Elements;
+
+using System;
+using System.Linq;
+
+/// <summary>
+/// JsonPath element representing array index
+/// </summary>
+public sealed class JsonPathArrayIndexElement : JsonPathElement, IEquatable<JsonPathArrayIndexElement>
 {
-    using System;
-    using System.Linq;
+    /// <summary>
+    /// Create <see cref="JsonPathArrayIndexElement"/> instance
+    /// </summary>
+    /// <param name="index">Array index</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is negative</exception>
+    public JsonPathArrayIndexElement(int index)
+    {
+        if (index < 0)
+            throw new ArgumentOutOfRangeException(nameof(index), index, "Array index must not be negative");
+
+        Index = index;
+    }
+
+    /// <inheritdoc />
+    public override JsonPathElementType Type => JsonPathElementType.ArrayIndex;
+
+    /// <inheritdoc />
+    public override bool IsStrict => true;
+
+    /// <inheritdoc />
+    public override bool IsNormalized => true;
 
     /// <summary>
-    /// JsonPath element representing array index
+    /// Gets array index value
     /// </summary>
-    public sealed class JsonPathArrayIndexElement : JsonPathElement, IEquatable<JsonPathArrayIndexElement>
+    public int Index { get; }
+
+    /// <inheritdoc />
+    public override JsonPathElement GetNormalized()
     {
-        /// <summary>
-        /// Create <see cref="JsonPathArrayIndexElement"/> instance
-        /// </summary>
-        /// <param name="index">Array index</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is negative</exception>
-        public JsonPathArrayIndexElement(int index)
-        {
-            if (index < 0)
-                throw new ArgumentOutOfRangeException(nameof(index), index, "Array index must not be negative");
+        return this;
+    }
 
-            Index = index;
+    /// <inheritdoc />
+    public override bool? Matches(JsonPathElement element)
+    {
+        if (element is null)
+            throw new ArgumentNullException(nameof(element));
+
+        switch (element)
+        {
+            case JsonPathArrayIndexElement arrayIndexElement:
+                return arrayIndexElement.Index == Index;
+            case JsonPathArrayIndexListElement arrayIndexListElement:
+                return arrayIndexListElement.Indexes.Count == 1 && arrayIndexListElement.Indexes.First() == Index;
+            case JsonPathArraySliceElement arraySliceElement:
+                return arraySliceElement.GetIndexes()?.All(x => x == Index);
         }
 
-        /// <inheritdoc />
-        public override JsonPathElementType Type => JsonPathElementType.ArrayIndex;
+        return Equals(element);
+    }
 
-        /// <inheritdoc />
-        public override bool IsStrict => true;
+    /// <inheritdoc cref="IEquatable{T}"/>
+    public bool Equals(JsonPathArrayIndexElement? other)
+    {
+        if (ReferenceEquals(null, other))
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
 
-        /// <inheritdoc />
-        public override bool IsNormalized => true;
+        return Index == other.Index;
+    }
 
-        /// <summary>
-        /// Gets array index value
-        /// </summary>
-        public int Index { get; }
+    /// <inheritdoc />
+    public override bool Equals(JsonPathElement? other)
+    {
+        return Equals((object?)other);
+    }
 
-        /// <inheritdoc />
-        public override JsonPathElement GetNormalized()
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != GetType())
+            return false;
+
+        return Equals((JsonPathArrayIndexElement) obj);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        unchecked
         {
-            return this;
-        }
+            int hashCode = Index;
+            hashCode = (hashCode * 397) ^ GetType().GetHashCode();
 
-        /// <inheritdoc />
-        public override bool? Matches(JsonPathElement element)
-        {
-            if (element is null)
-                throw new ArgumentNullException(nameof(element));
-
-            switch (element)
-            {
-                case JsonPathArrayIndexElement arrayIndexElement:
-                    return arrayIndexElement.Index == Index;
-                case JsonPathArrayIndexListElement arrayIndexListElement:
-                    return arrayIndexListElement.Indexes.Count == 1 && arrayIndexListElement.Indexes.First() == Index;
-                case JsonPathArraySliceElement arraySliceElement:
-                    return arraySliceElement.GetIndexes()?.All(x => x == Index);
-            }
-
-            return Equals(element);
-        }
-
-        /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(JsonPathArrayIndexElement? other)
-        {
-            if (ReferenceEquals(null, other))
-                return false;
-            if (ReferenceEquals(this, other))
-                return true;
-
-            return Index == other.Index;
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(JsonPathElement? other)
-        {
-            return Equals((object?)other);
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            if (obj.GetType() != GetType())
-                return false;
-
-            return Equals((JsonPathArrayIndexElement) obj);
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode = Index;
-                hashCode = (hashCode * 397) ^ GetType().GetHashCode();
-
-                return hashCode;
-            }
+            return hashCode;
         }
     }
 }
