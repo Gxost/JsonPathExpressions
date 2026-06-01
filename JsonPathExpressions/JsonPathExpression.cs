@@ -130,7 +130,7 @@ namespace JsonPathExpressions
         public static IFirstPathElementSyntax Builder => JsonPathExpressionBuilder.Create();
 
         /// <inheritdoc cref="IEquatable{T}"/>
-        public virtual bool Equals(JsonPathExpression other)
+        public virtual bool Equals(JsonPathExpression? other)
         {
             if (ReferenceEquals(null, other))
                 return false;
@@ -141,7 +141,7 @@ namespace JsonPathExpressions
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj))
                 return false;
@@ -169,7 +169,7 @@ namespace JsonPathExpressions
         /// <param name="left">Left JsonPath expression</param>
         /// <param name="right">Right JsonPath expression</param>
         /// <returns>True if two JsonPath expressions are equal</returns>
-        public static bool operator ==(JsonPathExpression left, JsonPathExpression right)
+        public static bool operator ==(JsonPathExpression? left, JsonPathExpression? right)
         {
             return Equals(left, right);
         }
@@ -180,7 +180,7 @@ namespace JsonPathExpressions
         /// <param name="left">Left JsonPath expression</param>
         /// <param name="right">Right JsonPath expression</param>
         /// <returns>True if two JsonPath expressions are not equal</returns>
-        public static bool operator !=(JsonPathExpression left, JsonPathExpression right)
+        public static bool operator !=(JsonPathExpression? left, JsonPathExpression? right)
         {
             return !Equals(left, right);
         }

@@ -64,9 +64,9 @@ namespace JsonPathExpressions
         public static new IFirstAbsolutePathElementSyntax Builder => AbsoluteJsonPathExpressionBuilder.Create();
 
         /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(AbsoluteJsonPathExpression other)
+        public bool Equals(AbsoluteJsonPathExpression? other)
         {
-            return Equals((JsonPathExpression)other);
+            return Equals((JsonPathExpression?)other);
         }
 
         /// <summary>

@@ -76,7 +76,7 @@ namespace JsonPathExpressions.Elements
         }
 
         /// <inheritdoc cref="IEquatable{T}"/>
-        public abstract bool Equals(JsonPathElement other);
+        public abstract bool Equals(JsonPathElement? other);
 
         internal virtual bool? Matches(IReadOnlyList<JsonPathElement> elements, int index, IReadOnlyList<JsonPathElement> otherElements, int otherIndex)
         {

@@ -58,6 +58,7 @@ namespace JsonPathExpressions.Utils
         }
 
         public static int GetCollectionHashCode<T>(this IEqualityComparer<T> equalityComparer, IEnumerable<T> collection)
+            where T : notnull
         {
             unchecked
             {

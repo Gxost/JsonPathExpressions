@@ -59,9 +59,9 @@ namespace JsonPathExpressions
         }
 
         /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(RelativeJsonPathExpression other)
+        public bool Equals(RelativeJsonPathExpression? other)
         {
-            return Equals((JsonPathExpression)other);
+            return Equals((JsonPathExpression?) other);
         }
 
         /// <summary>

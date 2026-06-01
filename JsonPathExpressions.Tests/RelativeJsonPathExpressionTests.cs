@@ -86,7 +86,7 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void ExplicitOperator_Null_ReturnsNull()
         {
-            var actual = (RelativeJsonPathExpression)(string)null;
+            var actual = (RelativeJsonPathExpression?)(string?)null;
 
             actual.Should().BeNull();
         }

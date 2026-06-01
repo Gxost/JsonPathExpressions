@@ -84,7 +84,7 @@ namespace JsonPathExpressions.Elements
         }
 
         /// <inheritdoc cref="IEquatable{T}"/>
-        public bool Equals(JsonPathPropertyElement other)
+        public bool Equals(JsonPathPropertyElement? other)
         {
             if (ReferenceEquals(null, other))
                 return false;
@@ -95,13 +95,13 @@ namespace JsonPathExpressions.Elements
         }
         
         /// <inheritdoc />
-        public override bool Equals(JsonPathElement other)
+        public override bool Equals(JsonPathElement? other)
         {
-            return Equals((object)other);
+            return Equals((object?)other);
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj))
                 return false;

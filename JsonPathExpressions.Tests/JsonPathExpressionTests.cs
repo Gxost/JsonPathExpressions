@@ -114,7 +114,7 @@ namespace JsonPathExpressions.Tests
         [InlineData("a", null, false)]
         [InlineData(null, "a", false)]
         [InlineData(null, null, true)]
-        public void EqualityOperator(string first, string second, bool expected)
+        public void EqualityOperator(string? first, string? second, bool expected)
         {
             var firstPath = first != null ? new JsonPathExpression(first) : null;
             var secondPath = second != null ? new JsonPathExpression(second) : null;
@@ -130,7 +130,7 @@ namespace JsonPathExpressions.Tests
         [InlineData("a", null, true)]
         [InlineData(null, "a", true)]
         [InlineData(null, null, false)]
-        public void InequalityOperator(string first, string second, bool expected)
+        public void InequalityOperator(string? first, string? second, bool expected)
         {
             var firstPath = first != null ? new JsonPathExpression(first) : null;
             var secondPath = second != null ? new JsonPathExpression(second) : null;
@@ -154,7 +154,7 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void ExplicitOperator_NullExpression_ReturnsNull()
         {
-            string actual = (string)(JsonPathExpression)null;
+            string? actual = (string?)(JsonPathExpression?)null;
 
             actual.Should().BeNull();
         }
@@ -172,7 +172,7 @@ namespace JsonPathExpressions.Tests
         [Fact]
         public void ExplicitOperator_NullString_ReturnsNull()
         {
-            var actual = (JsonPathExpression)(string)null;
+            var actual = (JsonPathExpression?)(string?)null;
 
             actual.Should().BeNull();
         }

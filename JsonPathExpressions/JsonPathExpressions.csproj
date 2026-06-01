@@ -1,19 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net461</TargetFrameworks>
-    <LangVersion>8.0</LangVersion>
-    <Nullable>enable</Nullable>
-    <WarningsAsErrors>nullable</WarningsAsErrors>
-    <Authors>Oleksandr Banakh</Authors>
-    <Company></Company>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net461;net8.0;net10.0</TargetFrameworks>
     <Description>Allows to create, parse, modify and analyze JSONPath expressions</Description>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageTags>JSONPath</PackageTags>
-    <RepositoryUrl>https://github.com/Gxost/JsonPathExpressions</RepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <Copyright>© 2020 Oleksandr Banakh</Copyright>
     <CodeAnalysisRuleSet>..\.sonarlint\gxost_jsonpathexpressionscsharp.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
