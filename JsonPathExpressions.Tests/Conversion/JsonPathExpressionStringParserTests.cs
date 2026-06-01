@@ -26,7 +26,7 @@ namespace JsonPathExpressions.Tests.Conversion;
 
 using System;
 using System.Collections.Generic;
-using FluentAssertions;
+using AwesomeAssertions;
 using JsonPathExpressions.Conversion;
 using JsonPathExpressions.Elements;
 using Xunit;
@@ -226,6 +226,6 @@ public class JsonPathExpressionStringParserTests
 
         var actual = JsonPathExpressionStringParser.Parse(expression);
 
-        actual.Should().BeEquivalentTo(expected);
+        actual.Should().BeEquivalentTo([expected]);
     }
 }

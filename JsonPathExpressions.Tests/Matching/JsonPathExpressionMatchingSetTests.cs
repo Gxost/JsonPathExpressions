@@ -25,7 +25,7 @@
 namespace JsonPathExpressions.Tests.Matching;
 
 using System.Collections.Generic;
-using FluentAssertions;
+using AwesomeAssertions;
 using JsonPathExpressions.Matching;
 using Xunit;
 

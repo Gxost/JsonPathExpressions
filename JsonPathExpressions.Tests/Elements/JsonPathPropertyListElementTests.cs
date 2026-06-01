@@ -25,7 +25,7 @@
 namespace JsonPathExpressions.Tests.Elements;
 
 using System;
-using FluentAssertions;
+using AwesomeAssertions;
 using Helpers;
 using JsonPathExpressions.Elements;
 using Xunit;
