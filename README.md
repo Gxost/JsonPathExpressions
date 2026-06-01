@@ -1,6 +1,6 @@
 # JSONPath expressions
 
-[![Nuget](https://img.shields.io/nuget/v/JsonPathExpressions)](https://www.nuget.org/packages/JsonPathExpressions) [![License](https://img.shields.io/github/license/Gxost/JsonPathExpressions)](https://github.com/Gxost/JsonPathExpressions/blob/master/LICENSE.md) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Gxost_JsonPathExpressions&metric=alert_status)](https://sonarcloud.io/dashboard?id=Gxost_JsonPathExpressions) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Gxost_JsonPathExpressions&metric=coverage)](https://sonarcloud.io/dashboard?id=Gxost_JsonPathExpressions)
+[![Nuget](https://img.shields.io/nuget/v/JsonPathExpressions)](https://www.nuget.org/packages/JsonPathExpressions) [![License](https://img.shields.io/github/license/Gxost/JsonPathExpressions)](https://github.com/Gxost/JsonPathExpressions/blob/master/LICENSE.md)
 
 ----
 

@@ -12,32 +12,13 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 3.1.301
-    - name: Cache SonarCloud packages
-      uses: actions/cache@v1
-      with:
-        path: ~\sonar\cache
-        key: ${{ runner.os }}-sonar
-        restore-keys: ${{ runner.os }}-sonar
-    - name: Cache SonarCloud scanner
-      id: cache-sonar-scanner
-      uses: actions/cache@v1
-      with:
-        path: .\.sonar\scanner
-        key: ${{ runner.os }}-sonar-scanner
-        restore-keys: ${{ runner.os }}-sonar-scanner
-    - name: Install SonarCloud scanner
-      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-      shell: powershell
-      run: |
-        New-Item -Path .\.sonar\scanner -ItemType Directory
-        dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+        dotnet-version: 10.0.300
     - name: Install dependencies
       run: dotnet restore
     - name: Build, test and analyze
@@ -46,8 +27,6 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       shell: powershell
       run: |
-        .\.sonar\scanner\dotnet-sonarscanner begin /k:"Gxost_JsonPathExpressions" /o:"gxost" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
         dotnet build --configuration Release --no-restore
         dotnet build --configuration Debug --no-restore
         dotnet test --configuration Debug --no-build --verbosity normal --logger:trx /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
