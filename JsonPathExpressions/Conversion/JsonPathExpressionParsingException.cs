@@ -51,10 +51,4 @@ public class JsonPathExpressionParsingException : Exception
         : base(message, innerException)
     {
     }
-
-    /// <inheritdoc />
-    protected JsonPathExpressionParsingException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
-    }
 }
