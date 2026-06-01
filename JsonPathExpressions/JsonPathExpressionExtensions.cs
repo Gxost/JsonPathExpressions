@@ -126,7 +126,7 @@ public static class JsonPathExpressionExtensions
 
         var elements = path.Elements
             .Select(x => x.GetNormalized())
-            .ToList();
+            .ToArray();
 
         return (TJsonPathExpression) path.Create(elements);
     }
@@ -164,7 +164,7 @@ public static class JsonPathExpressionExtensions
 
             var elements = path.Elements
                 .Take(i)
-                .ToList();
+                .ToArray();
 
             return (TJsonPathExpression)path.Create(elements);
         }
@@ -214,7 +214,7 @@ public static class JsonPathExpressionExtensions
 
         var elements = childPath.Elements
             .Skip(path.Elements.Count)
-            .ToList();
+            .ToArray();
 
         return new RelativeJsonPathExpression(elements);
     }
@@ -346,7 +346,7 @@ public static class JsonPathExpressionExtensions
 
         var elements = path.Elements
             .Take(path.Elements.Count - count)
-            .ToList();
+            .ToArray();
 
         return (TJsonPathExpression)path.Create(elements);
     }

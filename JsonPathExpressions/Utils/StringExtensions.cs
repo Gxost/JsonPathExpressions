@@ -32,12 +32,11 @@ internal static class StringExtensions
     private static readonly char[] CommaWithSingleQuote = [',', '\''];
     private static readonly char[] ClosingSquareBracketWithSingleQuote = [']', '\''];
 
-    public static IReadOnlyCollection<string> SplitQuoted(this string str, char delimiter, char quote)
+    public static IEnumerable<string> SplitQuoted(this string str, char delimiter, char quote)
     {
         if (quote == delimiter)
             throw new ArgumentException("Quote character is equal to delimiter", nameof(quote));
 
-        var parts = new List<string>();
         var valueWithQuote = GetValueWithQuote(delimiter, quote);
 
         for (int nextIndex = 0; nextIndex < str.Length;)
@@ -45,15 +44,13 @@ internal static class StringExtensions
             int index = str.IndexOfOutsideQuotes(delimiter, quote, nextIndex, valueWithQuote);
             if (index == -1)
             {
-                parts.Add(str.Substring(nextIndex));
-                break;
+                yield return str.Substring(nextIndex);
+                yield break;
             }
 
-            parts.Add(str.Substring(nextIndex, index - nextIndex));
+            yield return str.Substring(nextIndex, index - nextIndex);
             nextIndex = index + 1;
         }
-
-        return parts;
     }
 
     public static int IndexOfOutsideQuotes(this string str, char value, char quote, int startIndex)

@@ -181,7 +181,7 @@ internal static class JsonPathExpressionStringParser
         {
             var indexes = parts
                 .Select(x => int.Parse(x.Trim()))
-                .ToList();
+                .ToArray();
 
             return new JsonPathArrayIndexListElement(indexes);
         }
@@ -225,19 +225,19 @@ internal static class JsonPathExpressionStringParser
         var parts = token
             .SplitQuoted(',', '\'')
             .Select(x => x.Trim())
-            .ToList();
+            .ToArray();
 
         if (parts.Any(string.IsNullOrWhiteSpace))
             throw new JsonPathExpressionParsingException("Double commas found inside array property list element");
 
         var names = parts
             .Select(x => x.Trim('\''))
-            .ToList();
+            .ToArray();
 
         if (names.Any(x => x.Contains('\'')))
             throw new JsonPathExpressionParsingException("Non-matching single quotes found inside array property list element");
 
-        return names.Count == 1
+        return names.Length == 1
             ? (JsonPathElement)new JsonPathPropertyElement(names[0])
             : (JsonPathElement)new JsonPathPropertyListElement(names);
     }
