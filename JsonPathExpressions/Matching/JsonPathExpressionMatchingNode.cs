@@ -64,7 +64,7 @@ namespace JsonPathExpressions.Matching
         public bool? Matches(TJsonPathExpression jsonPath)
         {
             if (Index == jsonPath.Elements.Count)
-                return !(_current is null);
+                return _current is not null;
 
             bool? result = false;
             if (jsonPath.Elements[Index].Type != JsonPathElementType.RecursiveDescent)
@@ -307,7 +307,7 @@ namespace JsonPathExpressions.Matching
 
         private bool AddCurrent(TJsonPathExpression jsonPath)
         {
-            if (!(_current is null))
+            if (_current is not null)
                 return false;
 
             _current = jsonPath;

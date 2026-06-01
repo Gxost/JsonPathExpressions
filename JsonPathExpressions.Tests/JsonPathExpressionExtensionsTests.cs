@@ -117,7 +117,7 @@ namespace JsonPathExpressions.Tests
         {
             var pathExpr = new JsonPathExpression(path);
             var otherExpr = new JsonPathExpression(other);
-            var expectedExpr = expected != null ? new JsonPathExpression(expected) : null;
+            var expectedExpr = expected is not null ? new JsonPathExpression(expected) : null;
 
             var actual = pathExpr.GetParentWith(otherExpr);
 
@@ -133,7 +133,7 @@ namespace JsonPathExpressions.Tests
         {
             var pathExpr = new AbsoluteJsonPathExpression(path);
             var otherExpr = new AbsoluteJsonPathExpression(other);
-            var expectedExpr = expected != null ? new JsonPathExpression(expected) : null;
+            var expectedExpr = expected is not null ? new JsonPathExpression(expected) : null;
 
             var actual = pathExpr.GetParentWith(otherExpr);
 
@@ -148,7 +148,7 @@ namespace JsonPathExpressions.Tests
         {
             var pathExpr = new JsonPathExpression(path);
             var childExpr = new JsonPathExpression(child);
-            var expectedExpr = expected != null ? new RelativeJsonPathExpression(expected) : null;
+            var expectedExpr = expected is not null ? new RelativeJsonPathExpression(expected) : null;
 
             var actual = pathExpr.GetRelativePathTo(childExpr);
 

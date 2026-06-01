@@ -245,7 +245,7 @@ namespace JsonPathExpressions
 
         private static void ValidateElements(IReadOnlyCollection<JsonPathElement> elements, bool? isAbsolutePath)
         {
-            if (isAbsolutePath != null)
+            if (isAbsolutePath is not null)
                 ValidateFirstElement(elements, isAbsolutePath.Value);
 
             if (elements.Skip(1).Any(x => x.Type == JsonPathElementType.Root))

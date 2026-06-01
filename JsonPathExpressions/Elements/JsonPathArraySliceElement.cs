@@ -227,8 +227,8 @@ namespace JsonPathExpressions.Elements
             if (Equals(other))
                 return true;
 
-            return !(IndexRange is null)
-                   && !(other.IndexRange is null)
+            return IndexRange is not null
+                   && other.IndexRange is not null
                    && IndexRange.Contains(other.IndexRange);
         }
 

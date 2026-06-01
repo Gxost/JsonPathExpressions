@@ -67,7 +67,7 @@ namespace JsonPathExpressions.Elements
         /// <inheritdoc cref="IEquatable{T}"/>
         public bool Equals(JsonPathAnyPropertyElement? other)
         {
-            return !(other is null);
+            return other is not null;
         }
 
         /// <inheritdoc />
